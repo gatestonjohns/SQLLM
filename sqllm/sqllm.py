@@ -7,12 +7,16 @@ from typing import List
 from .config import DEFAULT_SQL_QUERY
 import logging
 from .UDF.register import register_all_udfs
+from .LLM.OpenAI import OpenAIProvider
 
 # Initialize database connection at module level
 _db_connection = duckdb.connect(database=":memory:")
 
+# Init other necessary clients/connections
+_llm_provider = OpenAIProvider()
+
 # Register all UDFs with DuckDB on module load using external UDFs registry
-register_all_udfs(_db_connection)
+register_all_udfs(_db_connection, llm_provider=_llm_provider)
 
 
 class State(rx.State):
