@@ -40,3 +40,13 @@ class LLMProvider(ABC):
             dict: Response data that adheres to the specified schema
         """
         ...
+
+    @abstractmethod
+    def count_tokens(
+        self,
+        prompt: str
+    ) -> int:
+        """
+        Count the number of tokens in the prompt.
+        """
+        ...

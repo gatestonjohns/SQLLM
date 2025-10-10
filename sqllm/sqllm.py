@@ -1,22 +1,13 @@
 import reflex as rx
 from reflex_monaco import monaco
-import duckdb
 import os
 import pandas as pd
-from typing import List
 from .config import DEFAULT_SQL_QUERY
 import logging
-from .UDF.register import register_all_udfs
-from .LLM.OpenAI import OpenAIProvider
+from .Engine.engine import Engine, TableRepresentationObject
 
 # Initialize database connection at module level
-_db_connection = duckdb.connect(database=":memory:")
-
-# Init other necessary clients/connections
-_llm_provider = OpenAIProvider()
-
-# Register all UDFs with DuckDB on module load using external UDFs registry
-register_all_udfs(_db_connection, llm_provider=_llm_provider)
+engine = Engine()
 
 
 class State(rx.State):
@@ -26,15 +17,17 @@ class State(rx.State):
     query_results_df: pd.DataFrame = pd.DataFrame()
     error_message: str = ""
     success_message: str = ""
-    available_tables: List[str] = []
+    available_tables: list[TableRepresentationObject] = []
+    available_pdfs: list[str] = []
     upload_dialog_open: bool = False
+    upload_dialog_mode: str = "csv"
 
     @rx.var
     def result_count(self) -> str:
         """Get the count of rows and columns in the results."""
         if self.query_results_df.empty:
             return ""
-        return f"{len(self.query_results_df)} rows × {len(self.query_results_df.columns)} columns"
+        return f"{len(self.query_results_df)} rows ☓ {len(self.query_results_df.columns)} columns"
 
     def _reset_before_query_execution(self):
         """Reset the state before executing a query."""
@@ -48,8 +41,15 @@ class State(rx.State):
         self.sql_query = sql_query
 
     @rx.event
-    def open_upload_dialog(self):
-        """Open the upload dialog."""
+    def open_upload_dialog_csv(self):
+        """Open the upload dialog for CSV files."""
+        self.upload_dialog_mode = "csv"
+        self.upload_dialog_open = True
+
+    @rx.event
+    def open_upload_dialog_pdf(self):
+        """Open the upload dialog for PDF files."""
+        self.upload_dialog_mode = "pdf"
         self.upload_dialog_open = True
 
     @rx.event
@@ -58,7 +58,7 @@ class State(rx.State):
         self.upload_dialog_open = False
 
     @rx.event
-    def set_upload_dialog_open(self, value: bool):
+    def toggle_upload_dialog_open(self, value: bool):
         """Set the upload dialog open state."""
         self.upload_dialog_open = value
 
@@ -67,19 +67,24 @@ class State(rx.State):
         """Execute the SQL query and update results."""
         try:
             self._reset_before_query_execution()
-
-            self.query_results_df = _db_connection.execute(self.sql_query).fetchdf()
+            result = engine.execute(self.sql_query)
+            self.query_results_df = result.df
+            self.available_tables = engine.list_tables()
 
             logging.info(
                 f"Query executed successfully: {len(self.query_results_df)} rows returned"
             )
+            if result.warnings:
+                self.success_message = "Query executed with warnings."
+            else:
+                self.success_message = "Query executed successfully."
 
         except Exception as e:
             self.error_message = f"Error: {str(e)}"
             logging.error(f"✗ Query error: {e}")
 
     @rx.event
-    async def handle_upload(self, files: List[rx.UploadFile]):
+    async def handle_csv_upload(self, files: list[rx.UploadFile]):
         """Handle CSV file upload and load into DuckDB."""
         for file in files:
             try:
@@ -95,23 +100,18 @@ class State(rx.State):
                 with open(file_path, "wb") as f:
                     f.write(upload_data)
 
-                # Extract table name from filename (without .csv extension)
-                table_name = os.path.splitext(file.filename)[0]
-
-                # Load into DuckDB
-                _db_connection.execute(
-                    f"CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM read_csv_auto('{file_path}')"
-                )
+                # Load into DuckDB and return the results
+                created_table_name, created_table_exec_result = engine.load_csv(file_path=file_path)
+                self.query_results_df = created_table_exec_result.df
 
                 # Update available tables list
-                if table_name not in self.available_tables:
-                    self.available_tables.append(table_name)
+                self.available_tables = engine.list_tables()
 
                 self.success_message = (
-                    f"Successfully loaded {file.filename} as table '{table_name}'"
+                    f"Successfully loaded {file.filename} as table '{created_table_name}'"
                 )
                 logging.info(
-                    f"Loaded {file.filename} into DuckDB as table '{table_name}'"
+                    f"Loaded {file.filename} into DuckDB as table '{created_table_name}'"
                 )
 
             except Exception as e:
@@ -120,6 +120,38 @@ class State(rx.State):
                 return
 
         # Close the dialog after all uploads complete successfully
+        self.upload_dialog_open = False
+
+    @rx.event
+    async def handle_pdf_upload(self, files: list[rx.UploadFile]):
+        """Handle PDF upload and store on disk for later ingestion."""
+        for file in files:
+            try:
+                self._reset_before_query_execution()
+
+                upload_data = await file.read()
+
+                upload_dir = rx.get_upload_dir()
+                pdf_dir = os.path.join(upload_dir, "pdfs")
+                os.makedirs(pdf_dir, exist_ok=True)
+                file_path = os.path.join(pdf_dir, file.filename)
+
+                with open(file_path, "wb") as f:
+                    f.write(upload_data)
+
+                if file_path not in self.available_pdfs:
+                    self.available_pdfs.append(file_path)
+
+                self.success_message = (
+                    f"Stored PDF {file.filename}. Use its path in llm_pdf_to_table()."
+                )
+                logging.info("Stored PDF %s at %s", file.filename, file_path)
+
+            except Exception as e:
+                self.error_message = f"Error uploading {file.filename}: {str(e)}"
+                logging.error(f"✗ Error uploading {file.filename}: {e}")
+                return
+
         self.upload_dialog_open = False
 
     @rx.event
@@ -147,103 +179,175 @@ class State(rx.State):
 
 
 def index():
-    # File upload modal dialog
-    upload_dialog = rx.dialog.root(
-        rx.dialog.trigger(
-            rx.button(
-                rx.icon("upload", size=18),
-                "Import CSV",
-                color_scheme="teal",
-                size="3",
-                variant="solid",
-                cursor="pointer",
+    csv_upload_section = rx.vstack(
+        rx.upload(
+            rx.vstack(
+                rx.icon("file-up", size=32, color="teal"),
+                rx.button(
+                    rx.icon("folder-open", size=16),
+                    "Select CSV Files",
+                    color_scheme="teal",
+                    size="2",
+                    variant="soft",
+                ),
+                rx.text(
+                    "Drag and drop CSV files here or click to browse",
+                    size="2",
+                    color="gray",
+                    align="center",
+                ),
+                align="center",
+                spacing="3",
+            ),
+            id="csv_upload",
+            multiple=True,
+            accept={"text/csv": [".csv"]},
+            max_files=5,
+            border="2px dashed",
+            border_color="teal",
+            padding="2em",
+            border_radius="12px",
+            background="var(--teal-a2)",
+            width="100%",
+        ),
+        rx.cond(
+            rx.selected_files("csv_upload").length() > 0,
+            rx.vstack(
+                rx.text("Selected files:", weight="bold", size="2"),
+                rx.vstack(
+                    rx.foreach(
+                        rx.selected_files("csv_upload"),
+                        lambda file: rx.hstack(
+                            rx.icon("file-text", size=16, color="teal"),
+                            rx.text(file, size="2"),
+                            spacing="2",
+                            align="center",
+                        ),
+                    ),
+                    spacing="2",
+                    width="100%",
+                ),
+                spacing="2",
+                width="100%",
+                padding="1em",
+                background="var(--gray-a2)",
+                border_radius="8px",
             ),
         ),
+        rx.button(
+            rx.icon("upload", size=18),
+            "Upload CSV Files",
+            on_click=State.handle_csv_upload(rx.upload_files(upload_id="csv_upload")),
+            size="3",
+            color_scheme="teal",
+            width="100%",
+            cursor="pointer",
+        ),
+        spacing="4",
+        width="100%",
+    )
+
+    pdf_upload_section = rx.vstack(
+        rx.upload(
+            rx.vstack(
+                rx.icon("file-plus", size=32, color="purple"),
+                rx.button(
+                    rx.icon("folder-open", size=16),
+                    "Select PDF Files",
+                    color_scheme="purple",
+                    size="2",
+                    variant="soft",
+                ),
+                rx.text(
+                    "Drag and drop PDF files here or click to browse",
+                    size="2",
+                    color="gray",
+                    align="center",
+                ),
+                align="center",
+                spacing="3",
+            ),
+            id="pdf_upload",
+            multiple=True,
+            accept={"application/pdf": [".pdf"]},
+            max_files=5,
+            border="2px dashed",
+            border_color="purple",
+            padding="2em",
+            border_radius="12px",
+            background="var(--purple-a2)",
+            width="100%",
+        ),
+        rx.cond(
+            rx.selected_files("pdf_upload").length() > 0,
+            rx.vstack(
+                rx.text("Selected files:", weight="bold", size="2"),
+                rx.vstack(
+                    rx.foreach(
+                        rx.selected_files("pdf_upload"),
+                        lambda file: rx.hstack(
+                            rx.icon("file", size=16, color="purple"),
+                            rx.text(file, size="2"),
+                            spacing="2",
+                            align="center",
+                        ),
+                    ),
+                    spacing="2",
+                    width="100%",
+                ),
+                spacing="2",
+                width="100%",
+                padding="1em",
+                background="var(--gray-a2)",
+                border_radius="8px",
+            ),
+        ),
+        rx.button(
+            rx.icon("upload", size=18),
+            "Upload PDF Files",
+            on_click=State.handle_pdf_upload(rx.upload_files(upload_id="pdf_upload")),
+            size="3",
+            color_scheme="purple",
+            width="100%",
+            cursor="pointer",
+        ),
+        spacing="4",
+        width="100%",
+    )
+
+    upload_dialog = rx.dialog.root(
         rx.dialog.content(
             rx.vstack(
                 rx.dialog.title(
-                    rx.hstack(
-                        rx.icon("database", size=24, color="teal"),
-                        "Import CSV Files",
-                        spacing="2",
-                        align="center",
-                    ),
+                    rx.cond(
+                        State.upload_dialog_mode == "csv",
+                        rx.hstack(
+                            rx.icon("database", size=24, color="teal"),
+                            "Import CSV Files",
+                            spacing="2",
+                            align="center",
+                        ),
+                        rx.hstack(
+                            rx.icon("file-plus", size=24, color="purple"),
+                            "Store PDF Files",
+                            spacing="2",
+                            align="center",
+                        ),
+                    )
                 ),
                 rx.dialog.description(
-                    "Upload CSV files to query them with SQL. Each file will be loaded as a separate table.",
+                    rx.cond(
+                        State.upload_dialog_mode == "csv",
+                        "Upload CSV files to query them with SQL. Each file becomes a DuckDB table.",
+                        "Upload PDFs to store them on disk. Reference the saved path in llm_pdf_to_table().",
+                    ),
                     size="2",
                     color="gray",
                 ),
-                rx.vstack(
-                    rx.upload(
-                        rx.vstack(
-                            rx.icon("file-up", size=32, color="teal"),
-                            rx.button(
-                                rx.icon("folder-open", size=16),
-                                "Select CSV Files",
-                                color_scheme="teal",
-                                size="2",
-                                variant="soft",
-                            ),
-                            rx.text(
-                                "Drag and drop CSV files here or click to browse",
-                                size="2",
-                                color="gray",
-                                align="center",
-                            ),
-                            align="center",
-                            spacing="3",
-                        ),
-                        id="csv_upload",
-                        multiple=True,
-                        accept={
-                            "text/csv": [".csv"],
-                        },
-                        max_files=5,
-                        border="2px dashed",
-                        border_color="teal",
-                        padding="2em",
-                        border_radius="12px",
-                        background="var(--teal-a2)",
-                        width="100%",
-                    ),
-                    rx.cond(
-                        rx.selected_files("csv_upload").length() > 0,
-                        rx.vstack(
-                            rx.text("Selected files:", weight="bold", size="2"),
-                            rx.vstack(
-                                rx.foreach(
-                                    rx.selected_files("csv_upload"),
-                                    lambda file: rx.hstack(
-                                        rx.icon("file-text", size=16, color="teal"),
-                                        rx.text(file, size="2"),
-                                        spacing="2",
-                                        align="center",
-                                    ),
-                                ),
-                                spacing="2",
-                                width="100%",
-                            ),
-                            spacing="2",
-                            width="100%",
-                            padding="1em",
-                            background="var(--gray-a2)",
-                            border_radius="8px",
-                        ),
-                    ),
-                    rx.button(
-                        rx.icon("upload", size=18),
-                        "Upload Files",
-                        on_click=State.handle_upload(
-                            rx.upload_files(upload_id="csv_upload")
-                        ),
-                        size="3",
-                        color_scheme="teal",
-                        width="100%",
-                        cursor="pointer",
-                    ),
-                    spacing="4",
-                    width="100%",
+                rx.cond(
+                    State.upload_dialog_mode == "csv",
+                    csv_upload_section,
+                    pdf_upload_section,
                 ),
                 spacing="4",
                 width="100%",
@@ -265,7 +369,7 @@ def index():
             style={"max_width": "550px"},
         ),
         open=State.upload_dialog_open,
-        on_open_change=State.set_upload_dialog_open,
+        on_open_change=State.toggle_upload_dialog_open,
     )
 
     # Available tables display
@@ -286,12 +390,48 @@ def index():
                 rx.hstack(
                     rx.foreach(
                         State.available_tables,
-                        lambda table: rx.badge(
-                            rx.icon("table-2", size=14),
-                            table,
-                            color_scheme="blue",
-                            variant="soft",
-                            size="2",
+                        lambda table: rx.popover.root(
+                            rx.popover.trigger(
+                                rx.badge(
+                                    rx.icon("table-2", size=14),
+                                    table.name,
+                                    color_scheme="blue",
+                                    variant="soft",
+                                    size="2",
+                                )
+                            ),
+                            rx.popover.content(
+                                rx.vstack(
+                                    rx.text(
+                                        f"Rows: {table.row_count}",
+                                        size="2",
+                                        weight="medium",
+                                    ),
+                                    rx.table.root(
+                                        rx.table.header(
+                                            rx.table.row(
+                                                rx.table.column_header_cell("Column"),
+                                                rx.table.column_header_cell("Type"),
+                                            )
+                                        ),
+                                        rx.table.body(
+                                            rx.foreach(
+                                                table.columns,
+                                                lambda col: rx.table.row(
+                                                    rx.table.cell(col.name),
+                                                    rx.table.cell(col.type),
+                                                ),
+                                            )
+                                        ),
+                                        size="1",
+                                    ),
+                                    spacing="2",
+                                    align="start",
+                                ),
+                                side="top",
+                                align="start",
+                                style={"min_width": "240px"},
+                            ),
                         ),
                     ),
                     spacing="2",
@@ -305,6 +445,47 @@ def index():
                 rx.icon("info", size=20, color="gray"),
                 rx.text(
                     "No tables loaded yet. Click 'Import CSV' to get started.",
+                    size="2",
+                    color="gray",
+                ),
+                spacing="2",
+                align="center",
+            ),
+        ),
+        variant="surface",
+        size="2",
+    )
+
+    pdf_display = rx.card(
+        rx.cond(
+            State.available_pdfs.length() > 0,
+            rx.vstack(
+                rx.hstack(
+                    rx.icon("file", size=20, color="purple"),
+                    rx.text(
+                        "Stored PDFs",
+                        size="3",
+                        weight="bold",
+                    ),
+                    spacing="2",
+                    align="center",
+                ),
+                rx.vstack(
+                    rx.foreach(
+                        State.available_pdfs,
+                        lambda pdf: rx.code(pdf, size="2"),
+                    ),
+                    spacing="1",
+                    align="start",
+                    width="100%",
+                ),
+                spacing="3",
+                align="start",
+            ),
+            rx.hstack(
+                rx.icon("info", size=20, color="gray"),
+                rx.text(
+                    "Upload PDFs to reference their saved paths in llm_pdf_to_table().",
                     size="2",
                     color="gray",
                 ),
@@ -430,6 +611,7 @@ def index():
 
     # Header with title and import button
     header = rx.box(
+        upload_dialog,
         rx.hstack(
             rx.hstack(
                 rx.icon("database", size=32, color="teal"),
@@ -452,7 +634,27 @@ def index():
                 align="center",
             ),
             rx.spacer(),
-            upload_dialog,
+            rx.hstack(
+                rx.button(
+                    rx.icon("upload", size=18),
+                    "Import CSV",
+                    color_scheme="teal",
+                    size="3",
+                    variant="solid",
+                    cursor="pointer",
+                    on_click=State.open_upload_dialog_csv,
+                ),
+                rx.button(
+                    rx.icon("file-plus", size=18),
+                    "Store PDF",
+                    color_scheme="purple",
+                    size="3",
+                    variant="soft",
+                    cursor="pointer",
+                    on_click=State.open_upload_dialog_pdf,
+                ),
+                spacing="2",
+            ),
             width="100%",
             align="center",
         ),
@@ -467,7 +669,13 @@ def index():
     return rx.box(
         rx.vstack(
             header,
-            tables_display,
+            rx.hstack(
+                tables_display,
+                pdf_display,
+                spacing="6",
+                align="start",
+                width="100%",
+            ),
             editor_section,
             success_display,
             error_display,
