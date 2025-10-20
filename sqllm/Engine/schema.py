@@ -26,21 +26,24 @@ class SchemaSpec:
     columns: List[ColumnSpec]
     canonical: str
     pandas_dtypes: dict[str, str]
+    table_name: str | None = None
 
 
-_TABLE_PATTERN = re.compile(r"(?is)\s*(?:create\s+)?table\s+\w+\s*\((.*)\)\s*")
+_TABLE_PATTERN = re.compile(
+    r"(?is)\s*(?:create\s+)?table\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*"
+)
 
 
-def _strip_table_wrapper(spec: str) -> str:
+def _strip_table_wrapper(spec: str) -> tuple[str, str | None]:
     match = _TABLE_PATTERN.match(spec)
     if match:
-        return match.group(1)
-    return spec
+        return match.group(2), match.group(1)
+    return spec, None
 
 
 def parse_schema_grammar(spec: str) -> SchemaSpec:
     # supports either "col type, ..." or "TABLE name (col type, ...)"
-    inner = _strip_table_wrapper(spec.strip())
+    inner, table_name = _strip_table_wrapper(spec.strip())
     cols: List[ColumnSpec] = []
     pandas_map: dict[str, str] = {}
     parts = [p.strip() for p in inner.split(",") if p.strip()]
@@ -55,7 +58,12 @@ def parse_schema_grammar(spec: str) -> SchemaSpec:
         cols.append(ColumnSpec(name=name, duckdb_type=tnorm))
         pandas_map[name] = _to_pandas_dtype(tmain)
     canonical = ",".join([f"{c.name} {c.duckdb_type}" for c in cols])
-    return SchemaSpec(columns=cols, canonical=canonical, pandas_dtypes=pandas_map)
+    return SchemaSpec(
+        columns=cols,
+        canonical=canonical,
+        pandas_dtypes=pandas_map,
+        table_name=table_name,
+    )
 
 
 def _to_pandas_dtype(t: str) -> str:

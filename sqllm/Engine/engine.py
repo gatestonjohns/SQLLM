@@ -32,11 +32,11 @@ class TableRepresentationObject:
 class Engine:
     def __init__(
         self,
-        conn: duckdb.DuckDBPyConnection | None = None,
-        llm: OpenAIProvider | None = None,
+        conn: duckdb.DuckDBPyConnection,
+        llm: OpenAIProvider,
     ):
-        self.conn = conn or duckdb.connect(database=":memory:")
-        self.llm = llm or OpenAIProvider()
+        self.conn = conn
+        self.llm = llm
         self.handlers = get_vtf_handlers()
         register_all_udfs(self.conn, llm_provider=self.llm)
 

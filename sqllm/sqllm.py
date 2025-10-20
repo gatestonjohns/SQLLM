@@ -5,9 +5,15 @@ import pandas as pd
 from .config import DEFAULT_SQL_QUERY
 import logging
 from .Engine.engine import Engine, TableRepresentationObject
+from .LLM.OpenAI import OpenAIProvider
+import duckdb
 
 # Initialize database connection at module level
-engine = Engine()
+
+engine = Engine(
+    conn=duckdb.connect(database=":memory:"),
+    llm=OpenAIProvider(),
+)
 
 
 class State(rx.State):
@@ -101,15 +107,15 @@ class State(rx.State):
                     f.write(upload_data)
 
                 # Load into DuckDB and return the results
-                created_table_name, created_table_exec_result = engine.load_csv(file_path=file_path)
+                created_table_name, created_table_exec_result = engine.load_csv(
+                    file_path=file_path
+                )
                 self.query_results_df = created_table_exec_result.df
 
                 # Update available tables list
                 self.available_tables = engine.list_tables()
 
-                self.success_message = (
-                    f"Successfully loaded {file.filename} as table '{created_table_name}'"
-                )
+                self.success_message = f"Successfully loaded {file.filename} as table '{created_table_name}'"
                 logging.info(
                     f"Loaded {file.filename} into DuckDB as table '{created_table_name}'"
                 )

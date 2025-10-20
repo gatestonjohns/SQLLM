@@ -10,7 +10,12 @@ import tiktoken
 class OpenAIProvider(LLMProvider):
     """OpenAI implementation of LLM provider."""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4.1-2025-04-14", token_limit: int = 190000):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model: str = "gpt-4.1-2025-04-14",
+        token_limit: int = 190000,
+    ):
         """
         Initialize OpenAI provider.
 
@@ -32,14 +37,17 @@ class OpenAIProvider(LLMProvider):
         )
         self._system_prompt_msg = {"role": "system", "content": self._system_prompt}
 
-    def generate_text_response(
-        self, 
-        prompt: str
-    ) -> str:
+    def generate_text_response(self, prompt: str) -> str:
         try:
             response = self._client.chat.completions.create(
                 model=self._model,
-                messages=[self._system_prompt_msg, {"role": "user", "content": self._truncate_to_token_limit_if_necessary(prompt)}],
+                messages=[
+                    self._system_prompt_msg,
+                    {
+                        "role": "user",
+                        "content": self._truncate_to_token_limit_if_necessary(prompt),
+                    },
+                ],
                 temperature=self._temperature,
             )
             return response.choices[0].message.content
@@ -53,7 +61,13 @@ class OpenAIProvider(LLMProvider):
         try:
             response = self._client.chat.completions.create(
                 model=self._model,
-                messages=[self._system_prompt_msg, {"role": "user", "content": self._truncate_to_token_limit_if_necessary(prompt)}],
+                messages=[
+                    self._system_prompt_msg,
+                    {
+                        "role": "user",
+                        "content": self._truncate_to_token_limit_if_necessary(prompt),
+                    },
+                ],
                 response_format={
                     "type": "json_schema",
                     "json_schema": output_schema,
@@ -65,30 +79,22 @@ class OpenAIProvider(LLMProvider):
             logging.error(f"Error generating structured response: {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
-    def _encode_as_tokens(
-        self,
-        prompt: str
-    ) -> list[int]:
+    def _encode_as_tokens(self, prompt: str) -> list[int]:
         return tiktoken.encoding_for_model(self._model).encode(prompt)
 
-    def _decode_from_tokens(
-        self,
-        tokens: list[int]
-    ) -> str:
+    def _decode_from_tokens(self, tokens: list[int]) -> str:
         return tiktoken.encoding_for_model(self._model).decode(tokens)
-    
-    def count_tokens(
-        self,
-        prompt: str
-    ) -> int:
+
+    def count_tokens(self, prompt: str) -> int:
         return len(self._encode_as_tokens(prompt))
 
-    def _truncate_to_token_limit_if_necessary(
-        self,
-        prompt: str
-    ) -> str:
+    def _truncate_to_token_limit_if_necessary(self, prompt: str) -> str:
         if self.count_tokens(prompt) > self._token_limit:
-            logging.warning(f"User message prompt exceeds {self._token_limit} tokens; truncating. (System prompt tokens not counted-- truncation may be under true API limit.)")
-            return self._decode_from_tokens(self._encode_as_tokens(prompt)[:self._token_limit])
-        
+            logging.warning(
+                f"User message prompt exceeds {self._token_limit} tokens; truncating. (System prompt tokens not counted-- truncation may be under true API limit.)"
+            )
+            return self._decode_from_tokens(
+                self._encode_as_tokens(prompt)[: self._token_limit]
+            )
+
         return prompt
