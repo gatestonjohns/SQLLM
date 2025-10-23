@@ -1,0 +1,1284 @@
+
+================================================================================
+  LLM JOIN TEST
+================================================================================
+
+Initializing engine and LLM provider...
+✓ Engine initialized
+
+
+--- Loading Data ---
+
+Left table:  ./uploaded_files/simplified_eq_list.csv
+Right table: ./uploaded_files/all_antennas.csv
+
+✓ Loaded 20 rows from left table: simplified_eq_list
+  Columns: equipment_category, manufacturer_name, model_name, dimensions
+
+✓ Loaded 75 rows from right table: all_antennas
+  Columns: model_name, dimensions
+
+Left table preview:
+equipment_category manufacturer_name model_name              dimensions
+           Antenna          Kathrein 7500100022    810 x 2490 x 1740 mm
+           Antenna          Kathrein  K5231187H    ~810 x ~2490 x ~1740
+           Antenna           Unknown   75010008 2490mm x 1740mm x 850mm
+
+Right table preview:
+model_name              dimensions
+7500100022 ~810 x ~2490 x ~1740 mm
+ K5231187H ~810 x ~2490 x ~1740 mm
+7500100023 ~810 x ~2490 x ~1740 mm
+
+--- Algorithm Configuration ---
+
+Algorithm string: 10: model_name semantic_distance 2.0, dimensions fuzzy_match 1.5
+Prompt: Match equipment to antenna catalog. Prioritize exact model name matches, but also consider dimension similarity. If model name matches exactly, prefer that even if dimensions are slightly different. For cases with multiple identical catalog entries, select the first match.
+
+✓ Parsed algorithm:
+  k-value (max candidates): 10
+  Criteria:
+    1. Column: model_name
+       Mechanism: semantic_distance
+       Weight: 2.000
+    2. Column: dimensions
+       Mechanism: fuzzy_match
+       Weight: 1.500
+
+--- Pre-computing Similarities ---
+
+Computing similarity matrices for all criteria...
+✓ Similarity matrices computed and cached
+
+================================================================================
+  JOIN PROCESS - Row by Row
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 1 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 7500100022
+  dimensions: 810 x 2490 x 1740 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.8972   {'model_name': '7500100022', 'dimensions...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.9302
+2      0.8190   {'model_name': '7500100023', 'dimensions...
+       └─ model_name: 0.9554
+       └─ dimensions: 0.9302
+3      0.8151   {'model_name': '7500100024', 'dimensions...
+       └─ model_name: 0.9532
+       └─ dimensions: 0.9302
+4      0.5723   {'model_name': '7500100026', 'dimensions...
+       └─ model_name: 0.9441
+       └─ dimensions: 0.7442
+5      0.5709   {'model_name': '7500100027', 'dimensions...
+       └─ model_name: 0.9431
+       └─ dimensions: 0.7442
+6      0.5515   {'model_name': '7500100025', 'dimensions...
+       └─ model_name: 0.9268
+       └─ dimensions: 0.7442
+7      0.4847   {'model_name': '7500100031', 'dimensions...
+       └─ model_name: 0.9221
+       └─ dimensions: 0.6875
+8      0.4735   {'model_name': '7500100018', 'dimensions...
+       └─ model_name: 0.9114
+       └─ dimensions: 0.6875
+9      0.4347   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.8454
+       └─ dimensions: 0.7179
+10     0.4307   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.8415
+       └─ dimensions: 0.7179
+
+→ Calling LLM to select best match...
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match (score 1.0) and highly similar dimensions (score 0.93). No other candidate has an exact model name match. This makes candidate 1 the best and most confident match.
+
+  Matched right row:
+    model_name: 7500100022
+    dimensions: ~810 x ~2490 x ~1740 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 2 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: K5231187H
+  dimensions: ~810 x ~2490 x ~1740
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.8972   {'model_name': 'K5231187H', 'dimensions'...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.9302
+2      0.8779   {'model_name': 'K5231188H', 'dimensions'...
+       └─ model_name: 0.9892
+       └─ dimensions: 0.9302
+3      0.5129   {'model_name': 'K5231187V', 'dimensions'...
+       └─ model_name: 0.8938
+       └─ dimensions: 0.7442
+4      0.5062   {'model_name': 'K5231188V', 'dimensions'...
+       └─ model_name: 0.8880
+       └─ dimensions: 0.7442
+5      0.4494   {'model_name': 'K523157', 'dimensions': ...
+       └─ model_name: 0.9248
+       └─ dimensions: 0.6512
+6      0.3756   {'model_name': 'K524017', 'dimensions': ...
+       └─ model_name: 0.8867
+       └─ dimensions: 0.6111
+7      0.3740   {'model_name': 'K523417', 'dimensions': ...
+       └─ model_name: 0.8919
+       └─ dimensions: 0.6047
+8      0.3207   {'model_name': 'K733147', 'dimensions': ...
+       └─ model_name: 0.8150
+       └─ dimensions: 0.6154
+9      0.2347   {'model_name': '7500100024', 'dimensions...
+       └─ model_name: 0.5115
+       └─ dimensions: 0.9302
+10     0.2238   {'model_name': '7500100022', 'dimensions...
+       └─ model_name: 0.4995
+       └─ dimensions: 0.9302
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match (score 1.0) and highly similar dimensions (score 0.93). No other candidate has a perfect model name match. This is the clear best match according to the prioritization rules.
+
+  Matched right row:
+    model_name: K5231187H
+    dimensions: ~810 x ~2490 x ~1740 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 3 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Unknown
+  model_name: 75010008
+  dimensions: 2490mm x 1740mm x 850mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.7508   {'model_name': '75010008', 'dimensions':...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.8261
+2      0.3975   {'model_name': '75010210', 'dimensions':...
+       └─ model_name: 0.9034
+       └─ dimensions: 0.6190
+3      0.3641   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.8646
+       └─ dimensions: 0.6190
+4      0.3538   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.8523
+       └─ dimensions: 0.6190
+5      0.3490   {'model_name': '7500100026', 'dimensions...
+       └─ model_name: 0.8573
+       └─ dimensions: 0.6087
+6      0.3414   {'model_name': '75010211', 'dimensions':...
+       └─ model_name: 0.8372
+       └─ dimensions: 0.6190
+7      0.3366   {'model_name': '75010085', 'dimensions':...
+       └─ model_name: 0.9451
+       └─ dimensions: 0.5217
+8      0.3264   {'model_name': '7500100022', 'dimensions...
+       └─ model_name: 0.8290
+       └─ dimensions: 0.6087
+9      0.3175   {'model_name': '7500100023', 'dimensions...
+       └─ model_name: 0.8176
+       └─ dimensions: 0.6087
+10     0.3124   {'model_name': '7500100027', 'dimensions...
+       └─ model_name: 0.8110
+       └─ dimensions: 0.6087
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.98
+  Reasoning: Candidate 1 has an exact model name match (score 1.0) and high dimension similarity (score 0.826). No other candidate has an exact model name match. According to the instructions, exact model name matches are prioritized even if dimensions are slightly different.
+
+  Matched right row:
+    model_name: 75010008
+    dimensions: ~2490 x ~1740 x ~850 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 4 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 601768
+  dimensions: 2200 x 830
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.7155   {'model_name': '601768', 'dimensions': '...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.8000
+2      0.5163   {'model_name': '601979', 'dimensions': '...
+       └─ model_name: 0.8494
+       └─ dimensions: 0.8000
+3      0.2656   {'model_name': '601694', 'dimensions': '...
+       └─ model_name: 0.8870
+       └─ dimensions: 0.4848
+4      0.2360   {'model_name': 'K5332187', 'dimensions':...
+       └─ model_name: 0.5744
+       └─ dimensions: 0.8000
+5      0.2310   {'model_name': '601709', 'dimensions': '...
+       └─ model_name: 0.9317
+       └─ dimensions: 0.4138
+6      0.2309   {'model_name': 'K5332188', 'dimensions':...
+       └─ model_name: 0.5680
+       └─ dimensions: 0.8000
+7      0.2102   {'model_name': '600256', 'dimensions': '...
+       └─ model_name: 0.7224
+       └─ dimensions: 0.5455
+8      0.1943   {'model_name': '763715', 'dimensions': '...
+       └─ model_name: 0.6810
+       └─ dimensions: 0.5600
+9      0.1912   {'model_name': '770776', 'dimensions': '...
+       └─ model_name: 0.6956
+       └─ dimensions: 0.5385
+10     0.1834   {'model_name': '775130', 'dimensions': '...
+       └─ model_name: 0.6616
+       └─ dimensions: 0.5600
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.99
+  Reasoning: Candidate 1 has an exact model name match ('601768') and highly similar dimensions ('2200 x 830' vs. '~2200 x ~830 mm'), resulting in a perfect model match score and high dimension similarity. No other candidate has an exact model match. This is the clear best match.
+
+  Matched right row:
+    model_name: 601768
+    dimensions: ~2200 x ~830 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 5 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: CA5-400
+  dimensions: 800 x 364 x 102 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.4534   {'model_name': 'CA5-400', 'dimensions': ...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.5902
+2      0.2015   {'model_name': 'CA7-460', 'dimensions': ...
+       └─ model_name: 0.8558
+       └─ dimensions: 0.4231
+3      0.1319   {'model_name': 'CA5-400 (490 MHz)', 'dim...
+       └─ model_name: 0.6822
+       └─ dimensions: 0.4314
+4      0.1274   {'model_name': 'CA5-400 (460 MHz)', 'dim...
+       └─ model_name: 0.6705
+       └─ dimensions: 0.4314
+5      0.1168   {'model_name': '600263', 'dimensions': '...
+       └─ model_name: 0.5088
+       └─ dimensions: 0.5882
+6      0.1084   {'model_name': 'CA5-400 (410 MHz)', 'dim...
+       └─ model_name: 0.6643
+       └─ dimensions: 0.3922
+7      0.0982   {'model_name': 'K733147', 'dimensions': ...
+       └─ model_name: 0.4084
+       └─ dimensions: 0.7027
+8      0.0958   {'model_name': '600256', 'dimensions': '...
+       └─ model_name: 0.4625
+       └─ dimensions: 0.5854
+9      0.0929   {'model_name': 'K5231187H', 'dimensions'...
+       └─ model_name: 0.4057
+       └─ dimensions: 0.6829
+10     0.0921   {'model_name': 'K5231188H', 'dimensions'...
+       └─ model_name: 0.4039
+       └─ dimensions: 0.6829
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact match on model_name ('CA5-400'), which is the highest priority. The dimensions also match exactly ('800 x 364 x 102 mm'), confirming it is the correct catalog entry. No other candidate matches both fields as closely.
+
+  Matched right row:
+    model_name: CA5-400
+    dimensions: 31.5 x 14.3 x 4 inches (800 x 364 x 102 mm)
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 6 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: K733147
+  dimensions: 910mm x 190mm x 1020mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.8228   {'model_name': 'K733147', 'dimensions': ...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.8780
+2      0.3513   {'model_name': '776167', 'dimensions': '...
+       └─ model_name: 0.6534
+       └─ dimensions: 0.8780
+3      0.3397   {'model_name': '776165', 'dimensions': '...
+       └─ model_name: 0.6426
+       └─ dimensions: 0.8780
+4      0.3260   {'model_name': 'K5231187H', 'dimensions'...
+       └─ model_name: 0.8150
+       └─ dimensions: 0.6222
+5      0.3148   {'model_name': 'K523417', 'dimensions': ...
+       └─ model_name: 0.8466
+       └─ dimensions: 0.5778
+6      0.3088   {'model_name': 'K5231188H', 'dimensions'...
+       └─ model_name: 0.7932
+       └─ dimensions: 0.6222
+7      0.2905   {'model_name': 'K524017', 'dimensions': ...
+       └─ model_name: 0.8121
+       └─ dimensions: 0.5789
+8      0.2857   {'model_name': '776202', 'dimensions': '...
+       └─ model_name: 0.5893
+       └─ dimensions: 0.8780
+9      0.2765   {'model_name': 'K5231187V', 'dimensions'...
+       └─ model_name: 0.7506
+       └─ dimensions: 0.6222
+10     0.2727   {'model_name': 'K523157', 'dimensions': ...
+       └─ model_name: 0.7880
+       └─ dimensions: 0.5778
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact match on model_name ('K733147') and very high similarity in dimensions ('910mm x 190mm x 1020mm' vs '910 x 190 x 1020 mm'). The model name match is prioritized, and the dimension format difference is negligible. No other candidate has an exact model name match.
+
+  Matched right row:
+    model_name: K733147
+    dimensions: 910 x 190 x 1020 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 7 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 7500100040
+  dimensions: 1300 x 1300 x 445 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.8308   {'model_name': '7500100040', 'dimensions...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.8837
+2      0.5675   {'model_name': '75010085', 'dimensions':...
+       └─ model_name: 0.8265
+       └─ dimensions: 0.8837
+3      0.5451   {'model_name': '75010350', 'dimensions':...
+       └─ model_name: 0.8435
+       └─ dimensions: 0.8372
+4      0.5184   {'model_name': '75010351', 'dimensions':...
+       └─ model_name: 0.8226
+       └─ dimensions: 0.8372
+5      0.5113   {'model_name': '75010352', 'dimensions':...
+       └─ model_name: 0.8170
+       └─ dimensions: 0.8372
+6      0.4624   {'model_name': '75010210', 'dimensions':...
+       └─ model_name: 0.8278
+       └─ dimensions: 0.7692
+7      0.4558   {'model_name': '7500100026', 'dimensions...
+       └─ model_name: 0.9314
+       └─ dimensions: 0.6512
+8      0.4487   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.8156
+       └─ dimensions: 0.7692
+9      0.4460   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.8130
+       └─ dimensions: 0.7692
+10     0.4376   {'model_name': '75010211', 'dimensions':...
+       └─ model_name: 0.8054
+       └─ dimensions: 0.7692
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match ('7500100040') and highly similar dimensions ('1300 x 1300 x 445 mm' vs '~1300 x ~1300 x ~443 mm'). The model name match is prioritized, and the dimension difference is minimal. No other candidate has an exact model match. Therefore, candidate 1 is the best match.
+
+  Matched right row:
+    model_name: 7500100040
+    dimensions: ~1300 x ~1300 x ~443 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 8 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 75010350
+  dimensions: ~1300 x ~1300 x ~405 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.9355   {'model_name': '75010350', 'dimensions':...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.9565
+2      0.8419   {'model_name': '75010352', 'dimensions':...
+       └─ model_name: 0.9487
+       └─ dimensions: 0.9565
+3      0.8257   {'model_name': '75010351', 'dimensions':...
+       └─ model_name: 0.9395
+       └─ dimensions: 0.9565
+4      0.7402   {'model_name': '75010085', 'dimensions':...
+       └─ model_name: 0.8895
+       └─ dimensions: 0.9565
+5      0.6208   {'model_name': '7500100040', 'dimensions...
+       └─ model_name: 0.8435
+       └─ dimensions: 0.9130
+6      0.5337   {'model_name': '75010210', 'dimensions':...
+       └─ model_name: 0.9402
+       └─ dimensions: 0.7143
+7      0.4979   {'model_name': '7500100026', 'dimensions...
+       └─ model_name: 0.8480
+       └─ dimensions: 0.7826
+8      0.4922   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.9030
+       └─ dimensions: 0.7143
+9      0.4848   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.8962
+       └─ dimensions: 0.7143
+10     0.4805   {'model_name': '75010008', 'dimensions':...
+       └─ model_name: 0.9100
+       └─ dimensions: 0.6957
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.99
+  Reasoning: Candidate 1 has an exact model name match (75010350) and highly similar dimensions (~1300 x ~1300 x ~400 mm vs ~405 mm), with a combined score of 0.935. No other candidate has an exact model match. This is the best and most reliable match.
+
+  Matched right row:
+    model_name: 75010350
+    dimensions: ~1300 x ~1300 x ~400 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 9 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: TBD
+  model_name: 75010295
+  dimensions: 2326 x 460 x 520
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.5802   {'model_name': '75010295', 'dimensions':...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.6957
+2      0.5645   {'model_name': '75010296', 'dimensions':...
+       └─ model_name: 0.9864
+       └─ dimensions: 0.6957
+3      0.5578   {'model_name': '75010297', 'dimensions':...
+       └─ model_name: 0.9805
+       └─ dimensions: 0.6957
+4      0.3343   {'model_name': '75010367', 'dimensions':...
+       └─ model_name: 0.9357
+       └─ dimensions: 0.5263
+5      0.3254   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.9393
+       └─ dimensions: 0.5143
+6      0.3240   {'model_name': '75010365', 'dimensions':...
+       └─ model_name: 0.9211
+       └─ dimensions: 0.5263
+7      0.3238   {'model_name': '75010368', 'dimensions':...
+       └─ model_name: 0.9209
+       └─ dimensions: 0.5263
+8      0.3213   {'model_name': '75010366', 'dimensions':...
+       └─ model_name: 0.9173
+       └─ dimensions: 0.5263
+9      0.3169   {'model_name': '75010008', 'dimensions':...
+       └─ model_name: 0.8649
+       └─ dimensions: 0.5641
+10     0.3031   {'model_name': '75010211', 'dimensions':...
+       └─ model_name: 0.9065
+       └─ dimensions: 0.5143
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.98
+  Reasoning: Candidate 1 has an exact model name match (score 1.0) and the highest combined score. The dimensions are very similar, with only an extra value in the candidate, but the main three dimensions match closely. No other candidate has an exact model name match. Therefore, candidate 1 is the best match.
+
+  Matched right row:
+    model_name: 75010295
+    dimensions: ~2326 x ~460 x ~520 x ~1280 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 10 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: K5231188V
+  dimensions: 810 x 1740 x 2500 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.7660   {'model_name': 'K5231188V', 'dimensions'...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.8372
+2      0.7492   {'model_name': 'K5231187V', 'dimensions'...
+       └─ model_name: 0.9889
+       └─ dimensions: 0.8372
+3      0.4697   {'model_name': 'K523417', 'dimensions': ...
+       └─ model_name: 0.8553
+       └─ dimensions: 0.7442
+4      0.4663   {'model_name': 'K5231188H', 'dimensions'...
+       └─ model_name: 0.8945
+       └─ dimensions: 0.6977
+5      0.4595   {'model_name': 'K5231187H', 'dimensions'...
+       └─ model_name: 0.8880
+       └─ dimensions: 0.6977
+6      0.4137   {'model_name': 'K524017', 'dimensions': ...
+       └─ model_name: 0.8718
+       └─ dimensions: 0.6667
+7      0.4056   {'model_name': 'K523157', 'dimensions': ...
+       └─ model_name: 0.8786
+       └─ dimensions: 0.6512
+8      0.3559   {'model_name': 'K733147', 'dimensions': ...
+       └─ model_name: 0.7263
+       └─ dimensions: 0.7692
+9      0.2203   {'model_name': 'K5332187', 'dimensions':...
+       └─ model_name: 0.7728
+       └─ dimensions: 0.5143
+10     0.2180   {'model_name': 'K5332188', 'dimensions':...
+       └─ model_name: 0.7689
+       └─ dimensions: 0.5143
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.98
+  Reasoning: Candidate 1 has an exact model name match (score 1.0), and the dimensions are very similar (score 0.837). No other candidate has an exact model name match. According to the rules, exact model name matches are prioritized even if dimensions differ slightly. Therefore, candidate 1 is the best match.
+
+  Matched right row:
+    model_name: K5231188V
+    dimensions: ~810 x ~1740 x ~2490 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 11 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: CA5-400 (460 MHz)
+  dimensions: 28 x 13 inches
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.4598   {'model_name': 'CA5-400 (460 MHz)', 'dim...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.5957
+2      0.3474   {'model_name': 'CA5-400 (490 MHz)', 'dim...
+       └─ model_name: 0.9757
+       └─ dimensions: 0.5106
+3      0.2939   {'model_name': 'CA5-400 (410 MHz)', 'dim...
+       └─ model_name: 0.9580
+       └─ dimensions: 0.4681
+4      0.1228   {'model_name': 'CA5-400', 'dimensions': ...
+       └─ model_name: 0.6705
+       └─ dimensions: 0.4211
+5      0.1163   {'model_name': 'CA7-460', 'dimensions': ...
+       └─ model_name: 0.6123
+       └─ dimensions: 0.4583
+6      0.0233   {'model_name': 'K5332188', 'dimensions':...
+       └─ model_name: 0.2959
+       └─ dimensions: 0.4138
+7      0.0215   {'model_name': 'K5332187', 'dimensions':...
+       └─ model_name: 0.2845
+       └─ dimensions: 0.4138
+8      0.0184   {'model_name': '600263', 'dimensions': '...
+       └─ model_name: 0.3093
+       └─ dimensions: 0.3333
+9      0.0168   {'model_name': 'K524017', 'dimensions': ...
+       └─ model_name: 0.2952
+       └─ dimensions: 0.3333
+10     0.0165   {'model_name': '600256', 'dimensions': '...
+       └─ model_name: 0.2664
+       └─ dimensions: 0.3784
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.98
+  Reasoning: Candidate 1 has an exact model name match ('CA5-400 (460 MHz)') and the dimensions are very close (28 x 13 inches vs 28.6 x 13.3 inches), which is acceptable. No other candidate has an exact model name match. Therefore, candidate 1 is the best match.
+
+  Matched right row:
+    model_name: CA5-400 (460 MHz)
+    dimensions: 28.6 x 13.3 inches (727 x 338 mm)
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 12 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Unknown
+  model_name: 75010212
+  dimensions: 1000 x 190 x 500
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.8742   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.9143
+2      0.8205   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.9688
+       └─ dimensions: 0.9143
+3      0.8179   {'model_name': '75010211', 'dimensions':...
+       └─ model_name: 0.9673
+       └─ dimensions: 0.9143
+4      0.7982   {'model_name': '75010210', 'dimensions':...
+       └─ model_name: 0.9555
+       └─ dimensions: 0.9143
+5      0.4901   {'model_name': '75010352', 'dimensions':...
+       └─ model_name: 0.9488
+       └─ dimensions: 0.6667
+6      0.4754   {'model_name': '75010351', 'dimensions':...
+       └─ model_name: 0.9345
+       └─ dimensions: 0.6667
+7      0.4372   {'model_name': '75010350', 'dimensions':...
+       └─ model_name: 0.8962
+       └─ dimensions: 0.6667
+8      0.3350   {'model_name': '75010085', 'dimensions':...
+       └─ model_name: 0.8331
+       └─ dimensions: 0.6154
+9      0.3078   {'model_name': '75010008', 'dimensions':...
+       └─ model_name: 0.8523
+       └─ dimensions: 0.5641
+10     0.3018   {'model_name': '75010242', 'dimensions':...
+       └─ model_name: 0.9730
+       └─ dimensions: 0.4667
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match (score 1.0) and the dimensions match closely (score 0.914, only difference is the 'mm' suffix). This is the highest combined score and aligns with the prioritization of exact model name matches. No other candidate matches the model name exactly.
+
+  Matched right row:
+    model_name: 75010212
+    dimensions: 1000 x 190 x 500 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 13 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 600263
+  dimensions: 1400 x 1700 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.9017   {'model_name': '600263', 'dimensions': '...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.9333
+2      0.3519   {'model_name': '600256', 'dimensions': '...
+       └─ model_name: 0.8208
+       └─ dimensions: 0.6486
+3      0.3055   {'model_name': '601709', 'dimensions': '...
+       └─ model_name: 0.7018
+       └─ dimensions: 0.7273
+4      0.2937   {'model_name': 'K524017', 'dimensions': ...
+       └─ model_name: 0.5708
+       └─ dimensions: 0.9333
+5      0.2846   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.6774
+       └─ dimensions: 0.7273
+6      0.2784   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.6700
+       └─ dimensions: 0.7273
+7      0.2766   {'model_name': '776165', 'dimensions': '...
+       └─ model_name: 0.6678
+       └─ dimensions: 0.7273
+8      0.2736   {'model_name': '601694', 'dimensions': '...
+       └─ model_name: 0.7237
+       └─ dimensions: 0.6486
+9      0.2650   {'model_name': '7500100026', 'dimensions...
+       └─ model_name: 0.7122
+       └─ dimensions: 0.6486
+10     0.2582   {'model_name': '75010210', 'dimensions':...
+       └─ model_name: 0.6452
+       └─ dimensions: 0.7273
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match ('600263') and highly similar dimensions ('1400 x 1700 mm' vs '~1400 x ~1700 mm'). The combined score is the highest (0.902), and the model name score is perfect (1.0). This is a clear match according to the given criteria.
+
+  Matched right row:
+    model_name: 600263
+    dimensions: ~1400 x ~1700 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 14 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: K523157
+  dimensions: 1200 x 1200 x 360
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.7837   {'model_name': 'K523157', 'dimensions': ...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.8500
+2      0.3877   {'model_name': 'K524017', 'dimensions': ...
+       └─ model_name: 0.9065
+       └─ dimensions: 0.6061
+3      0.3489   {'model_name': 'K5231187H', 'dimensions'...
+       └─ model_name: 0.9248
+       └─ dimensions: 0.5500
+4      0.3443   {'model_name': 'K5231188H', 'dimensions'...
+       └─ model_name: 0.9188
+       └─ dimensions: 0.5500
+5      0.3364   {'model_name': 'K523417', 'dimensions': ...
+       └─ model_name: 0.9082
+       └─ dimensions: 0.5500
+6      0.3208   {'model_name': 'K5231187V', 'dimensions'...
+       └─ model_name: 0.8869
+       └─ dimensions: 0.5500
+7      0.3148   {'model_name': 'K5231188V', 'dimensions'...
+       └─ model_name: 0.8786
+       └─ dimensions: 0.5500
+8      0.2967   {'model_name': 'K733147', 'dimensions': ...
+       └─ model_name: 0.7880
+       └─ dimensions: 0.6111
+9      0.2821   {'model_name': 'K5332187', 'dimensions':...
+       └─ model_name: 0.8178
+       └─ dimensions: 0.5625
+10     0.2631   {'model_name': 'K5332188', 'dimensions':...
+       └─ model_name: 0.7898
+       └─ dimensions: 0.5625
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match ('K523157') and highly similar dimensions ('1200 x 1200 x 360' vs '~1200 x ~1200 x ~360 mm'). No other candidate has an exact model name match. This is the strongest possible match based on the provided criteria.
+
+  Matched right row:
+    model_name: K523157
+    dimensions: ~1200 x ~1200 x ~360 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 15 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 7500100027
+  dimensions: 810 x 1740 x 2490 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.8972   {'model_name': '7500100027', 'dimensions...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.9302
+2      0.8015   {'model_name': '7500100026', 'dimensions...
+       └─ model_name: 0.9451
+       └─ dimensions: 0.9302
+3      0.7563   {'model_name': '7500100025', 'dimensions...
+       └─ model_name: 0.9182
+       └─ dimensions: 0.9302
+4      0.5833   {'model_name': '7500100024', 'dimensions...
+       └─ model_name: 0.9532
+       └─ dimensions: 0.7442
+5      0.5709   {'model_name': '7500100022', 'dimensions...
+       └─ model_name: 0.9431
+       └─ dimensions: 0.7442
+6      0.5607   {'model_name': '7500100023', 'dimensions...
+       └─ model_name: 0.9345
+       └─ dimensions: 0.7442
+7      0.4346   {'model_name': '7500100031', 'dimensions...
+       └─ model_name: 0.9379
+       └─ dimensions: 0.6250
+8      0.4308   {'model_name': '7500100040', 'dimensions...
+       └─ model_name: 0.9054
+       └─ dimensions: 0.6512
+9      0.4222   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.8331
+       └─ dimensions: 0.7179
+10     0.4213   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.8322
+       └─ dimensions: 0.7179
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.99
+  Reasoning: Candidate 1 has an exact model name match (score 1.0) and very high dimension similarity (0.93). No other candidate has an exact model name match. As per instructions, prioritize exact model name matches even if dimensions are slightly different. Candidate 1 is the best and only exact match.
+
+  Matched right row:
+    model_name: 7500100027
+    dimensions: ~810 x ~1740 x ~2490 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 16 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 75010367
+  dimensions: 2625 x 900 x 870
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.7728   {'model_name': '75010367', 'dimensions':...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.8421
+2      0.7492   {'model_name': '75010366', 'dimensions':...
+       └─ model_name: 0.9846
+       └─ dimensions: 0.8421
+3      0.7449   {'model_name': '75010368', 'dimensions':...
+       └─ model_name: 0.9818
+       └─ dimensions: 0.8421
+4      0.7437   {'model_name': '75010365', 'dimensions':...
+       └─ model_name: 0.9810
+       └─ dimensions: 0.8421
+5      0.3300   {'model_name': '75010295', 'dimensions':...
+       └─ model_name: 0.9357
+       └─ dimensions: 0.5217
+6      0.3298   {'model_name': '75010296', 'dimensions':...
+       └─ model_name: 0.9355
+       └─ dimensions: 0.5217
+7      0.3287   {'model_name': '75010297', 'dimensions':...
+       └─ model_name: 0.9339
+       └─ dimensions: 0.5217
+8      0.3185   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.9293
+       └─ dimensions: 0.5143
+9      0.2963   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.8964
+       └─ dimensions: 0.5143
+10     0.2958   {'model_name': '75010211', 'dimensions':...
+       └─ model_name: 0.8955
+       └─ dimensions: 0.5143
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match ('75010367') and highly similar dimensions ('2625 x 900 x 870' vs '~2625 x ~900 x ~870 mm'). No other candidate matches the model name exactly. Therefore, candidate 1 is the best and most confident match.
+
+  Matched right row:
+    model_name: 75010367
+    dimensions: ~2625 x ~900 x ~870 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 17 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Unknown
+  model_name: CA5-400
+  dimensions: 31 x 14 x 4 inches
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.4534   {'model_name': 'CA5-400', 'dimensions': ...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.5902
+2      0.2589   {'model_name': 'CA7-460', 'dimensions': ...
+       └─ model_name: 0.8558
+       └─ dimensions: 0.5000
+3      0.1795   {'model_name': 'CA5-400 (410 MHz)', 'dim...
+       └─ model_name: 0.6643
+       └─ dimensions: 0.5490
+4      0.1503   {'model_name': 'CA5-400 (490 MHz)', 'dim...
+       └─ model_name: 0.6822
+       └─ dimensions: 0.4706
+5      0.1274   {'model_name': 'CA5-400 (460 MHz)', 'dim...
+       └─ model_name: 0.6705
+       └─ dimensions: 0.4314
+6      0.0669   {'model_name': '75010085', 'dimensions':...
+       └─ model_name: 0.4432
+       └─ dimensions: 0.4878
+7      0.0627   {'model_name': 'K5231188V', 'dimensions'...
+       └─ model_name: 0.3995
+       └─ dimensions: 0.5366
+8      0.0622   {'model_name': '600256', 'dimensions': '...
+       └─ model_name: 0.4625
+       └─ dimensions: 0.4390
+9      0.0598   {'model_name': 'K5231187V', 'dimensions'...
+       └─ model_name: 0.3900
+       └─ dimensions: 0.5366
+10     0.0576   {'model_name': '75010352', 'dimensions':...
+       └─ model_name: 0.4112
+       └─ dimensions: 0.4878
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.95
+  Reasoning: Candidate 1 has an exact model name match ('CA5-400') and the highest combined score. The dimensions are very similar, with only minor differences (likely due to rounding or measurement conventions). No other candidate has an exact model name match. This is the best match by a significant margin.
+
+  Matched right row:
+    model_name: CA5-400
+    dimensions: 31.5 x 14.3 x 4 inches (800 x 364 x 102 mm)
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 18 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 75010066
+  dimensions: 1.4m height 330mm diameter
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.9193   {'model_name': '75010066', 'dimensions':...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.9455
+2      0.7793   {'model_name': '75010067', 'dimensions':...
+       └─ model_name: 0.9482
+       └─ dimensions: 0.9091
+3      0.7382   {'model_name': '75010068', 'dimensions':...
+       └─ model_name: 0.9515
+       └─ dimensions: 0.8727
+4      0.7272   {'model_name': '75010069', 'dimensions':...
+       └─ model_name: 0.9444
+       └─ dimensions: 0.8727
+5      0.6172   {'model_name': '7500100006', 'dimensions...
+       └─ model_name: 0.8701
+       └─ dimensions: 0.8727
+6      0.5981   {'model_name': '75010270', 'dimensions':...
+       └─ model_name: 0.8842
+       └─ dimensions: 0.8364
+7      0.5778   {'model_name': '75010271', 'dimensions':...
+       └─ model_name: 0.8419
+       └─ dimensions: 0.8727
+8      0.5778   {'model_name': '7500000043', 'dimensions...
+       └─ model_name: 0.8418
+       └─ dimensions: 0.8727
+9      0.5566   {'model_name': '75010272', 'dimensions':...
+       └─ model_name: 0.8531
+       └─ dimensions: 0.8364
+10     0.2807   {'model_name': '7500100007', 'dimensions...
+       └─ model_name: 0.8574
+       └─ dimensions: 0.5263
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 1.00
+  Reasoning: Candidate 1 has an exact model name match ('75010066') and highly similar dimensions ('1.4 m height, 330 mm diameter' vs '1.4m height 330mm diameter'). No other candidate has an exact model name match. This is the clear best match.
+
+  Matched right row:
+    model_name: 75010066
+    dimensions: 1.4 m height, 330 mm diameter
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 19 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: TBD
+  model_name: K5231187H
+  dimensions: 810 x 2500 x 1750 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.7031   {'model_name': 'K5231187H', 'dimensions'...
+       └─ model_name: 1.0000
+       └─ dimensions: 0.7907
+2      0.6880   {'model_name': 'K5231188H', 'dimensions'...
+       └─ model_name: 0.9892
+       └─ dimensions: 0.7907
+3      0.4984   {'model_name': 'K523157', 'dimensions': ...
+       └─ model_name: 0.9248
+       └─ dimensions: 0.6977
+4      0.4280   {'model_name': 'K524017', 'dimensions': ...
+       └─ model_name: 0.8867
+       └─ dimensions: 0.6667
+5      0.4198   {'model_name': 'K5231187V', 'dimensions'...
+       └─ model_name: 0.8938
+       └─ dimensions: 0.6512
+6      0.4143   {'model_name': 'K5231188V', 'dimensions'...
+       └─ model_name: 0.8880
+       └─ dimensions: 0.6512
+7      0.4041   {'model_name': 'K733147', 'dimensions': ...
+       └─ model_name: 0.8150
+       └─ dimensions: 0.7179
+8      0.3740   {'model_name': 'K523417', 'dimensions': ...
+       └─ model_name: 0.8919
+       └─ dimensions: 0.6047
+9      0.2899   {'model_name': 'K5332187', 'dimensions':...
+       └─ model_name: 0.8192
+       └─ dimensions: 0.5714
+10     0.2691   {'model_name': 'K5332188', 'dimensions':...
+       └─ model_name: 0.7893
+       └─ dimensions: 0.5714
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: 1
+  Confidence: 0.98
+  Reasoning: Candidate 1 has an exact match on model_name ('K5231187H'), which is the highest priority. The dimensions are also very close (~810 x ~2490 x ~1740 mm vs 810 x 2500 x 1750 mm), with a high similarity score (0.791). No other candidate has an exact model_name match. Therefore, candidate 1 is the best match.
+
+  Matched right row:
+    model_name: K5231187H
+    dimensions: ~810 x ~2490 x ~1740 mm
+
+────────────────────────────────────────────────────────────────────────────────
+LEFT ROW 20 of 20
+────────────────────────────────────────────────────────────────────────────────
+
+Left row data:
+  equipment_category: Antenna
+  manufacturer_name: Kathrein
+  model_name: 75010999
+  dimensions: 1300 x 1300 x 400 mm
+
+→ Finding top 10 candidates from right table...
+
+✓ Found 10 candidates:
+
+Rank   Score    Right Row       Score Breakdown
+────────────────────────────────────────────────────────────────────────────────
+1      0.6558   {'model_name': '75010351', 'dimensions':...
+       └─ model_name: 0.8550
+       └─ dimensions: 0.9302
+2      0.6484   {'model_name': '75010350', 'dimensions':...
+       └─ model_name: 0.8501
+       └─ dimensions: 0.9302
+3      0.6411   {'model_name': '75010352', 'dimensions':...
+       └─ model_name: 0.8453
+       └─ dimensions: 0.9302
+4      0.5548   {'model_name': '75010213', 'dimensions':...
+       └─ model_name: 0.8640
+       └─ dimensions: 0.8205
+5      0.5037   {'model_name': '75010211', 'dimensions':...
+       └─ model_name: 0.8233
+       └─ dimensions: 0.8205
+6      0.5005   {'model_name': '75010210', 'dimensions':...
+       └─ model_name: 0.8206
+       └─ dimensions: 0.8205
+7      0.4914   {'model_name': '75010085', 'dimensions':...
+       └─ model_name: 0.8009
+       └─ dimensions: 0.8372
+8      0.4911   {'model_name': '75010212', 'dimensions':...
+       └─ model_name: 0.8128
+       └─ dimensions: 0.8205
+9      0.4722   {'model_name': '7500100040', 'dimensions...
+       └─ model_name: 0.7851
+       └─ dimensions: 0.8372
+10     0.3695   {'model_name': '7500100026', 'dimensions...
+       └─ model_name: 0.7963
+       └─ dimensions: 0.6977
+
+→ Calling LLM to select best match...
+
+✓ LLM Response:
+  Selected candidate: NONE (null)
+  Confidence: 0.20
+  Reasoning: None of the candidates have an exact model name match with '75010999'. The closest model names ('75010351', '75010350', '75010352') differ by several digits, indicating they are likely different models. While the dimensions are similar, the model name is the primary key for matching, and no candidate meets this criterion. Therefore, no suitable match is found.
+
+================================================================================
+  SUMMARY
+================================================================================
+
+Total left rows processed: 20
+Successful matches:        19 (95.0%)
+Null matches:              1 (5.0%)
+Average confidence:        0.951
+
+Match breakdown:
+  Row 1: ✓ MATCHED (conf: 1.00)
+  Row 2: ✓ MATCHED (conf: 1.00)
+  Row 3: ✓ MATCHED (conf: 0.98)
+  Row 4: ✓ MATCHED (conf: 0.99)
+  Row 5: ✓ MATCHED (conf: 1.00)
+  Row 6: ✓ MATCHED (conf: 1.00)
+  Row 7: ✓ MATCHED (conf: 1.00)
+  Row 8: ✓ MATCHED (conf: 0.99)
+  Row 9: ✓ MATCHED (conf: 0.98)
+  Row 10: ✓ MATCHED (conf: 0.98)
+  Row 11: ✓ MATCHED (conf: 0.98)
+  Row 12: ✓ MATCHED (conf: 1.00)
+  Row 13: ✓ MATCHED (conf: 1.00)
+  Row 14: ✓ MATCHED (conf: 1.00)
+  Row 15: ✓ MATCHED (conf: 0.99)
+  Row 16: ✓ MATCHED (conf: 1.00)
+  Row 17: ✓ MATCHED (conf: 0.95)
+  Row 18: ✓ MATCHED (conf: 1.00)
+  Row 19: ✓ MATCHED (conf: 0.98)
+  Row 20: ✗ NULL 
+
+================================================================================
+  FINAL RESULT TABLE
+================================================================================
+
+left_equipment_category left_manufacturer_name   left_model_name            left_dimensions  right_model_name                            right_dimensions  join_confidence                                                                                                                                                                                                                                                                                                                                                             join_reasoning
+                Antenna               Kathrein        7500100022       810 x 2490 x 1740 mm        7500100022                     ~810 x ~2490 x ~1740 mm             1.00                                                                                                                                                              Candidate 1 has an exact model name match (score 1.0) and highly similar dimensions (score 0.93). No other candidate has an exact model name match. This makes candidate 1 the best and most confident match.
+                Antenna               Kathrein         K5231187H       ~810 x ~2490 x ~1740         K5231187H                     ~810 x ~2490 x ~1740 mm             1.00                                                                                                                                                   Candidate 1 has an exact model name match (score 1.0) and highly similar dimensions (score 0.93). No other candidate has a perfect model name match. This is the clear best match according to the prioritization rules.
+                Antenna                Unknown          75010008    2490mm x 1740mm x 850mm          75010008                     ~2490 x ~1740 x ~850 mm             0.98                                                                                                    Candidate 1 has an exact model name match (score 1.0) and high dimension similarity (score 0.826). No other candidate has an exact model name match. According to the instructions, exact model name matches are prioritized even if dimensions are slightly different.
+                Antenna               Kathrein            601768                 2200 x 830            601768                             ~2200 x ~830 mm             0.99                                                                                                Candidate 1 has an exact model name match ('601768') and highly similar dimensions ('2200 x 830' vs. '~2200 x ~830 mm'), resulting in a perfect model match score and high dimension similarity. No other candidate has an exact model match. This is the clear best match.
+                Antenna               Kathrein           CA5-400         800 x 364 x 102 mm           CA5-400 31.5 x 14.3 x 4 inches (800 x 364 x 102 mm)             1.00                                                                                                                          Candidate 1 has an exact match on model_name ('CA5-400'), which is the highest priority. The dimensions also match exactly ('800 x 364 x 102 mm'), confirming it is the correct catalog entry. No other candidate matches both fields as closely.
+                Antenna               Kathrein           K733147     910mm x 190mm x 1020mm           K733147                         910 x 190 x 1020 mm             1.00                                                                             Candidate 1 has an exact match on model_name ('K733147') and very high similarity in dimensions ('910mm x 190mm x 1020mm' vs '910 x 190 x 1020 mm'). The model name match is prioritized, and the dimension format difference is negligible. No other candidate has an exact model name match.
+                Antenna               Kathrein        7500100040       1300 x 1300 x 445 mm        7500100040                     ~1300 x ~1300 x ~443 mm             1.00                                                         Candidate 1 has an exact model name match ('7500100040') and highly similar dimensions ('1300 x 1300 x 445 mm' vs '~1300 x ~1300 x ~443 mm'). The model name match is prioritized, and the dimension difference is minimal. No other candidate has an exact model match. Therefore, candidate 1 is the best match.
+                Antenna               Kathrein          75010350    ~1300 x ~1300 x ~405 mm          75010350                     ~1300 x ~1300 x ~400 mm             0.99                                                                                                                            Candidate 1 has an exact model name match (75010350) and highly similar dimensions (~1300 x ~1300 x ~400 mm vs ~405 mm), with a combined score of 0.935. No other candidate has an exact model match. This is the best and most reliable match.
+                Antenna                    TBD          75010295           2326 x 460 x 520          75010295              ~2326 x ~460 x ~520 x ~1280 mm             0.98                                                                 Candidate 1 has an exact model name match (score 1.0) and the highest combined score. The dimensions are very similar, with only an extra value in the candidate, but the main three dimensions match closely. No other candidate has an exact model name match. Therefore, candidate 1 is the best match.
+                Antenna               Kathrein         K5231188V       810 x 1740 x 2500 mm         K5231188V                     ~810 x ~1740 x ~2490 mm             0.98                                                                 Candidate 1 has an exact model name match (score 1.0), and the dimensions are very similar (score 0.837). No other candidate has an exact model name match. According to the rules, exact model name matches are prioritized even if dimensions differ slightly. Therefore, candidate 1 is the best match.
+                Antenna               Kathrein CA5-400 (460 MHz)             28 x 13 inches CA5-400 (460 MHz)           28.6 x 13.3 inches (727 x 338 mm)             0.98                                                                                                                 Candidate 1 has an exact model name match ('CA5-400 (460 MHz)') and the dimensions are very close (28 x 13 inches vs 28.6 x 13.3 inches), which is acceptable. No other candidate has an exact model name match. Therefore, candidate 1 is the best match.
+                Antenna                Unknown          75010212           1000 x 190 x 500          75010212                         1000 x 190 x 500 mm             1.00                                                                            Candidate 1 has an exact model name match (score 1.0) and the dimensions match closely (score 0.914, only difference is the 'mm' suffix). This is the highest combined score and aligns with the prioritization of exact model name matches. No other candidate matches the model name exactly.
+                Antenna               Kathrein            600263             1400 x 1700 mm            600263                            ~1400 x ~1700 mm             1.00                                                                                                  Candidate 1 has an exact model name match ('600263') and highly similar dimensions ('1400 x 1700 mm' vs '~1400 x ~1700 mm'). The combined score is the highest (0.902), and the model name score is perfect (1.0). This is a clear match according to the given criteria.
+                Antenna               Kathrein           K523157          1200 x 1200 x 360           K523157                     ~1200 x ~1200 x ~360 mm             1.00                                                                                                             Candidate 1 has an exact model name match ('K523157') and highly similar dimensions ('1200 x 1200 x 360' vs '~1200 x ~1200 x ~360 mm'). No other candidate has an exact model name match. This is the strongest possible match based on the provided criteria.
+                Antenna               Kathrein        7500100027       810 x 1740 x 2490 mm        7500100027                     ~810 x ~1740 x ~2490 mm             0.99                                                                       Candidate 1 has an exact model name match (score 1.0) and very high dimension similarity (0.93). No other candidate has an exact model name match. As per instructions, prioritize exact model name matches even if dimensions are slightly different. Candidate 1 is the best and only exact match.
+                Antenna               Kathrein          75010367           2625 x 900 x 870          75010367                      ~2625 x ~900 x ~870 mm             1.00                                                                                                                     Candidate 1 has an exact model name match ('75010367') and highly similar dimensions ('2625 x 900 x 870' vs '~2625 x ~900 x ~870 mm'). No other candidate matches the model name exactly. Therefore, candidate 1 is the best and most confident match.
+                Antenna                Unknown           CA5-400         31 x 14 x 4 inches           CA5-400 31.5 x 14.3 x 4 inches (800 x 364 x 102 mm)             0.95                                                                  Candidate 1 has an exact model name match ('CA5-400') and the highest combined score. The dimensions are very similar, with only minor differences (likely due to rounding or measurement conventions). No other candidate has an exact model name match. This is the best match by a significant margin.
+                Antenna               Kathrein          75010066 1.4m height 330mm diameter          75010066               1.4 m height, 330 mm diameter             1.00                                                                                                                                    Candidate 1 has an exact model name match ('75010066') and highly similar dimensions ('1.4 m height, 330 mm diameter' vs '1.4m height 330mm diameter'). No other candidate has an exact model name match. This is the clear best match.
+                Antenna                    TBD         K5231187H       810 x 2500 x 1750 mm         K5231187H                     ~810 x ~2490 x ~1740 mm             0.98                                                         Candidate 1 has an exact match on model_name ('K5231187H'), which is the highest priority. The dimensions are also very close (~810 x ~2490 x ~1740 mm vs 810 x 2500 x 1750 mm), with a high similarity score (0.791). No other candidate has an exact model_name match. Therefore, candidate 1 is the best match.
+                Antenna               Kathrein          75010999       1300 x 1300 x 400 mm              None                                        None             0.20 None of the candidates have an exact model name match with '75010999'. The closest model names ('75010351', '75010350', '75010352') differ by several digits, indicating they are likely different models. While the dimensions are similar, the model name is the primary key for matching, and no candidate meets this criterion. Therefore, no suitable match is found.
+
+✓ Results saved to: llm_join_results.csv
+
+================================================================================
+  TEST COMPLETE
+================================================================================
+
