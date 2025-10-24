@@ -15,13 +15,34 @@ engine = Engine(
 class State(rx.State):
     """State management for the SQL editor."""
 
-    sql_query: str = """
-SELECT *
-FROM llm_pdf_to_table(
-    'uploaded_files/pdfs/your_pdf.pdf',
-    'table antennas (model_name VARCHAR, kg_weight FLOAT, mm_dimensions VARCHAR)',
-    'Your task is to extract structured data to represent each of the antenna models of all possible variations. Do not include any information about shipping specifications or any information about hardware that is not an antenna. The goal of this is to extract tabular data for the antenna models supported by this company. Use the alphanumeric model name if present, otherwise use the purely numeric model name.'
+    sql_query: str = """-- 🤖 LLM-Powered SQL Functions
+
+-- 📄 VTF: llm_pdf_to_table - Extract structured data from PDFs
+SELECT * FROM llm_pdf_to_table(
+    'uploaded_files/pdfs/your_file.pdf',
+    'column1 TEXT, column2 INTEGER, column3 FLOAT',
+    'optional: custom extraction instructions'
 );
+
+-- 🔄 VTF: llm_table_to_table - Transform existing table data
+SELECT * FROM llm_table_to_table(
+    'SELECT * FROM source_table',
+    'TABLE output_name (new_col1 TEXT, new_col2 TEXT)',
+    'optional: transformation instructions'
+);
+
+-- 🔗 VTF: llm_join - Fuzzy join tables using LLM or similarity
+SELECT * FROM llm_join(
+    left_table, right_table,
+    left_key, right_key,
+    algorithm => 'llm'  -- options: 'llm', 'fuzzy', 'embedding', 'hybrid'
+);
+
+-- 💬 UDF: llm - Generate text for individual cells
+SELECT 
+    name,
+    llm('Summarize this in 5 words: ' || description) AS summary
+FROM your_table;
 """
     query_results_df: pd.DataFrame = pd.DataFrame()
     error_message: str = ""
@@ -30,6 +51,7 @@ FROM llm_pdf_to_table(
     available_pdfs: list[str] = []
     upload_dialog_open: bool = False
     upload_dialog_mode: str = "csv"
+    is_uploading: bool = False
     export_dialog_open: bool = False
     export_filename: str = "query_results.csv"
     is_loading: bool = False
@@ -122,6 +144,9 @@ FROM llm_pdf_to_table(
     @rx.event
     async def handle_csv_upload(self, files: list[rx.UploadFile]):
         """Handle CSV file upload and load into DuckDB."""
+        self.is_uploading = True
+        yield
+        
         for file in files:
             try:
                 self._reset_before_query_execution()
@@ -149,8 +174,10 @@ FROM llm_pdf_to_table(
                 logging.info(
                     f"Loaded {file.filename} into DuckDB as table '{created_table_name}'"
                 )
+                self.is_uploading = False
 
             except Exception as e:
+                self.is_uploading = False
                 self.error_message = f"Error uploading {file.filename}: {str(e)}"
                 logging.error(f"✗ Error uploading {file.filename}: {e}")
                 return
@@ -161,6 +188,9 @@ FROM llm_pdf_to_table(
     @rx.event
     async def handle_pdf_upload(self, files: list[rx.UploadFile]):
         """Handle PDF upload and store on disk for later ingestion."""
+        self.is_uploading = True
+        yield
+
         for file in files:
             try:
                 self._reset_before_query_execution()
@@ -182,8 +212,10 @@ FROM llm_pdf_to_table(
                     f"Stored PDF {file.filename}. Use its path in llm_pdf_to_table()."
                 )
                 logging.info("Stored PDF %s at %s", file.filename, file_path)
+                self.is_uploading = False
 
             except Exception as e:
+                self.is_uploading = False
                 self.error_message = f"Error uploading {file.filename}: {str(e)}"
                 logging.error(f"✗ Error uploading {file.filename}: {e}")
                 return
@@ -206,7 +238,11 @@ FROM llm_pdf_to_table(
             )
             logging.info(f"Exported {len(self.query_results_df)} rows")
 
-            properly_extended_filename = self.export_filename if self.export_filename.endswith(".csv") else self.export_filename + ".csv"
+            properly_extended_filename = (
+                self.export_filename
+                if self.export_filename.endswith(".csv")
+                else self.export_filename + ".csv"
+            )
 
             # Trigger download by passing data directly
             return rx.download(data=csv_data, filename=properly_extended_filename)
