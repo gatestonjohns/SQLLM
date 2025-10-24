@@ -13,7 +13,7 @@ class OpenAIProvider(LLMProvider):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "gpt-4.1-2025-04-14",
+        model: str = "gpt-4.1",
         token_limit: int = 190000,
         azure_endpoint: Optional[str] = None,
         api_version: str = "2024-02-15-preview",
