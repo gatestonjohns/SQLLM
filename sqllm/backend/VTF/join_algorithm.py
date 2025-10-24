@@ -178,5 +178,3 @@ class SimilarityScorer:
         if max_dist > 0:
             return 1.0 - (distances / max_dist)
         return np.ones_like(distances)
-
-

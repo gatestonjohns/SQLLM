@@ -26,7 +26,7 @@ class OpenAIProvider(LLMProvider):
         self._api_key = api_key or os.getenv("OPENAI_API_KEY")
         self._model = model
         self._token_limit = token_limit
-        self._client = OpenAI(api_key=self._api_key)
+        self._client = None  # Lazy initialization
         self._temperature = 0.3
         self._system_prompt = (
             "You are an assistant to a data analyst. "
@@ -37,9 +37,16 @@ class OpenAIProvider(LLMProvider):
         )
         self._system_prompt_msg = {"role": "system", "content": self._system_prompt}
 
+    @property
+    def client(self) -> OpenAI:
+        """Lazy-load the OpenAI client."""
+        if self._client is None:
+            self._client = OpenAI(api_key=self._api_key)
+        return self._client
+
     def generate_text_response(self, prompt: str) -> str:
         try:
-            response = self._client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model=self._model,
                 messages=[
                     self._system_prompt_msg,
@@ -59,7 +66,7 @@ class OpenAIProvider(LLMProvider):
         self, prompt: str, output_schema: JSONSchema
     ) -> dict[str, Any]:
         try:
-            response = self._client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model=self._model,
                 messages=[
                     self._system_prompt_msg,

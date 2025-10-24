@@ -352,10 +352,14 @@ def index() -> rx.Component:
                 justify="between",
                 width="100%",
             ),
-            monaco(
-                default_language="sql",
-                value=State.sql_query,
-                on_change=State.set_sql_query,
+            rx.box(
+                monaco(
+                    default_language="sql",
+                    value=State.sql_query,
+                    on_change=State.set_sql_query,
+                    height="400px",
+                    width="100%",
+                ),
                 height="400px",
                 width="100%",
             ),
@@ -376,7 +380,7 @@ def index() -> rx.Component:
             value="EDITOR",
         ),
         rx.tabs.content(
-            gui_section,
+            gui_section(),
             value="GUI",
         ),
         default_value="EDITOR",

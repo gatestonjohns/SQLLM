@@ -213,308 +213,311 @@ class BatchState(rx.State):
         self.pdf_batch_include_source = value
 
 
-gui_section = rx.card(
-    rx.vstack(
-        # Header with Run Button
-        rx.hstack(
+def gui_section() -> rx.Component:
+    return rx.card(
+        rx.vstack(
+            # Header with Run Button
             rx.hstack(
-                rx.icon("layers", size=20, color="purple"),
-                rx.text(
-                    "Batch PDF to Table Converter",
-                    size="4",
-                    weight="bold",
+                rx.hstack(
+                    rx.icon("layers", size=20, color="purple"),
+                    rx.text(
+                        "Batch PDF to Table Converter",
+                        size="4",
+                        weight="bold",
+                    ),
+                    spacing="2",
+                    align="center",
+                ),
+                rx.button(
+                    rx.icon("play", size=18),
+                    "Create Table from PDFs",
+                    on_click=BatchState.run_pdf_batch_ingest,
+                    size="3",
+                    color_scheme="purple",
+                    variant="solid",
+                    disabled=~BatchState.batch_can_run,
+                    cursor="pointer",
                 ),
                 spacing="2",
                 align="center",
+                justify="between",
+                width="100%",
             ),
-            rx.button(
-                rx.icon("play", size=18),
-                "Create Table from PDFs",
-                on_click=BatchState.run_pdf_batch_ingest,
-                size="3",
-                color_scheme="purple",
-                variant="solid",
-                disabled=~BatchState.batch_can_run,
-                cursor="pointer",
-            ),
-            spacing="2",
-            align="center",
-            justify="between",
-            width="100%",
-        ),
-        # Horizontal layout for sub-cards
-        rx.hstack(
-            # Section 1: PDF Selection
-            rx.card(
-                rx.vstack(
-                    rx.hstack(
-                        rx.icon("file", size=18, color="purple"),
-                        rx.text("Select PDFs", size="3", weight="bold"),
-                        rx.spacer(),
-                        rx.badge(
-                            f"{BatchState.pdf_batch_selected_pdfs.length()} selected",
-                            color_scheme="purple",
-                            variant="soft",
-                        ),
-                        spacing="2",
-                        align="center",
-                        width="100%",
-                    ),
-                    rx.cond(
-                        BatchState.available_pdfs.length() > 0,
-                        rx.vstack(
-                            rx.foreach(
-                                BatchState.available_pdfs,
-                                lambda pdf: rx.box(
-                                    rx.checkbox(
-                                        rx.text(pdf, size="2"),
-                                        checked=BatchState.pdf_batch_selected_pdfs.contains(
-                                            pdf
-                                        ),
-                                        on_change=lambda _: BatchState.toggle_pdf_selection(
-                                            pdf
-                                        ),
-                                        size="2",
-                                    ),
-                                    padding="0.5em",
-                                    border_radius="6px",
-                                    background=rx.cond(
-                                        BatchState.pdf_batch_selected_pdfs.contains(
-                                            pdf
-                                        ),
-                                        "var(--purple-a3)",
-                                        "transparent",
-                                    ),
-                                    width="100%",
-                                ),
-                            ),
-                            spacing="2",
-                            width="100%",
-                            max_height="200px",
-                            overflow_y="auto",
-                        ),
-                        rx.hstack(
-                            rx.icon("info", size=18, color="gray"),
-                            rx.text(
-                                "No PDFs available. Upload PDFs using the 'Store PDF' button above.",
-                                size="2",
-                                color="gray",
-                            ),
-                            spacing="2",
-                            align="center",
-                        ),
-                    ),
-                    spacing="3",
-                    width="100%",
-                    height="100%",
-                ),
-                variant="surface",
-                size="1",
-                height="100%",
-                flex="1",
-            ),
-            # Section 2: Schema Builder
-            rx.card(
-                rx.vstack(
-                    rx.hstack(
-                        rx.icon("table-2", size=18, color="blue"),
-                        rx.text("Define Table Schema", size="3", weight="bold"),
-                        rx.spacer(),
-                        rx.button(
-                            rx.icon("plus", size=16),
-                            "Add Column",
-                            on_click=BatchState.add_pdf_batch_column,
-                            size="2",
-                            color_scheme="blue",
-                            variant="soft",
-                        ),
-                        spacing="2",
-                        align="center",
-                        width="100%",
-                    ),
-                    rx.cond(
-                        BatchState.pdf_batch_columns.length() > 0,
-                        rx.vstack(
-                            rx.foreach(
-                                BatchState.pdf_batch_columns,
-                                lambda col, idx: rx.hstack(
-                                    rx.input(
-                                        placeholder="Column name",
-                                        value=col["name"],
-                                        on_change=lambda v: BatchState.update_pdf_batch_column(
-                                            idx, "name", v
-                                        ),
-                                        size="2",
-                                        width="50%",
-                                    ),
-                                    rx.select(
-                                        BatchState.available_duck_types,
-                                        value=col["type"],
-                                        on_change=lambda v: BatchState.update_pdf_batch_column(
-                                            idx, "type", v
-                                        ),
-                                        size="2",
-                                        width="40%",
-                                    ),
-                                    rx.icon_button(
-                                        rx.icon("trash-2", size=16),
-                                        on_click=lambda: BatchState.remove_pdf_batch_column(
-                                            idx
-                                        ),
-                                        size="2",
-                                        color_scheme="red",
-                                        variant="soft",
-                                    ),
-                                    spacing="2",
-                                    align="center",
-                                    width="100%",
-                                ),
-                            ),
-                            spacing="2",
-                            width="100%",
-                            max_height="250px",
-                            overflow_y="auto",
-                        ),
-                        rx.hstack(
-                            rx.icon("info", size=18, color="gray"),
-                            rx.text(
-                                "Click 'Add Column' to define your table schema.",
-                                size="2",
-                                color="gray",
-                            ),
-                            spacing="2",
-                            align="center",
-                        ),
-                    ),
-                    spacing="3",
-                    width="100%",
-                    height="100%",
-                ),
-                variant="surface",
-                size="1",
-                height="100%",
-                flex="1",
-            ),
-            # Section 3: Configuration Options
-            rx.card(
-                rx.vstack(
-                    rx.hstack(
-                        rx.icon("settings", size=18, color="teal"),
-                        rx.text("Configuration", size="3", weight="bold"),
-                        spacing="2",
-                        align="center",
-                    ),
+            # Horizontal layout for sub-cards
+            rx.hstack(
+                # Section 1: PDF Selection
+                rx.card(
                     rx.vstack(
-                        # Table name input
-                        rx.vstack(
+                        rx.hstack(
+                            rx.icon("file", size=18, color="purple"),
+                            rx.text("Select PDFs", size="3", weight="bold"),
+                            rx.spacer(),
+                            rx.badge(
+                                f"{BatchState.pdf_batch_selected_pdfs.length()} selected",
+                                color_scheme="purple",
+                                variant="soft",
+                            ),
+                            spacing="2",
+                            align="center",
+                            width="100%",
+                        ),
+                        rx.cond(
+                            BatchState.available_pdfs.length() > 0,
+                            rx.vstack(
+                                rx.foreach(
+                                    BatchState.available_pdfs,
+                                    lambda pdf: rx.box(
+                                        rx.checkbox(
+                                            rx.text(pdf, size="2"),
+                                            checked=BatchState.pdf_batch_selected_pdfs.contains(
+                                                pdf
+                                            ),
+                                            on_change=lambda _: BatchState.toggle_pdf_selection(
+                                                pdf
+                                            ),
+                                            size="2",
+                                        ),
+                                        padding="0.5em",
+                                        border_radius="6px",
+                                        background=rx.cond(
+                                            BatchState.pdf_batch_selected_pdfs.contains(
+                                                pdf
+                                            ),
+                                            "var(--purple-a3)",
+                                            "transparent",
+                                        ),
+                                        width="100%",
+                                    ),
+                                ),
+                                spacing="2",
+                                width="100%",
+                                max_height="200px",
+                                overflow_y="auto",
+                            ),
                             rx.hstack(
-                                rx.text("Table Name", size="2", weight="medium"),
-                                rx.badge(
-                                    "Required",
-                                    color_scheme="red",
-                                    variant="soft",
-                                    size="1",
+                                rx.icon("info", size=18, color="gray"),
+                                rx.text(
+                                    "No PDFs available. Upload PDFs using the 'Store PDF' button above.",
+                                    size="2",
+                                    color="gray",
                                 ),
                                 spacing="2",
                                 align="center",
                             ),
-                            rx.input(
-                                placeholder="Enter table name (e.g., equipment_data)",
-                                value=BatchState.pdf_batch_table_name,
-                                on_change=BatchState.set_pdf_batch_table_name,
+                        ),
+                        spacing="3",
+                        width="100%",
+                        height="100%",
+                    ),
+                    variant="surface",
+                    size="1",
+                    height="100%",
+                    flex="1",
+                ),
+                # Section 2: Schema Builder
+                rx.card(
+                    rx.vstack(
+                        rx.hstack(
+                            rx.icon("table-2", size=18, color="blue"),
+                            rx.text("Define Table Schema", size="3", weight="bold"),
+                            rx.spacer(),
+                            rx.button(
+                                rx.icon("plus", size=16),
+                                "Add Column",
+                                on_click=BatchState.add_pdf_batch_column,
                                 size="2",
-                                width="100%",
+                                color_scheme="blue",
+                                variant="soft",
                             ),
-                            spacing="1",
+                            spacing="2",
+                            align="center",
                             width="100%",
                         ),
-                        # Checkboxes
-                        rx.hstack(
-                            rx.checkbox(
-                                "Force Recreate Table",
-                                checked=BatchState.pdf_batch_force_recreate,
-                                on_change=BatchState.set_pdf_batch_force_recreate,
-                                size="2",
-                            ),
-                            rx.checkbox(
-                                "Include Source Column",
-                                checked=BatchState.pdf_batch_include_source,
-                                on_change=BatchState.set_pdf_batch_include_source,
-                                size="2",
-                            ),
-                            spacing="4",
-                            wrap="wrap",
-                        ),
-                        # Optional prompt
-                        rx.vstack(
-                            rx.text(
-                                "Extraction Prompt (Optional)",
-                                size="2",
-                                weight="medium",
-                            ),
-                            rx.text_area(
-                                placeholder="Enter custom instructions for the LLM (e.g., 'Focus on technical specifications')",
-                                value=BatchState.pdf_batch_prompt,
-                                on_change=BatchState.set_pdf_batch_prompt,
-                                size="2",
+                        rx.cond(
+                            BatchState.pdf_batch_columns.length() > 0,
+                            rx.vstack(
+                                rx.foreach(
+                                    BatchState.pdf_batch_columns,
+                                    lambda col, idx: rx.hstack(
+                                        rx.input(
+                                            placeholder="Column name",
+                                            value=col["name"],
+                                            on_change=lambda v: BatchState.update_pdf_batch_column(
+                                                idx, "name", v
+                                            ),
+                                            size="2",
+                                            width="50%",
+                                        ),
+                                        rx.select(
+                                            BatchState.available_duck_types,
+                                            value=col["type"],
+                                            on_change=lambda v: BatchState.update_pdf_batch_column(
+                                                idx, "type", v
+                                            ),
+                                            size="2",
+                                            width="40%",
+                                        ),
+                                        rx.icon_button(
+                                            rx.icon("trash-2", size=16),
+                                            on_click=lambda: BatchState.remove_pdf_batch_column(
+                                                idx
+                                            ),
+                                            size="2",
+                                            color_scheme="red",
+                                            variant="soft",
+                                        ),
+                                        spacing="2",
+                                        align="center",
+                                        width="100%",
+                                    ),
+                                ),
+                                spacing="2",
                                 width="100%",
-                                rows="15",
+                                max_height="250px",
+                                overflow_y="auto",
                             ),
-                            spacing="1",
+                            rx.hstack(
+                                rx.icon("info", size=18, color="gray"),
+                                rx.text(
+                                    "Click 'Add Column' to define your table schema.",
+                                    size="2",
+                                    color="gray",
+                                ),
+                                spacing="2",
+                                align="center",
+                            ),
+                        ),
+                        spacing="3",
+                        width="100%",
+                        height="100%",
+                    ),
+                    variant="surface",
+                    size="1",
+                    height="100%",
+                    flex="1",
+                ),
+                # Section 3: Configuration Options
+                rx.card(
+                    rx.vstack(
+                        rx.hstack(
+                            rx.icon("settings", size=18, color="teal"),
+                            rx.text("Configuration", size="3", weight="bold"),
+                            spacing="2",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            # Table name input
+                            rx.vstack(
+                                rx.hstack(
+                                    rx.text("Table Name", size="2", weight="medium"),
+                                    rx.badge(
+                                        "Required",
+                                        color_scheme="red",
+                                        variant="soft",
+                                        size="1",
+                                    ),
+                                    spacing="2",
+                                    align="center",
+                                ),
+                                rx.input(
+                                    placeholder="Enter table name (e.g., equipment_data)",
+                                    value=BatchState.pdf_batch_table_name,
+                                    on_change=BatchState.set_pdf_batch_table_name,
+                                    size="2",
+                                    width="100%",
+                                ),
+                                spacing="1",
+                                width="100%",
+                            ),
+                            # Checkboxes
+                            rx.hstack(
+                                rx.checkbox(
+                                    "Force Recreate Table",
+                                    checked=BatchState.pdf_batch_force_recreate,
+                                    on_change=BatchState.set_pdf_batch_force_recreate,
+                                    size="2",
+                                ),
+                                rx.checkbox(
+                                    "Include Source Column",
+                                    checked=BatchState.pdf_batch_include_source,
+                                    on_change=BatchState.set_pdf_batch_include_source,
+                                    size="2",
+                                ),
+                                spacing="4",
+                                wrap="wrap",
+                            ),
+                            # Optional prompt
+                            rx.vstack(
+                                rx.text(
+                                    "Extraction Prompt (Optional)",
+                                    size="2",
+                                    weight="medium",
+                                ),
+                                rx.text_area(
+                                    placeholder="Enter custom instructions for the LLM (e.g., 'Focus on technical specifications')",
+                                    value=BatchState.pdf_batch_prompt,
+                                    on_change=BatchState.set_pdf_batch_prompt,
+                                    size="2",
+                                    width="100%",
+                                    rows="15",
+                                ),
+                                spacing="1",
+                                width="100%",
+                            ),
+                            spacing="3",
                             width="100%",
                         ),
                         spacing="3",
                         width="100%",
+                        height="100%",
                     ),
-                    spacing="3",
-                    width="100%",
+                    variant="surface",
+                    size="1",
                     height="100%",
+                    flex="1",
                 ),
-                variant="surface",
-                size="1",
-                height="100%",
-                flex="1",
+                spacing="4",
+                align="start",
+                height="500px",
+                width="100%",
             ),
-            spacing="4",
-            align="start",
-            height="500px",
-            width="100%",
-        ),
-        # Validation hints
-        rx.cond(
-            ~BatchState.batch_can_run,
-            rx.callout(
-                rx.vstack(
-                    rx.text("Please complete the following:", weight="bold", size="2"),
+            # Validation hints
+            rx.cond(
+                ~BatchState.batch_can_run,
+                rx.callout(
                     rx.vstack(
-                        rx.cond(
-                            BatchState.pdf_batch_table_name == "",
-                            rx.text("• Enter a table name", size="2"),
+                        rx.text(
+                            "Please complete the following:", weight="bold", size="2"
                         ),
-                        rx.cond(
-                            BatchState.pdf_batch_columns.length() == 0,
-                            rx.text(
-                                "• Add at least one column to the schema", size="2"
+                        rx.vstack(
+                            rx.cond(
+                                BatchState.pdf_batch_table_name == "",
+                                rx.text("• Enter a table name", size="2"),
                             ),
+                            rx.cond(
+                                BatchState.pdf_batch_columns.length() == 0,
+                                rx.text(
+                                    "• Add at least one column to the schema", size="2"
+                                ),
+                            ),
+                            rx.cond(
+                                BatchState.pdf_batch_selected_pdfs.length() == 0,
+                                rx.text("• Select at least one PDF", size="2"),
+                            ),
+                            spacing="1",
+                            align="start",
                         ),
-                        rx.cond(
-                            BatchState.pdf_batch_selected_pdfs.length() == 0,
-                            rx.text("• Select at least one PDF", size="2"),
-                        ),
-                        spacing="1",
+                        spacing="2",
                         align="start",
                     ),
-                    spacing="2",
-                    align="start",
+                    icon="circle_alert",
+                    color_scheme="amber",
+                    size="2",
                 ),
-                icon="circle_alert",
-                color_scheme="amber",
-                size="2",
             ),
+            spacing="4",
+            width="100%",
         ),
-        spacing="4",
+        variant="classic",
         width="100%",
-    ),
-    variant="classic",
-    width="100%",
-)
+    )
