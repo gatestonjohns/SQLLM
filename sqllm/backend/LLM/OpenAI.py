@@ -3,7 +3,7 @@ from typing import Optional, Any
 import os
 import json
 import logging
-from openai import OpenAI
+from openai import AzureOpenAI
 import tiktoken
 
 
@@ -15,15 +15,21 @@ class OpenAIProvider(LLMProvider):
         api_key: Optional[str] = None,
         model: str = "gpt-4.1-2025-04-14",
         token_limit: int = 190000,
+        azure_endpoint: Optional[str] = None,
+        api_version: str = "2024-02-15-preview",
     ):
         """
-        Initialize OpenAI provider.
+        Initialize Azure OpenAI provider.
 
         Args:
-            api_key: OpenAI API key (defaults to OPENAI_API_KEY env var)
-            model: Model to use (default: gpt-4.1-2025-04-14 for cost efficiency with high token limit)
+            api_key: Azure OpenAI API key (defaults to AZURE_OPENAI_API_KEY env var)
+            model: Model deployment name in Azure
+            azure_endpoint: Azure OpenAI endpoint (defaults to AZURE_OPENAI_ENDPOINT env var)
+            api_version: Azure API version
         """
-        self._api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self._api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY")
+        self._azure_endpoint = azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
+        self._api_version = api_version
         self._model = model
         self._token_limit = token_limit
         self._client = None  # Lazy initialization
@@ -38,10 +44,14 @@ class OpenAIProvider(LLMProvider):
         self._system_prompt_msg = {"role": "system", "content": self._system_prompt}
 
     @property
-    def client(self) -> OpenAI:
-        """Lazy-load the OpenAI client."""
+    def client(self) -> AzureOpenAI:
+        """Lazy-load the Azure OpenAI client."""
         if self._client is None:
-            self._client = OpenAI(api_key=self._api_key)
+            self._client = AzureOpenAI(
+                api_key=self._api_key,
+                azure_endpoint=self._azure_endpoint,
+                api_version=self._api_version,
+            )
         return self._client
 
     def generate_text_response(self, prompt: str) -> str:
