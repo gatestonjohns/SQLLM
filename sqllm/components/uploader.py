@@ -133,7 +133,7 @@ def uploader_section() -> rx.Component:
                 rx.dialog.title(
                     rx.hstack(
                         rx.icon("database", size=24, color="teal"),
-                        "Upload CSV or PDF Files",
+                        "Upload CSVs/PDFs",
                         spacing="2",
                         align="center",
                     )
