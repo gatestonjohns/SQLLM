@@ -18,28 +18,7 @@ class State(rx.State):
     query_results_df: pd.DataFrame = pd.DataFrame()
     error_message: str = ""
     success_message: str = ""
-    # TODO: Remove dummy table objects before production deployment
-    from .backend.Engine.engine import TableColumnRepresentationObject
-    available_tables: list[TableRepresentationObject] = [
-        TableRepresentationObject(
-            name="users",
-            columns=[
-                TableColumnRepresentationObject(name="id", type="INTEGER"),
-                TableColumnRepresentationObject(name="name", type="TEXT"),
-                TableColumnRepresentationObject(name="email", type="TEXT"),
-            ],
-            row_count=3,
-        ),
-        TableRepresentationObject(
-            name="orders",
-            columns=[
-                TableColumnRepresentationObject(name="order_id", type="INTEGER"),
-                TableColumnRepresentationObject(name="user_id", type="INTEGER"),
-                TableColumnRepresentationObject(name="amount", type="FLOAT"),
-            ],
-            row_count=5,
-        ),
-    ]
+    available_tables: list[TableRepresentationObject] = []
     available_pdfs: list[str] = []
     export_dialog_open: bool = False
     export_filename: str = "query_results.csv"
