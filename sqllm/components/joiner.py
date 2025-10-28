@@ -628,6 +628,7 @@ def joiner_section() -> rx.Component:
                             size="2",
                             color_scheme="purple",
                             variant="soft",
+                            # TODO: are these comparison methods right? 
                             disabled=(JoinerState.left_table == None)
                             | (JoinerState.right_table == None),
                         ),

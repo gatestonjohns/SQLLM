@@ -7,7 +7,7 @@ def isProd() -> bool:
 
 config = rx.Config(
     app_name="sqllm",
-    frontend_path="/SQLLM" if isProd() else "",  # Base path for the frontend
+    frontend_path="/SQLLM",
     api_url="https://sbaai.sbasite.com/SQLLM_API"
     if isProd()
     else "http://0.0.0.0:8000",  # Update with your backend URL
