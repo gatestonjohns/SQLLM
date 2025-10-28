@@ -15,43 +15,32 @@ engine = Engine(
 class State(rx.State):
     """State management for the SQL editor."""
 
-    sql_query: str = """-- 🤖 LLM-Powered SQL Functions
-
--- 📄 VTF: llm_pdf_to_table - Extract structured data from PDFs
-SELECT * FROM llm_pdf_to_table(
-    'uploaded_files/pdfs/your_file.pdf',
-    'column1 TEXT, column2 INTEGER, column3 FLOAT',
-    'optional: custom extraction instructions'
-);
-
--- 🔄 VTF: llm_table_to_table - Transform existing table data
-SELECT * FROM llm_table_to_table(
-    'SELECT * FROM source_table',
-    'TABLE output_name (new_col1 TEXT, new_col2 TEXT)',
-    'optional: transformation instructions'
-);
-
--- 🔗 VTF: llm_join - Fuzzy join tables using LLM or similarity
-SELECT * FROM llm_join(
-    left_table, right_table,
-    left_key, right_key,
-    algorithm => 'llm'  -- options: 'llm', 'fuzzy', 'embedding', 'hybrid'
-);
-
--- 💬 UDF: llm - Generate text for individual cells
-SELECT 
-    name,
-    llm('Summarize this in 5 words: ' || description) AS summary
-FROM your_table;
-"""
     query_results_df: pd.DataFrame = pd.DataFrame()
     error_message: str = ""
     success_message: str = ""
-    available_tables: list[TableRepresentationObject] = []
+    # TODO: Remove dummy table objects before production deployment
+    from .backend.Engine.engine import TableColumnRepresentationObject
+    available_tables: list[TableRepresentationObject] = [
+        TableRepresentationObject(
+            name="users",
+            columns=[
+                TableColumnRepresentationObject(name="id", type="INTEGER"),
+                TableColumnRepresentationObject(name="name", type="TEXT"),
+                TableColumnRepresentationObject(name="email", type="TEXT"),
+            ],
+            row_count=3,
+        ),
+        TableRepresentationObject(
+            name="orders",
+            columns=[
+                TableColumnRepresentationObject(name="order_id", type="INTEGER"),
+                TableColumnRepresentationObject(name="user_id", type="INTEGER"),
+                TableColumnRepresentationObject(name="amount", type="FLOAT"),
+            ],
+            row_count=5,
+        ),
+    ]
     available_pdfs: list[str] = []
-    upload_dialog_open: bool = False
-    upload_dialog_mode: str = "csv"
-    is_uploading: bool = False
     export_dialog_open: bool = False
     export_filename: str = "query_results.csv"
     is_loading: bool = False
@@ -90,40 +79,13 @@ FROM your_table;
         self.export_dialog_open = value
 
     @rx.event
-    def set_sql_query(self, sql_query: str):
-        """Set the SQL query."""
-        self.sql_query = sql_query
-
-    @rx.event
-    def open_upload_dialog_csv(self):
-        """Open the upload dialog for CSV files."""
-        self.upload_dialog_mode = "csv"
-        self.upload_dialog_open = True
-
-    @rx.event
-    def open_upload_dialog_pdf(self):
-        """Open the upload dialog for PDF files."""
-        self.upload_dialog_mode = "pdf"
-        self.upload_dialog_open = True
-
-    @rx.event
-    def close_upload_dialog(self):
-        """Close the upload dialog."""
-        self.upload_dialog_open = False
-
-    @rx.event
-    def toggle_upload_dialog_open(self, value: bool):
-        """Set the upload dialog open state."""
-        self.upload_dialog_open = value
-
-    @rx.event
-    def execute_query(self):
+    def execute_query(self, sql_query: str):
         """Execute the SQL query and update results."""
         try:
             self._reset_before_query_execution()
             self.is_loading = True
             yield
-            result = engine.execute(self.sql_query)
+            result = engine.execute(sql_query)
             self.query_results_df = result.df
             self.available_tables = engine.list_tables()
 
@@ -144,9 +106,6 @@ FROM your_table;
     @rx.event
     async def handle_csv_upload(self, files: list[rx.UploadFile]):
         """Handle CSV file upload and load into DuckDB."""
-        self.is_uploading = True
-        yield
-        
         for file in files:
             try:
                 self._reset_before_query_execution()
@@ -174,23 +133,14 @@ FROM your_table;
                 logging.info(
                     f"Loaded {file.filename} into DuckDB as table '{created_table_name}'"
                 )
-                self.is_uploading = False
 
             except Exception as e:
-                self.is_uploading = False
                 self.error_message = f"Error uploading {file.filename}: {str(e)}"
                 logging.error(f"✗ Error uploading {file.filename}: {e}")
-                return
-
-        # Close the dialog after all uploads complete successfully
-        self.upload_dialog_open = False
 
     @rx.event
     async def handle_pdf_upload(self, files: list[rx.UploadFile]):
         """Handle PDF upload and store on disk for later ingestion."""
-        self.is_uploading = True
-        yield
-
         for file in files:
             try:
                 self._reset_before_query_execution()
@@ -212,15 +162,11 @@ FROM your_table;
                     f"Stored PDF {file.filename}. Use its path in llm_pdf_to_table()."
                 )
                 logging.info("Stored PDF %s at %s", file.filename, file_path)
-                self.is_uploading = False
 
             except Exception as e:
-                self.is_uploading = False
                 self.error_message = f"Error uploading {file.filename}: {str(e)}"
                 logging.error(f"✗ Error uploading {file.filename}: {e}")
                 return
-
-        self.upload_dialog_open = False
 
     @rx.event
     def export_results(self):

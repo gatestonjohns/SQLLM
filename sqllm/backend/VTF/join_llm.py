@@ -45,8 +45,18 @@ class LLMJoinVTF:
         algorithm = parse_algorithm(algorithm_str)
 
         # Load tables
-        left_df = engine.conn.execute(f"SELECT * FROM {left_table}").fetchdf()
-        right_df = engine.conn.execute(f"SELECT * FROM {right_table}").fetchdf()
+        left_sql = (
+            f"SELECT * FROM {left_table}"
+            if len(left_table.split()) == 1
+            else f"({left_table})"
+        )
+        right_sql = (
+            f"SELECT * FROM {right_table}"
+            if len(right_table.split()) == 1
+            else f"({right_table})"
+        )
+        left_df = engine.conn.execute(left_sql).fetchdf()
+        right_df = engine.conn.execute(right_sql).fetchdf()
 
         # Pre-compute similarities
         logging.info(
@@ -60,9 +70,7 @@ class LLMJoinVTF:
         )
 
         # Materialize result
-        table_name = engine._generate_new_table_name(
-            f"llm_join_{left_table}_{right_table}"
-        )
+        table_name = engine._generate_new_table_name("llm_join_result")
         engine._materialize_df(result_df, table_name)
 
         logging.info(f"llm_join: Materialized {len(result_df)} rows to {table_name}")
@@ -98,6 +106,23 @@ class LLMJoinVTF:
 
         return pd.DataFrame(results)
 
+    def _make_json_serializable(self, obj):
+        """Convert pandas types to JSON-serializable types."""
+        import numpy as np
+
+        if isinstance(obj, dict):
+            return {k: self._make_json_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [self._make_json_serializable(item) for item in obj]
+        elif isinstance(obj, (pd.Timestamp, pd.Timedelta)):
+            return str(obj)
+        elif isinstance(obj, (np.integer, np.floating)):
+            return obj.item()
+        elif pd.isna(obj):
+            return None
+        else:
+            return obj
+
     def _call_llm_for_decision(self, left_row, candidates, right_df, prompt, llm):
         """Call LLM to select best candidate."""
         candidate_data = []
@@ -106,7 +131,7 @@ class LLMJoinVTF:
             candidate_data.append(
                 {
                     "candidate_number": idx,
-                    "row_data": right_row,
+                    "row_data": self._make_json_serializable(right_row),
                     "combined_score": round(float(score), 3),
                     "score_breakdown": {
                         k: round(float(v), 3) for k, v in breakdown.items()
@@ -114,7 +139,11 @@ class LLMJoinVTF:
                 }
             )
 
-        llm_prompt = self._build_llm_prompt(left_row, candidate_data, prompt)
+        # Convert left_row before passing to prompt builder
+        left_row_serializable = self._make_json_serializable(left_row)
+        llm_prompt = self._build_llm_prompt(
+            left_row_serializable, candidate_data, prompt
+        )
         json_schema = self._build_response_schema()
 
         response = llm.generate_structured_response(llm_prompt, json_schema)
@@ -133,7 +162,10 @@ Candidate matches from right table (pre-ranked by similarity):
 Task: {user_prompt}
 
 Select the candidate number that best matches the left row, or return null if no candidate is a good match.
-Provide reasoning for your decision."""
+Provide a very brief reasoning for your final decision that is formatted as concise reasoning steps as bullet points separated by newlines.
+If the decision is obvious, just say why it is obvious in one point. 
+If the decision was close, concisely explain how you chose between the top candidates. 
+You do not need to mention candidates that were not good matches unless it is a NULL match decision (where no good match was decided)."""
 
     def _build_response_schema(self):
         """Build JSON schema for LLM response."""

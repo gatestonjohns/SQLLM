@@ -7,7 +7,6 @@ from ..state import State, engine
 class BatchState(rx.State):
     """State management for batch PDF processing."""
 
-    # Batch Task Manager state
     pdf_batch_selected_pdfs: list[str] = []
     pdf_batch_columns: list[dict[str, str]] = []
     pdf_batch_table_name: str = ""
@@ -219,7 +218,7 @@ def gui_section() -> rx.Component:
             # Header with Run Button
             rx.hstack(
                 rx.hstack(
-                    rx.icon("layers", size=20, color="purple"),
+                    rx.icon("pickaxe", size=20, color="orange"),
                     rx.text(
                         "Batch PDF to Table Converter",
                         size="4",

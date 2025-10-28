@@ -1,212 +1,10 @@
 import reflex as rx
-from reflex_monaco import monaco
 from ..state import State
-from ..components.gui import gui_section
+from ..components import editor_section, gui_section, uploader_section, joiner_section
 
 
 @rx.page(route="/", title="SQLLM")
 def index() -> rx.Component:
-    csv_upload_section = rx.vstack(
-        rx.upload(
-            rx.vstack(
-                rx.icon("file-up", size=32, color="teal"),
-                rx.button(
-                    rx.icon("folder-open", size=16),
-                    "Select CSV Files",
-                    color_scheme="teal",
-                    size="2",
-                    variant="soft",
-                ),
-                rx.text(
-                    "Drag and drop CSV files here or click to browse",
-                    size="2",
-                    color="gray",
-                    align="center",
-                ),
-                align="center",
-                spacing="3",
-            ),
-            id="csv_upload",
-            multiple=True,
-            accept={"text/csv": [".csv"]},
-            max_files=5,
-            border="2px dashed",
-            border_color="teal",
-            padding="2em",
-            border_radius="12px",
-            background="var(--teal-a2)",
-            width="100%",
-        ),
-        rx.cond(
-            rx.selected_files("csv_upload").length() > 0,
-            rx.vstack(
-                rx.text("Selected files:", weight="bold", size="2"),
-                rx.vstack(
-                    rx.foreach(
-                        rx.selected_files("csv_upload"),
-                        lambda file: rx.hstack(
-                            rx.icon("file-text", size=16, color="teal"),
-                            rx.text(file, size="2"),
-                            spacing="2",
-                            align="center",
-                        ),
-                    ),
-                    spacing="2",
-                    width="100%",
-                ),
-                spacing="2",
-                width="100%",
-                padding="1em",
-                background="var(--gray-a2)",
-                border_radius="8px",
-            ),
-        ),
-        rx.button(
-            rx.cond(
-                State.is_uploading,
-                rx.spinner(),
-                "Upload CSV Files",
-            ),
-            on_click=State.handle_csv_upload(rx.upload_files(upload_id="csv_upload")),
-            size="3",
-            color_scheme="teal",
-            width="100%",
-            cursor="pointer",
-            disabled=State.is_uploading,
-        ),
-        spacing="4",
-        width="100%",
-    )
-
-    pdf_upload_section = rx.vstack(
-        rx.upload(
-            rx.vstack(
-                rx.icon("file-plus", size=32, color="purple"),
-                rx.button(
-                    rx.icon("folder-open", size=16),
-                    "Select PDF Files",
-                    color_scheme="purple",
-                    size="2",
-                    variant="soft",
-                ),
-                rx.text(
-                    "Drag and drop PDF files here or click to browse",
-                    size="2",
-                    color="gray",
-                    align="center",
-                ),
-                align="center",
-                spacing="3",
-            ),
-            id="pdf_upload",
-            multiple=True,
-            accept={"application/pdf": [".pdf"]},
-            max_files=5,
-            border="2px dashed",
-            border_color="purple",
-            padding="2em",
-            border_radius="12px",
-            background="var(--purple-a2)",
-            width="100%",
-        ),
-        rx.cond(
-            rx.selected_files("pdf_upload").length() > 0,
-            rx.vstack(
-                rx.text("Selected files:", weight="bold", size="2"),
-                rx.vstack(
-                    rx.foreach(
-                        rx.selected_files("pdf_upload"),
-                        lambda file: rx.hstack(
-                            rx.icon("file", size=16, color="purple"),
-                            rx.text(file, size="2"),
-                            spacing="2",
-                            align="center",
-                        ),
-                    ),
-                    spacing="2",
-                    width="100%",
-                ),
-                spacing="2",
-                width="100%",
-                padding="1em",
-                background="var(--gray-a2)",
-                border_radius="8px",
-            ),
-        ),
-        rx.button(
-            rx.cond(
-                State.is_uploading,
-                rx.spinner(),
-                "Upload PDF Files",
-            ),
-            on_click=State.handle_pdf_upload(rx.upload_files(upload_id="pdf_upload")),
-            size="3",
-            color_scheme="purple",
-            width="100%",
-            cursor="pointer",
-            disabled=State.is_uploading,
-        ),
-        spacing="4",
-        width="100%",
-    )
-
-    upload_dialog = rx.dialog.root(
-        rx.dialog.content(
-            rx.vstack(
-                rx.dialog.title(
-                    rx.cond(
-                        State.upload_dialog_mode == "csv",
-                        rx.hstack(
-                            rx.icon("database", size=24, color="teal"),
-                            "Import CSV Files",
-                            spacing="2",
-                            align="center",
-                        ),
-                        rx.hstack(
-                            rx.icon("file-plus", size=24, color="purple"),
-                            "Store PDF Files",
-                            spacing="2",
-                            align="center",
-                        ),
-                    )
-                ),
-                rx.dialog.description(
-                    rx.cond(
-                        State.upload_dialog_mode == "csv",
-                        "Upload CSV files to query them with SQL. Each file becomes a DuckDB table.",
-                        "Upload PDFs to store them on disk. Reference the saved path in llm_pdf_to_table().",
-                    ),
-                    size="2",
-                    color="gray",
-                ),
-                rx.cond(
-                    State.upload_dialog_mode == "csv",
-                    csv_upload_section,
-                    pdf_upload_section,
-                ),
-                spacing="4",
-                width="100%",
-            ),
-            rx.flex(
-                rx.dialog.close(
-                    rx.button(
-                        "Close",
-                        on_click=State.close_upload_dialog,
-                        color_scheme="gray",
-                        variant="soft",
-                        size="2",
-                    ),
-                ),
-                spacing="3",
-                margin_top="16px",
-                justify="end",
-            ),
-            style={"max_width": "550px"},
-        ),
-        open=State.upload_dialog_open,
-        on_open_change=State.toggle_upload_dialog_open,
-    )
-
     # Available tables display
     tables_display = rx.card(
         rx.cond(
@@ -332,66 +130,26 @@ def index() -> rx.Component:
         size="2",
     )
 
-    # Monaco SQL Editor - bound to State.sql_query
-    editor_section = rx.card(
-        rx.vstack(
-            rx.hstack(
-                rx.hstack(
-                    rx.icon("code", size=20, color="indigo"),
-                    rx.text(
-                        "SQL Query Editor",
-                        size="4",
-                        weight="bold",
-                    ),
-                    spacing="2",
-                    align="center",
-                ),
-                rx.button(
-                    rx.icon("play", size=18),
-                    "Run Query",
-                    on_click=State.execute_query,
-                    size="3",
-                    color_scheme="indigo",
-                    variant="solid",
-                    cursor="pointer",
-                ),
-                spacing="2",
-                align="center",
-                justify="between",
-                width="100%",
-            ),
-            rx.box(
-                monaco(
-                    default_language="sql",
-                    value=State.sql_query,
-                    on_change=State.set_sql_query,
-                    height="400px",
-                    width="100%",
-                ),
-                height="400px",
-                width="100%",
-            ),
-            spacing="3",
-        ),
-        variant="classic",
-        width="100%",
-    )
-
     # Tabs switch between EDITOR & GUI
     tabs_main_view = rx.tabs.root(
         rx.tabs.list(
             rx.tabs.trigger("SQL Editor", value="EDITOR"),
-            rx.tabs.trigger("Batch Task Manager", value="GUI"),
+            rx.tabs.trigger("PDFs -> Table", value="PDFS_TO_TABLE"),
+            rx.tabs.trigger("Smart Join", value="SMART_JOIN"),
         ),
         rx.tabs.content(
-            editor_section,
+            editor_section(),
             value="EDITOR",
         ),
         rx.tabs.content(
             gui_section(),
-            value="GUI",
+            value="PDFS_TO_TABLE",
         ),
-        default_value="EDITOR",
+        rx.tabs.content(
+            joiner_section(),
+            value="SMART_JOIN",
+        ),
+        default_value="SMART_JOIN",  # TODO: what do we want as default tab?
         width="100%",
     )
 
@@ -515,12 +273,34 @@ def index() -> rx.Component:
                         align="center",
                         width="100%",
                     ),
-                    rx.data_table(
-                        data=State.query_results_df,
-                        pagination=True,
-                        search=False,
-                        sort=True,
-                        style={"height": "600px", "width": "100%"},
+                    rx.box(
+                        rx.data_table(
+                            data=State.query_results_df,
+                            pagination=True,
+                            search=False,
+                            sort=True,
+                            style={
+                                "min-width": "max-content",
+                                "& td": {
+                                    "max-height": "4.5em",
+                                    "overflow": "hidden",
+                                    "text-overflow": "ellipsis",
+                                    "vertical-align": "top",
+                                    "line-height": "1.5em",
+                                    "white-space": "nowrap",
+                                    "min-width": "150px",
+                                },
+                                "& th": {
+                                    "white-space": "nowrap",
+                                    "min-width": "150px",
+                                },
+                            },
+                        ),
+                        width="100%",
+                        height="600px",
+                        overflow_x="scroll",
+                        overflow_y="auto",
+                        position="relative",
                     ),
                     spacing="3",
                 ),
@@ -531,66 +311,10 @@ def index() -> rx.Component:
         ),
     )
 
-    # Header with title and import button
-    header = rx.box(
-        upload_dialog,
-        rx.hstack(
-            rx.hstack(
-                rx.icon("database", size=32, color="teal"),
-                rx.vstack(
-                    rx.heading(
-                        "SQL Query Tool for CSV Files",
-                        size="7",
-                        weight="bold",
-                        color="teal",
-                    ),
-                    rx.text(
-                        "Upload CSV files and query them using SQL powered by DuckDB",
-                        size="3",
-                        color="gray",
-                    ),
-                    align="start",
-                    spacing="1",
-                ),
-                spacing="3",
-                align="center",
-            ),
-            rx.spacer(),
-            rx.hstack(
-                rx.button(
-                    rx.icon("upload", size=18),
-                    "Import CSV",
-                    color_scheme="teal",
-                    size="3",
-                    variant="solid",
-                    cursor="pointer",
-                    on_click=State.open_upload_dialog_csv,
-                ),
-                rx.button(
-                    rx.icon("file-plus", size=18),
-                    "Store PDF",
-                    color_scheme="purple",
-                    size="3",
-                    variant="soft",
-                    cursor="pointer",
-                    on_click=State.open_upload_dialog_pdf,
-                ),
-                spacing="2",
-            ),
-            width="100%",
-            align="center",
-        ),
-        padding="2em",
-        background="linear-gradient(135deg, var(--teal-a2) 0%, var(--indigo-a2) 100%)",
-        border_radius="16px",
-        margin_bottom="1em",
-        width="100%",
-    )
-
     # The container with all components
     return rx.box(
         rx.vstack(
-            header,
+            uploader_section(),
             rx.hstack(
                 tables_display,
                 pdf_display,
