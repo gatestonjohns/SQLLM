@@ -74,7 +74,7 @@ def uploader_section() -> rx.Component:
             id="csv_pdf_upload",
             multiple=True,
             accept={"text/csv": [".csv"], "application/pdf": [".pdf"]},
-            max_files=5,
+            max_files=15,
             border="2px dashed",
             border_color="teal",
             padding="2em",
@@ -141,6 +141,7 @@ def uploader_section() -> rx.Component:
                 rx.dialog.description(
                     "Upload CSV files to query with SQL (each file becomes a DuckDB table). "
                     "Upload PDFs to store them on disk; reference saved paths in llm_pdf_to_table().",
+                    "You can upload up to 15 files at a time.",
                     size="2",
                     color="gray",
                 ),

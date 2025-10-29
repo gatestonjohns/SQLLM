@@ -163,13 +163,19 @@ class BatchState(rx.State):
 
     @rx.event
     def set_pdf_batch_force_recreate(self, value: bool):
-        """Set the force recreate flag for batch processing."""
+        """Set the force recreate (overwrite existing table) flag for batch processing."""
         self.pdf_batch_force_recreate = value
 
     @rx.event
     def set_pdf_batch_include_source(self, value: bool):
         """Set the include source flag for batch processing."""
         self.pdf_batch_include_source = value
+
+    @rx.event
+    async def select_all_pdfs(self):
+        """Select all available PDFs for batch processing."""
+        available = await self.get_var_value(State.available_pdfs)
+        self.pdf_batch_selected_pdfs = list(available)
 
 
 def gui_section() -> rx.Component:
@@ -211,6 +217,14 @@ def gui_section() -> rx.Component:
                             rx.icon("file", size=18, color="purple"),
                             rx.text("Select PDFs", size="3", weight="bold"),
                             rx.spacer(),
+                            rx.button(
+                                "Select All",
+                                on_click=BatchState.select_all_pdfs,
+                                size="2",
+                                color_scheme="purple",
+                                variant="soft",
+                                disabled=BatchState.available_pdfs.length() == 0,
+                            ),
                             rx.badge(
                                 f"{BatchState.pdf_batch_selected_pdfs.length()} selected",
                                 color_scheme="purple",
@@ -250,7 +264,6 @@ def gui_section() -> rx.Component:
                                 ),
                                 spacing="2",
                                 width="100%",
-                                max_height="200px",
                                 overflow_y="auto",
                             ),
                             rx.hstack(
@@ -391,7 +404,7 @@ def gui_section() -> rx.Component:
                             # Checkboxes
                             rx.hstack(
                                 rx.checkbox(
-                                    "Force Recreate Table",
+                                    "Overwrite Existing Table",
                                     checked=BatchState.pdf_batch_force_recreate,
                                     on_change=BatchState.set_pdf_batch_force_recreate,
                                     size="2",
