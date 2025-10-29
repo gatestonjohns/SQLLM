@@ -41,23 +41,37 @@ class Engine:
         register_all_udfs(self.conn, llm_provider=self.llm)
 
     def execute(self, sql: str) -> ExecResult:
+        warnings: list[str] = []
         trees = sqlglot.parse(sql, read="duckdb")
 
-        if len(trees) > 1:
-            raise ValueError("Only one SQL statement can be executed at a time.")
+        if not trees:
+            raise ValueError("No valid SQL statements provided.")
 
-        tree = trees[0]
-        warnings: list[str] = []
-        calls: list[VTFCall] = []
-        for handler in self.handlers:
-            calls.extend(handler.discover(tree))
+        df: pd.DataFrame | None = None  # Will store the result of the last statement
 
-        for call in calls:
-            table_name = call.handler.materialize(call, self)
-            call.rewrite_to_table(table_name)
+        # Process each SQL statement in order
+        for i, tree in enumerate(trees):
+            # Discover and materialize VTF calls for this statement
+            calls: list[VTFCall] = []
+            for handler in self.handlers:
+                calls.extend(handler.discover(tree))
 
-        rewritten_sql = tree.sql(dialect="duckdb")
-        df = self.conn.execute(rewritten_sql).fetchdf()
+            for call in calls:
+                table_name = call.handler.materialize(call, self)
+                call.rewrite_to_table(table_name)
+
+            rewritten_sql = tree.sql(dialect="duckdb")
+            print(f"rewritten_sql (statement {i + 1}/{len(trees)}):", rewritten_sql)
+
+            # Execute the statement
+            result = self.conn.execute(rewritten_sql)
+
+            # Store the result (we'll return the last one)
+            df = result.fetchdf()
+
+        # Only print the final result
+        print("df:", df.head())
+
         return ExecResult(df=df, warnings=warnings)
 
     def _materialize_df(self, df: pd.DataFrame, table_name: str) -> None:

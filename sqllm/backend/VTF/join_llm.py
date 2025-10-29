@@ -162,7 +162,7 @@ Candidate matches from right table (pre-ranked by similarity):
 Task: {user_prompt}
 
 Select the candidate number that best matches the left row, or return null if no candidate is a good match.
-Provide a very brief reasoning for your final decision that is formatted as concise reasoning steps as bullet points separated by newlines.
+Provide a very brief (1-2 point, ~20 word) reasoning for your final decision that is formatted as concise reasoning steps as bullet points separated by newlines.
 If the decision is obvious, just say why it is obvious in one point. 
 If the decision was close, concisely explain how you chose between the top candidates. 
 You do not need to mention candidates that were not good matches unless it is a NULL match decision (where no good match was decided)."""

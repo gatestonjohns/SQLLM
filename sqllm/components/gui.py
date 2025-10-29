@@ -1,7 +1,7 @@
 import reflex as rx
 import os
 import logging
-from ..state import State, engine
+from ..state import State
 
 
 class BatchState(rx.State):
@@ -18,7 +18,6 @@ class BatchState(rx.State):
     def available_duck_types(self) -> list[str]:
         """Get available DuckDB types for schema builder."""
         return [
-            "TEXT",
             "VARCHAR",
             "INTEGER",
             "BIGINT",
@@ -73,9 +72,6 @@ class BatchState(rx.State):
         try:
             # Get the main state to access shared functionality
             main_state = await self.get_state(State)
-            main_state._reset_before_query_execution()
-            main_state.is_loading = True
-            yield
 
             # Validate inputs
             table_name = self.pdf_batch_table_name.strip()
@@ -102,14 +98,6 @@ class BatchState(rx.State):
                     return
 
                 schema_parts.append(f"{col_name} {col_type}")
-
-            # Add source_pdf column if requested and not already present
-            has_source = any(
-                col.get("name", "").lower() == "source_pdf"
-                for col in self.pdf_batch_columns
-            )
-            if self.pdf_batch_include_source and not has_source:
-                schema_parts.append("source_pdf TEXT")
 
             schema_str = ", ".join(schema_parts)
 
@@ -150,41 +138,13 @@ class BatchState(rx.State):
             union_query = " UNION ALL ".join(selects)
 
             # Final SQL statement
-            sql = f"{create_clause} {table_name} AS {union_query}"
+            create_table_sql = f"{create_clause} {table_name} AS {union_query};"
+            return_new_table_sql = f"SELECT * FROM {table_name};"
+            full_sql = f"{create_table_sql}\n{return_new_table_sql}"
+            print("full_sql from gui:", full_sql)
+            
+            return main_state.execute_query(full_sql)
 
-            # Format SQL for readability before storing in editor
-            try:
-                import sqlglot
-
-                formatted_sql = sqlglot.parse_one(sql).sql(
-                    dialect="duckdb", pretty=True
-                )
-                main_state.sql_query = formatted_sql
-            except Exception as e:
-                main_state.is_loading = False
-                # Fallback to unformatted SQL if formatting fails
-                logging.warning(f"Could not format SQL: {e}")
-                main_state.sql_query = sql
-
-            # Execute the query
-            logging.info(
-                f"Executing batch PDF ingestion: {len(self.pdf_batch_selected_pdfs)} PDFs -> table '{table_name}'"
-            )
-            engine.execute(sql)
-
-            # Fetch the created table to show results
-            fetch_result = engine.execute(f"SELECT * FROM {table_name}")
-            main_state.query_results_df = fetch_result.df
-
-            # Update available tables
-            main_state.available_tables = engine.list_tables()
-
-            row_count = len(main_state.query_results_df)
-            main_state.success_message = f"Successfully created table '{table_name}' with {row_count} rows from {len(self.pdf_batch_selected_pdfs)} PDFs"
-            logging.info(
-                f"Batch ingestion complete: {row_count} rows in '{table_name}'"
-            )
-            main_state.is_loading = False
         except Exception as e:
             main_state = await self.get_state(State)
             main_state.is_loading = False
