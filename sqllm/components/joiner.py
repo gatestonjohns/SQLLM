@@ -342,14 +342,28 @@ class JoinerState(rx.State):
         left_select_parts = []
         for orig_col, new_col in left_renames.items():
             left_select_parts.append(f"{orig_col} AS {new_col}")
-        left_select_parts.append("*")
+
+        # Use EXCLUDE to avoid selecting renamed columns twice
+        if left_renames:
+            excluded_cols = ", ".join(left_renames.keys())
+            left_select_parts.append(f"* EXCLUDE ({excluded_cols})")
+        else:
+            left_select_parts.append("*")
+
         left_select = ", ".join(left_select_parts)
         left_query = f"(SELECT {left_select} FROM {self.left_table_name})"
 
         right_select_parts = []
         for orig_col, new_col in right_renames.items():
             right_select_parts.append(f"{orig_col} AS {new_col}")
-        right_select_parts.append("*")
+
+        # Use EXCLUDE to avoid selecting renamed columns twice
+        if right_renames:
+            excluded_cols = ", ".join(right_renames.keys())
+            right_select_parts.append(f"* EXCLUDE ({excluded_cols})")
+        else:
+            right_select_parts.append("*")
+
         right_select = ", ".join(right_select_parts)
         right_query = f"(SELECT {right_select} FROM {self.right_table_name})"
 
@@ -628,7 +642,7 @@ def joiner_section() -> rx.Component:
                             size="2",
                             color_scheme="purple",
                             variant="soft",
-                            # TODO: are these comparison methods right? 
+                            # TODO: are these comparison methods right?
                             disabled=(JoinerState.left_table == None)
                             | (JoinerState.right_table == None),
                         ),
