@@ -8,6 +8,7 @@ class JoinerState(rx.State):
     """State management for the joiner GUI section."""
 
     joiner_dialog_open: bool = False
+    new_table_name: str = ""
     left_table_name: str = ""
     right_table_name: str = ""
     left_table: TableRepresentationObject | None = None
@@ -45,6 +46,11 @@ class JoinerState(rx.State):
         """Get the available tables."""
         state = await self.get_state(State)
         return [table.name for table in state.available_tables]
+
+    @rx.event
+    def set_new_table_name(self, value: str):
+        """Set the new table name."""
+        self.new_table_name = value
 
     @rx.event
     async def set_left_table_name(self, value: str):
@@ -106,7 +112,8 @@ class JoinerState(rx.State):
     def can_execute_join(self) -> bool:
         """Check if join can be executed."""
         return (
-            self.left_table is not None
+            self.new_table_name.strip() != ""  # TODO: sql sanitize new table name
+            and self.left_table is not None
             and self.right_table is not None
             and self.left_table_name != self.right_table_name
             and len(self.join_criteria) > 0
@@ -372,6 +379,7 @@ class JoinerState(rx.State):
 
         # Build final SQL with nested SELECT statements as arguments
         sql = f"""SELECT * FROM llm_join(
+    '{self.new_table_name}',
     '{left_query}',
     '{right_query}',
     '{algorithm_str}',
@@ -487,6 +495,20 @@ def joiner_section() -> rx.Component:
                 spacing="2",
                 align="center",
                 justify="between",
+                width="100%",
+            ),
+            rx.card(
+                rx.vstack(
+                    rx.text("New Table Name", size="2", weight="medium"),
+                    rx.input(
+                        type="text",
+                        placeholder="new_table_name",
+                        on_change=JoinerState.set_new_table_name,
+                        width="100%",
+                    ),
+                ),
+                variant="surface",
+                size="1",
                 width="100%",
             ),
             # Left and Right Tables

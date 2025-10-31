@@ -4,6 +4,8 @@ import logging
 import pandas as pd
 from sqlglot import expressions as exp
 from typing import Any
+import concurrent.futures
+
 
 from .base import VTFCall
 from .join_algorithm import parse_algorithm, SimilarityScorer
@@ -39,7 +41,7 @@ class LLMJoinVTF:
 
     def materialize(self, call: VTFCall, engine) -> str:
         """Execute the LLM join and materialize result table."""
-        left_table, right_table, algorithm_str, prompt = self._parse_args(call.args)
+        new_table_name, left_table, right_table, algorithm_str, prompt = self._parse_args(call.args)
 
         # Parse algorithm
         algorithm = parse_algorithm(algorithm_str)
@@ -70,18 +72,16 @@ class LLMJoinVTF:
         )
 
         # Materialize result
-        table_name = engine._generate_new_table_name("llm_join_result")
-        engine._materialize_df(result_df, table_name)
+        table_name = engine._generate_new_table_name(new_table_name)
+        engine._materialize_df(result_df, table_name, temporary = False)
 
         logging.info(f"llm_join: Materialized {len(result_df)} rows to {table_name}")
         call.rewrite_to_table(table_name)
         return table_name
 
     def _execute_join(self, left_df, right_df, algorithm, scorer, prompt, llm):
-        """Execute the join for all left rows."""
-        results = []
-
-        for left_idx in range(len(left_df)):
+        """Execute the join for all left rows (parallelized)."""
+        def process_row(left_idx):
             left_row = left_df.iloc[left_idx].to_dict()
 
             # Get top k candidates
@@ -89,20 +89,25 @@ class LLMJoinVTF:
 
             # If no good candidates (all scores near 0), skip LLM call
             if not candidates or candidates[0][1] < 0.01:
-                results.append(self._create_null_result(left_row, right_df.columns))
                 logging.debug(f"llm_join: No good candidates for left row {left_idx}")
-                continue
+                return self._create_null_result(left_row, right_df.columns)
 
             # Call LLM to pick best match
+            print(f"llm_join: Calling LLM for left row {left_idx}")
             llm_result = self._call_llm_for_decision(
                 left_row, candidates, right_df, prompt, llm
             )
+            print(f"llm_join: Received LLM result for left row {left_idx}")
 
             # Build result row
             result_row = self._build_result_row(
                 left_row, llm_result, right_df, candidates
             )
-            results.append(result_row)
+            return result_row
+
+        # Use ThreadPoolExecutor (or ProcessPoolExecutor if tasks are more cpu-bound)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            results = list(executor.map(process_row, range(len(left_df))))
 
         return pd.DataFrame(results)
 
@@ -161,11 +166,11 @@ Candidate matches from right table (pre-ranked by similarity):
 
 Task: {user_prompt}
 
-Select the candidate number that best matches the left row, or return null if no candidate is a good match.
-Provide a very brief (1-2 point, ~20 word) reasoning for your final decision that is formatted as concise reasoning steps as bullet points separated by newlines.
-If the decision is obvious, just say why it is obvious in one point. 
-If the decision was close, concisely explain how you chose between the top candidates. 
-You do not need to mention candidates that were not good matches unless it is a NULL match decision (where no good match was decided)."""
+Select the candidate number that best matches the left row, or return null if no candidate is a good match."""
+# Provide a very brief (1-2 point, ~20 word) reasoning for your final decision that is formatted as concise reasoning steps as bullet points separated by newlines.
+# If the decision is obvious, just say why it is obvious in one point. 
+# If the decision was close, concisely explain how you chose between the top candidates. 
+# You do not need to mention candidates that were not good matches unless it is a NULL match decision (where no good match was decided)."""
 
     def _build_response_schema(self):
         """Build JSON schema for LLM response."""
@@ -182,12 +187,13 @@ You do not need to mention candidates that were not good matches unless it is a 
                         "type": "number",
                         "description": "Confidence score 0-1",
                     },
-                    "reasoning": {
-                        "type": "string",
-                        "description": "Explanation for the decision",
-                    },
+                    # TODO: add reasoning back in only for test mode
+                    # "reasoning": {
+                    #     "type": "string",
+                    #     "description": "Explanation for the decision",
+                    # },
                 },
-                "required": ["selected_candidate", "confidence", "reasoning"],
+                "required": ["selected_candidate", "confidence"], # "reasoning"],
                 "additionalProperties": False,
             },
             "strict": True,
@@ -216,7 +222,7 @@ You do not need to mention candidates that were not good matches unless it is a 
 
         # Add metadata
         result["join_confidence"] = llm_result.get("confidence", 0.0)
-        result["join_reasoning"] = llm_result.get("reasoning", "")
+        # result["join_reasoning"] = llm_result.get("reasoning", "")
 
         return result
 
@@ -226,16 +232,16 @@ You do not need to mention candidates that were not good matches unless it is a 
         for col in right_columns:
             result[f"right_{col}"] = None
         result["join_confidence"] = 0.0
-        result["join_reasoning"] = "No suitable candidates found"
+        # result["join_reasoning"] = "No suitable candidates found"
         return result
 
     def _parse_args(self, args: list[Any]) -> tuple[str, str, str, str]:
         """Parse function arguments."""
-        if len(args) < 4:
+        if len(args) < 5:
             raise ValueError(
-                "llm_join requires (left_table, right_table, algorithm, prompt)"
+                "llm_join requires (new_table_name, left_table, right_table, algorithm, prompt)"
             )
-        return args[0], args[1], args[2], args[3]
+        return args[0], args[1], args[2], args[3], args[4]
 
     def _literal_value(self, e: exp.Expression) -> Any:
         """Extract literal value from expression."""

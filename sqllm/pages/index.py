@@ -73,6 +73,8 @@ def index() -> rx.Component:
                 ),
                 spacing="3",
                 align="start",
+                max_height="100px",
+                overflow_y="auto",
             ),
             rx.hstack(
                 rx.icon("info", size=20, color="gray"),
@@ -87,6 +89,7 @@ def index() -> rx.Component:
         ),
         variant="surface",
         size="2",
+        width="50%",
     )
 
     pdf_display = rx.card(
@@ -111,6 +114,8 @@ def index() -> rx.Component:
                     spacing="1",
                     align="start",
                     width="100%",
+                    max_height="100px",
+                    overflow_y="auto",
                 ),
                 spacing="3",
                 align="start",
@@ -128,6 +133,7 @@ def index() -> rx.Component:
         ),
         variant="surface",
         size="2",
+        width="50%",
     )
 
     # Tabs switch between EDITOR & GUI
@@ -276,25 +282,11 @@ def index() -> rx.Component:
                     rx.box(
                         rx.data_table(
                             data=State.query_results_df,
-                            pagination=True,
+                            pagination=False,
+                            resizable=True,
                             search=False,
                             sort=True,
-                            style={
-                                "min-width": "max-content",
-                                "& td": {
-                                    "max-height": "4.5em",
-                                    "overflow": "hidden",
-                                    "text-overflow": "ellipsis",
-                                    "vertical-align": "top",
-                                    "line-height": "1.5em",
-                                    "white-space": "nowrap",
-                                    "min-width": "150px",
-                                },
-                                "& th": {
-                                    "white-space": "nowrap",
-                                    "min-width": "150px",
-                                },
-                            },
+                            # TODO: make the columns more wide by default
                         ),
                         width="100%",
                         height="600px",

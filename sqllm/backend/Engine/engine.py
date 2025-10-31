@@ -74,14 +74,15 @@ class Engine:
 
         return ExecResult(df=df, warnings=warnings)
 
-    def _materialize_df(self, df: pd.DataFrame, table_name: str) -> None:
-        self.conn.register(f"__reg_{table_name}", df)
+    def _materialize_df(self, df: pd.DataFrame, table_name: str, temporary: bool = True) -> None:
+        temp_df_table_name = f"__reg_{table_name}"
+        self.conn.register(temp_df_table_name, df)
         self.conn.execute(
-            f"CREATE OR REPLACE TEMP TABLE {table_name} AS SELECT * FROM __reg_{table_name}"
+            f"CREATE OR REPLACE {"TEMP" if temporary else ""} TABLE {table_name} AS SELECT * FROM {temp_df_table_name}"
         )
-        self.conn.unregister(f"__reg_{table_name}")
+        self.conn.unregister(temp_df_table_name)
 
-    def _generate_new_table_name(self, raw_string: str) -> str:
+    def _generate_new_table_name(self, raw_string: str, ensure_new: bool = True) -> str:
         """
         Generate a new unique, clean, SQL-friendly table name from a raw string by enforcing:
         - is unique among existing table names
@@ -94,7 +95,7 @@ class Engine:
             new_table_name = f"_{new_table_name}"
 
         existing_table_names = self._get_existing_table_names()
-        if new_table_name in existing_table_names:
+        if ensure_new and new_table_name in existing_table_names:
             int_suffix: int = 1
             base_name = new_table_name
             proposed_name = f"{base_name}_{int_suffix}"
@@ -107,9 +108,14 @@ class Engine:
 
         return new_table_name
 
-    def _get_existing_table_names(self) -> list[str]:
+    def _get_existing_table_names(self, include_temp: bool = False) -> list[str]:
         """Get a list of all table names currently in the database."""
-        return [row[0] for row in self.conn.execute("SHOW TABLES").fetchall()]
+        return [
+            row[0]
+            for row in self.conn.execute(
+                "SELECT table_name FROM duckdb_tables WHERE database_name = 'memory';"
+            ).fetchall()
+        ]
 
     def load_csv(self, file_path: str) -> tuple[str, ExecResult]:
         """Load a CSV file into a DuckDB table and return the dataframe of the loaded table."""
@@ -118,17 +124,21 @@ class Engine:
         )
 
         self.conn.execute(
-            f"CREATE OR REPLACE TABLE {cleaned_table_name} AS SELECT * FROM read_csv_auto('{file_path}', header=true)"
+            f"CREATE OR REPLACE TABLE {cleaned_table_name} AS FROM read_csv('{file_path}',  header = true, normalize_names = true)"
         )
 
         df = self.conn.execute(f"SELECT * FROM {cleaned_table_name}").fetchdf()
 
         return cleaned_table_name, ExecResult(df=df, warnings=[])
 
-    def list_tables(self) -> list[TableRepresentationObject]:
+    def list_tables(
+        self, include_temp: bool = False
+    ) -> list[TableRepresentationObject]:
         """Get a list of TableRepresentationObjects for all tables currently in the database."""
         table_representation_objects: list[TableRepresentationObject] = []
-        all_existing_table_names: list[str] = self._get_existing_table_names()
+        all_existing_table_names: list[str] = self._get_existing_table_names(
+            include_temp=include_temp
+        )
 
         for table_name in all_existing_table_names:
             columns = [

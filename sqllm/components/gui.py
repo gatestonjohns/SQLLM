@@ -44,7 +44,7 @@ class BatchState(rx.State):
     @rx.event
     def add_pdf_batch_column(self):
         """Add a new column to the batch schema."""
-        self.pdf_batch_columns.append({"name": "", "type": "TEXT"})
+        self.pdf_batch_columns.append({"name": "", "type": "VARCHAR"})
 
     @rx.event
     def update_pdf_batch_column(self, index: int, field: str, value: str):
@@ -172,11 +172,13 @@ class BatchState(rx.State):
         self.pdf_batch_include_source = value
 
     @rx.event
-    async def select_all_pdfs(self):
-        """Select all available PDFs for batch processing."""
+    async def toggle_all_pdfs(self):
+        """Toggle all available PDFs for batch processing."""
         available = await self.get_var_value(State.available_pdfs)
-        self.pdf_batch_selected_pdfs = list(available)
-
+        if self.pdf_batch_selected_pdfs == list(available):
+            self.pdf_batch_selected_pdfs = []
+        else:
+            self.pdf_batch_selected_pdfs = list(available)
 
 def gui_section() -> rx.Component:
     return rx.card(
@@ -218,8 +220,8 @@ def gui_section() -> rx.Component:
                             rx.text("Select PDFs", size="3", weight="bold"),
                             rx.spacer(),
                             rx.button(
-                                "Select All",
-                                on_click=BatchState.select_all_pdfs,
+                                "Toggle All",
+                                on_click=BatchState.toggle_all_pdfs,
                                 size="2",
                                 color_scheme="purple",
                                 variant="soft",
@@ -312,7 +314,7 @@ def gui_section() -> rx.Component:
                                     BatchState.pdf_batch_columns,
                                     lambda col, idx: rx.hstack(
                                         rx.input(
-                                            placeholder="Column name",
+                                            placeholder="col_name",
                                             value=col["name"],
                                             on_change=lambda v: BatchState.update_pdf_batch_column(
                                                 idx, "name", v
@@ -345,7 +347,6 @@ def gui_section() -> rx.Component:
                                 ),
                                 spacing="2",
                                 width="100%",
-                                max_height="250px",
                                 overflow_y="auto",
                             ),
                             rx.hstack(

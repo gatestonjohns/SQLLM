@@ -46,7 +46,7 @@ class LLMPDFToTableVTF:
         pdf_id, schema_str, prompt_text, options = self._parse_args(call.args)
         schema_spec = parse_schema_grammar(schema_str)
         json_schema = build_json_schema(schema_spec)
-        table_name = engine._generate_new_table_name(pdf_id)
+        table_name = engine._generate_new_table_name(pdf_id, ensure_new=False)
 
         existing_tables = engine._get_existing_table_names()
         table_exists = table_name in existing_tables
