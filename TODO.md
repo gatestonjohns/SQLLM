@@ -1,5 +1,14 @@
-
 - ~~fix the upload # limit on file uploads~~
 - ~~add a select all button for PDF selection in PDF miner~~
 - ~~"Force Recreate" -> "Overwrite Existing"~~
-- 
+- ~~normalize csv headers when importing that table~~
+- expand number of results in the results section
+- no more temp creating tables on each run (use CTEs where possible that arent persistent)
+- select all should toggle
+- clear all input states on GUI panes
+- columns pane in PDF to Table should take full height of parent
+- add a price display to the app as a whole
+- custom widening of data table columns
+- name join results with custom table name
+- duplicate execute buttons at the bottom
+- make it so that pdf to table can handle bigger pdfs by splitting up
