@@ -49,6 +49,11 @@ class State(rx.State):
     current_query_output_tokens: int = 0
     current_query_cost: float = 0.0
 
+    @rx.var
+    def results_present(self) -> bool:
+        """Check if there are results to display."""
+        return not self.query_results_df.empty
+
     @property
     def _engine(self) -> Engine:
         """Get per-session engine instance."""
@@ -126,7 +131,7 @@ class State(rx.State):
             result = self._engine.execute(sql_query)
             self.query_results_df = result.df
             self.available_tables = self._engine.list_tables()
-            
+
             # Update token stats to trigger re-render
             self._update_token_stats()
 

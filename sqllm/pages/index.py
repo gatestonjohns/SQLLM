@@ -464,14 +464,23 @@ def index() -> rx.Component:
                         width="100%",
                     ),
                     rx.box(
-                        rx.data_table(
-                            data=State.query_results_df,
-                            pagination=True,
-                            page_size=100,
-                            resizable=True,
-                            search=False,
-                            sort=True,
-                            # TODO: make the columns more wide by default
+                        rx.cond(
+                            State.results_present,
+                            rx.data_table(
+                                data=State.query_results_df,
+                                pagination=True,
+                                page_size=100,
+                                resizable=True,
+                                search=False,
+                                sort=True,
+                                # TODO: make the columns more wide by default
+                            ),
+                            rx.text(
+                                "No results to display",
+                                size="2",
+                                color="gray",
+                                weight="medium",
+                            ),
                         ),
                         width="100%",
                         height="auto",
