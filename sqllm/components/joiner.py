@@ -1,5 +1,7 @@
 import reflex as rx
 import logging
+
+from sqlglot.expressions import From
 from ..state import State
 from ..backend.Engine.engine import TableRepresentationObject
 
@@ -314,7 +316,7 @@ class JoinerState(rx.State):
             logging.info(
                 f"Executing LLM join: {self.left_table_name} ⋈ {self.right_table_name}"
             )
-            return main_state.execute_query(sql)
+            return State.execute_query(sql)
 
         except Exception as e:
             raise RuntimeError(f"Error executing join: {str(e)}")
