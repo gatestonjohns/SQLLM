@@ -123,13 +123,10 @@ class State(rx.State):
             self._llm.reset_current_query_stats()
             self.is_loading = True
             yield
-
             result = self._engine.execute(sql_query)
-            
-            
             self.query_results_df = result.df
             self.available_tables = self._engine.list_tables()
-
+            
             # Update token stats to trigger re-render
             self._update_token_stats()
 

@@ -55,8 +55,8 @@ def editor_section() -> rx.Component:
             rx.box(
                 monaco(
                     default_language="sql",
-                    value=DEFAULT_SQL_QUERY,
-                    on_change=EditorState.set_sql_query,
+                    value=EditorState.sql_query,
+                    on_change=EditorState.set_sql_query.debounce(200),
                     height="400px",
                     width="100%",
                 ),
