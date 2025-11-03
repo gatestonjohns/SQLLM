@@ -316,7 +316,7 @@ class JoinerState(rx.State):
             logging.info(
                 f"Executing LLM join: {self.left_table_name} ⋈ {self.right_table_name}"
             )
-            return State.execute_query(sql)
+            return main_state.execute_query(sql)
 
         except Exception as e:
             raise RuntimeError(f"Error executing join: {str(e)}")
