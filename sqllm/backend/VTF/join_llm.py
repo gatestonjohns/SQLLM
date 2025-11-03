@@ -81,6 +81,9 @@ class LLMJoinVTF:
 
     def _execute_join(self, left_df, right_df, algorithm, scorer, prompt, llm):
         """Execute the join for all left rows (parallelized)."""
+        # Extract columns mentioned in the algorithm criteria
+        algorithm_columns = [criterion.column for criterion in algorithm.criteria]
+        
         def process_row(left_idx):
             left_row = left_df.iloc[left_idx].to_dict()
 
@@ -95,7 +98,7 @@ class LLMJoinVTF:
             # Call LLM to pick best match
             print(f"llm_join: Calling LLM for left row {left_idx}")
             llm_result = self._call_llm_for_decision(
-                left_row, candidates, right_df, prompt, llm
+                left_row, candidates, right_df, prompt, llm, algorithm_columns
             )
             print(f"llm_join: Received LLM result for left row {left_idx}")
 
@@ -128,15 +131,20 @@ class LLMJoinVTF:
         else:
             return obj
 
-    def _call_llm_for_decision(self, left_row, candidates, right_df, prompt, llm):
+    def _call_llm_for_decision(self, left_row, candidates, right_df, prompt, llm, algorithm_columns):
         """Call LLM to select best candidate."""
+        # Filter left_row to only include algorithm columns
+        filtered_left_row = {k: v for k, v in left_row.items() if k in algorithm_columns}
+        
         candidate_data = []
         for idx, (right_idx, score, breakdown) in enumerate(candidates, 1):
             right_row = right_df.iloc[right_idx].to_dict()
+            # Filter right_row to only include algorithm columns
+            filtered_right_row = {k: v for k, v in right_row.items() if k in algorithm_columns}
             candidate_data.append(
                 {
                     "candidate_number": idx,
-                    "row_data": self._make_json_serializable(right_row),
+                    "row_data": self._make_json_serializable(filtered_right_row),
                     "combined_score": round(float(score), 3),
                     "score_breakdown": {
                         k: round(float(v), 3) for k, v in breakdown.items()
@@ -144,8 +152,8 @@ class LLMJoinVTF:
                 }
             )
 
-        # Convert left_row before passing to prompt builder
-        left_row_serializable = self._make_json_serializable(left_row)
+        # Convert filtered left_row before passing to prompt builder
+        left_row_serializable = self._make_json_serializable(filtered_left_row)
         llm_prompt = self._build_llm_prompt(
             left_row_serializable, candidate_data, prompt
         )

@@ -115,39 +115,34 @@ class State(rx.State):
         """Toggle the export dialog open state."""
         self.export_dialog_open = value
 
-    @rx.event(background=True)
-    async def execute_query(self, sql_query: str):
+    @rx.event
+    def execute_query(self, sql_query: str):
         """Execute the SQL query and update results."""
         try:
-            async with self:
-                self._reset_before_query_execution()
-                self._llm.reset_current_query_stats()
-                self.is_loading = True
-                yield
-
+            self._reset_before_query_execution()
+            self._llm.reset_current_query_stats()
+            self.is_loading = True
+            yield
             result = self._engine.execute(sql_query)
+            self.query_results_df = result.df
+            self.available_tables = self._engine.list_tables()
             
-            async with self:
-                self.query_results_df = result.df
-                self.available_tables = self._engine.list_tables()
+            # Update token stats to trigger re-render
+            self._update_token_stats()
 
-                # Update token stats to trigger re-render
-                self._update_token_stats()
-
-                logging.info(
-                    f"Query executed successfully: {len(self.query_results_df)} rows returned"
-                )
-                self.is_loading = False
-                if result.warnings:
-                    self.success_message = "Query executed with warnings."
-                else:
-                    self.success_message = "Query executed successfully."
+            logging.info(
+                f"Query executed successfully: {len(self.query_results_df)} rows returned"
+            )
+            self.is_loading = False
+            if result.warnings:
+                self.success_message = "Query executed with warnings."
+            else:
+                self.success_message = "Query executed successfully."
 
         except Exception as e:
-            async with self:
-                self.is_loading = False
-                self.error_message = f"Error: {str(e)}"
-                logging.error(f"✗ Query error: {e}")
+            self.is_loading = False
+            self.error_message = f"Error: {str(e)}"
+            logging.error(f"✗ Query error: {e}")
 
     @rx.event
     async def handle_csv_upload(self, files: list[rx.UploadFile]):
