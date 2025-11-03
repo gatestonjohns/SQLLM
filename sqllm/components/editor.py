@@ -41,7 +41,7 @@ def editor_section() -> rx.Component:
                 rx.button(
                     rx.icon("play", size=18),
                     "Run Query",
-                    on_click=EditorState.run_query,
+                    on_click=EditorState.run_query.debounce(1000),
                     size="3",
                     color_scheme="indigo",
                     variant="solid",
@@ -56,7 +56,7 @@ def editor_section() -> rx.Component:
                 monaco(
                     default_language="sql",
                     value=EditorState.sql_query,
-                    on_change=EditorState.set_sql_query.debounce(200),
+                    on_change=EditorState.set_sql_query.debounce(1000),
                     height="400px",
                     width="100%",
                 ),
