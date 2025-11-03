@@ -10,6 +10,7 @@ import concurrent.futures
 from .base import VTFCall
 from .join_algorithm import parse_algorithm, SimilarityScorer
 
+MAX_ALLOWED_ROWS_FOR_JOIN = 10000
 
 class LLMJoinVTF:
     function_name = "llm_join"
@@ -39,6 +40,18 @@ class LLMJoinVTF:
 
         return calls
 
+    def _dfs_under_allowed_size(self, *dfs: pd.DataFrame) -> bool:
+        """
+        Check if all dataframes are under the allowed row limit.
+
+        Args:
+            *dfs: Any number of pandas DataFrames.
+
+        Returns:
+            True if all DataFrames have row count <= MAX_ALLOWED_ROWS_FOR_JOIN, else False.
+        """
+        return all(len(df) <= MAX_ALLOWED_ROWS_FOR_JOIN for df in dfs)
+
     def materialize(self, call: VTFCall, engine) -> str:
         """Execute the LLM join and materialize result table."""
         new_table_name, left_table, right_table, algorithm_str, prompt = self._parse_args(call.args)
@@ -59,6 +72,9 @@ class LLMJoinVTF:
         )
         left_df = engine.conn.execute(left_sql).fetchdf()
         right_df = engine.conn.execute(right_sql).fetchdf()
+
+        if not self._dfs_under_allowed_size(left_df):
+            raise ValueError(f"Allowed Cost Threshold Exceeded: Left dataframe is too large to perform per-row LLM join on (max allowed rows: {MAX_ALLOWED_ROWS_FOR_JOIN}). Please reduce the number of rows in the left dataframe.")
 
         # Pre-compute similarities
         logging.info(
