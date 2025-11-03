@@ -180,6 +180,16 @@ class BatchState(rx.State):
         else:
             self.pdf_batch_selected_pdfs = list(available)
 
+    @rx.event
+    def reset_all_inputs(self):
+        """Reset all input elements to their default/empty values."""
+        self.pdf_batch_selected_pdfs = []
+        self.pdf_batch_columns = []
+        self.pdf_batch_table_name = ""
+        self.pdf_batch_prompt = ""
+        self.pdf_batch_force_recreate = False
+        self.pdf_batch_include_source = False
+
 def gui_section() -> rx.Component:
     return rx.card(
         rx.vstack(
@@ -195,15 +205,28 @@ def gui_section() -> rx.Component:
                     spacing="2",
                     align="center",
                 ),
-                rx.button(
-                    rx.icon("play", size=18),
-                    "Create Table from PDFs",
-                    on_click=BatchState.run_pdf_batch_ingest,
-                    size="3",
-                    color_scheme="purple",
-                    variant="solid",
-                    disabled=~BatchState.batch_can_run,
-                    cursor="pointer",
+                rx.hstack(
+                    rx.button(
+                        rx.icon("rotate-ccw", size=14),
+                        "Reset Options",
+                        on_click=BatchState.reset_all_inputs,
+                        size="1",
+                        color_scheme="gray",
+                        variant="outline",
+                        cursor="pointer",
+                    ),
+                    rx.button(
+                        rx.icon("play", size=18),
+                        "Create Table from PDFs",
+                        on_click=BatchState.run_pdf_batch_ingest,
+                        size="3",
+                        color_scheme="purple",
+                        variant="solid",
+                        disabled=~BatchState.batch_can_run,
+                        cursor="pointer",
+                    ),
+                    spacing="4",
+                    align="center",
                 ),
                 spacing="2",
                 align="center",

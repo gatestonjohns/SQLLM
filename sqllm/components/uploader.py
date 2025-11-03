@@ -12,6 +12,7 @@ class UploaderState(rx.State):
     @rx.event
     async def handle_upload(self, files: list[rx.UploadFile]):
         """Upload files using the appropriate handlers for each type."""
+        # signal uploading state
         self.is_uploading = True
         yield
 

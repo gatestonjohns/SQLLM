@@ -2,13 +2,21 @@
 - ~~add a select all button for PDF selection in PDF miner~~
 - ~~"Force Recreate" -> "Overwrite Existing"~~
 - ~~normalize csv headers when importing that table~~
-- expand number of results in the results section
-- no more temp creating tables on each run (use CTEs where possible that arent persistent)
-- select all should toggle
+- ~~expand number of results in the results section~~
+- find way to set pagination num per page
+- ~~no more temp creating tables on each run (use CTEs where possible that arent persistent)~~ (just stopped showing them in available tables)
+- ~~select all should toggle ~~
 - clear all input states on GUI panes
-- columns pane in PDF to Table should take full height of parent
-- add a price display to the app as a whole
-- custom widening of data table columns
-- name join results with custom table name
+- ~~columns pane in PDF to Table should take full height of parent~~
+- ~~add a price display to the app as a whole~~
+- ~~custom widening of data table columns~~
+- ~~name join results with custom table name~~
 - duplicate execute buttons at the bottom
+- find a way to do massive joins much cheaper (provisioned models?)
+- ~~clean up the token / cost counting logic~~
+- do per-session engine / llm clients in a better way
+- users with auth?
+- test join logic (improve UI for this) and perhaps kick off full process on the backend?
+
+- persistent SQLite FS DB?
 - make it so that pdf to table can handle bigger pdfs by splitting up

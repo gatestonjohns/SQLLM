@@ -136,6 +136,174 @@ def index() -> rx.Component:
         width="50%",
     )
 
+    # Session usage and cost tracking card
+    usage_stats_card = rx.card(
+        rx.vstack(
+            rx.hstack(
+                rx.icon("activity", size=20, color="green"),
+                rx.text("Session Usage & Cost", size="3", weight="bold"),
+                spacing="2",
+                align="center",
+            ),
+            rx.cond(
+                State.query_count > 0,
+                rx.hstack(
+                    # Left side - Cumulative stats
+                    rx.hstack(
+                        rx.vstack(
+                            rx.text(
+                                "Session Total", size="2", weight="bold", color="green"
+                            ),
+                            spacing="1",
+                        ),
+                        rx.vstack(
+                            rx.text(
+                                "Total Tokens", size="1", color="gray", weight="medium"
+                            ),
+                            rx.badge(
+                                f"{State.cumulative_total_tokens:,}",
+                                color_scheme="green",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            rx.text("Input", size="1", color="gray", weight="medium"),
+                            rx.badge(
+                                f"{State.cumulative_input_tokens:,}",
+                                color_scheme="blue",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            rx.text("Output", size="1", color="gray", weight="medium"),
+                            rx.badge(
+                                f"{State.cumulative_output_tokens:,}",
+                                color_scheme="blue",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            rx.text(
+                                "Total Cost", size="1", color="gray", weight="medium"
+                            ),
+                            rx.badge(
+                                f"${State.cumulative_cost:.4f}",
+                                color_scheme="green",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            rx.text("Queries", size="1", color="gray", weight="medium"),
+                            rx.badge(
+                                f"{State.query_count}",
+                                color_scheme="purple",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        spacing="3",
+                        align="center",
+                        flex="1",
+                    ),
+                    # Divider
+                    rx.divider(orientation="vertical", size="4"),
+                    # Right side - Last query stats
+                    rx.hstack(
+                        rx.vstack(
+                            rx.text(
+                                "Last Query", size="2", weight="bold", color="orange"
+                            ),
+                            spacing="1",
+                        ),
+                        rx.vstack(
+                            rx.text(
+                                "Total Tokens", size="1", color="gray", weight="medium"
+                            ),
+                            rx.badge(
+                                f"{State.current_query_total_tokens:,}",
+                                color_scheme="orange",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            rx.text("Input", size="1", color="gray", weight="medium"),
+                            rx.badge(
+                                f"{State.current_query_input_tokens:,}",
+                                color_scheme="blue",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            rx.text("Output", size="1", color="gray", weight="medium"),
+                            rx.badge(
+                                f"{State.current_query_output_tokens:,}",
+                                color_scheme="blue",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        rx.vstack(
+                            rx.text(
+                                "Query Cost", size="1", color="gray", weight="medium"
+                            ),
+                            rx.badge(
+                                f"${State.current_query_cost:.4f}",
+                                color_scheme="orange",
+                                variant="soft",
+                                size="2",
+                            ),
+                            spacing="1",
+                            align="center",
+                        ),
+                        spacing="3",
+                        align="center",
+                        flex="1",
+                    ),
+                    spacing="4",
+                    align="start",
+                    width="100%",
+                ),
+                rx.hstack(
+                    rx.icon("info", size=16, color="gray"),
+                    rx.text(
+                        "No queries executed yet. Run a query to see usage statistics.",
+                        size="2",
+                        color="gray",
+                    ),
+                    spacing="2",
+                    align="center",
+                ),
+            ),
+            spacing="3",
+            align="start",
+        ),
+        variant="surface",
+        size="2",
+        width="100%",
+    )
+
     # Tabs switch between EDITOR & GUI
     tabs_main_view = rx.tabs.root(
         rx.tabs.list(
@@ -266,6 +434,22 @@ def index() -> rx.Component:
                             ),
                             rx.text(""),
                         ),
+                        rx.cond(
+                            State.current_query_cost > 0,
+                            rx.badge(
+                                rx.hstack(
+                                    rx.icon("zap", size=14),
+                                    rx.text(
+                                        f"{State.current_query_total_tokens:,} tokens (${State.current_query_cost:.4f})"
+                                    ),
+                                    spacing="1",
+                                    align="center",
+                                ),
+                                color_scheme="green",
+                                variant="soft",
+                                size="2",
+                            ),
+                        ),
                         rx.button(
                             rx.icon("download", size=18),
                             "Export Results",
@@ -282,14 +466,15 @@ def index() -> rx.Component:
                     rx.box(
                         rx.data_table(
                             data=State.query_results_df,
-                            pagination=False,
+                            pagination=True,
+                            page_size=100,
                             resizable=True,
                             search=False,
                             sort=True,
                             # TODO: make the columns more wide by default
                         ),
                         width="100%",
-                        height="600px",
+                        height="auto",
                         overflow_x="scroll",
                         overflow_y="auto",
                         position="relative",
@@ -314,6 +499,7 @@ def index() -> rx.Component:
                 align="start",
                 width="100%",
             ),
+            usage_stats_card,
             tabs_main_view,
             success_display,
             error_display,

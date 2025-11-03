@@ -42,3 +42,32 @@ class LLMProvider(ABC):
         Count the number of tokens in the prompt.
         """
         ...
+
+    @abstractmethod
+    def get_session_stats(self) -> dict[str, Any]:
+        """
+        Get cumulative session statistics including total input tokens, total output tokens,
+        total cost, and number of queries executed.
+
+        Returns:
+            dict: Dictionary containing 'total_input_tokens', 'total_output_tokens',
+                  'total_tokens', 'total_cost', and 'query_count'.
+        """
+        ...
+
+    @abstractmethod
+    def get_current_query_stats(self) -> dict[str, Any]:
+        """
+        Get accumulated statistics for the current query (which may include multiple LLM calls).
+
+        Returns:
+            dict: Dictionary containing 'input_tokens', 'output_tokens', 'total_tokens', and 'cost'.
+        """
+        ...
+
+    @abstractmethod
+    def reset_current_query_stats(self) -> None:
+        """
+        Reset the per-query statistics accumulator at the start of a new query execution.
+        """
+        ...

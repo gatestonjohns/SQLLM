@@ -1,6 +1,6 @@
 import reflex as rx
 import logging
-from ..state import State, engine
+from ..state import State
 from ..backend.Engine.engine import TableRepresentationObject
 
 
@@ -100,7 +100,7 @@ class JoinerState(rx.State):
 
             # Skip incomplete criteria
             if not left_col or not right_col:
-                continue
+                return False
 
             is_valid, _ = self._validate_criterion(criterion)
             if not is_valid:
@@ -157,6 +157,21 @@ class JoinerState(rx.State):
     def set_join_prompt(self, value: str):
         """Set the join prompt."""
         self.join_prompt = value
+
+    @rx.event
+    async def reset_all_inputs(self):
+        """Reset all input elements to their default/empty values."""
+        self.new_table_name = ""
+        self.left_table_name = ""
+        self.right_table_name = ""
+        self.left_table = None
+        self.right_table = None
+        self.join_criteria = []
+        self.k_value = 5
+        self.join_prompt = ""
+
+        state = await self.get_state(State)
+        state._reset_before_query_execution()
 
     def _get_column_type(self, table: TableRepresentationObject, col_name: str) -> str:
         """Get the type of a column in a table."""
@@ -239,9 +254,6 @@ class JoinerState(rx.State):
         try:
             # Get main state
             main_state = await self.get_state(State)
-            main_state._reset_before_query_execution()
-            main_state.is_loading = True
-            yield
 
             # Validate tables
             if self.left_table is None or self.right_table is None:
@@ -302,24 +314,10 @@ class JoinerState(rx.State):
             logging.info(
                 f"Executing LLM join: {self.left_table_name} ⋈ {self.right_table_name}"
             )
-            result = engine.execute(sql)
-            main_state.query_results_df = result.df
-
-            # Update available tables
-            main_state.available_tables = engine.list_tables()
-
-            row_count = len(main_state.query_results_df)
-            main_state.success_message = (
-                f"Successfully executed join: {row_count} rows returned"
-            )
-            logging.info(f"Join complete: {row_count} rows")
-            main_state.is_loading = False
+            return main_state.execute_query(sql)
 
         except Exception as e:
-            main_state = await self.get_state(State)
-            main_state.is_loading = False
-            main_state.error_message = f"Error executing join: {str(e)}"
-            logging.error(f"✗ Join error: {e}")
+            raise RuntimeError(f"Error executing join: {str(e)}")
 
     def _generate_join_sql(self) -> str:
         """Generate the SQL for the join with column renaming."""
@@ -482,15 +480,28 @@ def joiner_section() -> rx.Component:
                     spacing="2",
                     align="center",
                 ),
-                rx.button(
-                    rx.icon("play", size=18),
-                    "Execute Join",
-                    on_click=JoinerState.validate_and_execute_join,
-                    size="3",
-                    color_scheme="orange",
-                    variant="solid",
-                    disabled=~JoinerState.can_execute_join,
-                    cursor="pointer",
+                rx.hstack(
+                    rx.button(
+                        rx.icon("rotate-ccw", size=14),
+                        "Reset Options",
+                        on_click=JoinerState.reset_all_inputs,
+                        size="1",
+                        color_scheme="gray",
+                        variant="outline",
+                        cursor="pointer",
+                    ),
+                    rx.button(
+                        rx.icon("play", size=18),
+                        "Execute Join",
+                        on_click=JoinerState.validate_and_execute_join,
+                        size="3",
+                        color_scheme="orange",
+                        variant="solid",
+                        disabled=~JoinerState.can_execute_join,
+                        cursor="pointer",
+                    ),
+                    spacing="4",
+                    align="center",
                 ),
                 spacing="2",
                 align="center",
@@ -503,6 +514,7 @@ def joiner_section() -> rx.Component:
                     rx.input(
                         type="text",
                         placeholder="new_table_name",
+                        value=JoinerState.new_table_name,
                         on_change=JoinerState.set_new_table_name,
                         width="100%",
                     ),
@@ -528,6 +540,7 @@ def joiner_section() -> rx.Component:
                         ),
                         rx.select(
                             JoinerState.available_table_names,
+                            value=JoinerState.left_table_name,
                             placeholder="Select source table...",
                             on_change=JoinerState.set_left_table_name,
                             width="100%",
@@ -556,6 +569,7 @@ def joiner_section() -> rx.Component:
                         ),
                         rx.select(
                             JoinerState.available_table_names,
+                            value=JoinerState.right_table_name,
                             placeholder="Select target table...",
                             on_change=JoinerState.set_right_table_name,
                             width="100%",
@@ -903,7 +917,7 @@ def joiner_section() -> rx.Component:
                                 (JoinerState.join_criteria.length() > 0)
                                 & ~JoinerState.has_valid_criteria,
                                 rx.text(
-                                    "• Fix type mismatches in matching criteria (see red-highlighted rows above)",
+                                    "• Fix matching criteria: each criterion must have column selected from each table and be of compatible types",
                                     size="2",
                                     color="red",
                                     weight="medium",

@@ -6,10 +6,26 @@ from .backend.Engine.engine import Engine, TableRepresentationObject
 from .backend.LLM.OpenAI import OpenAIProvider
 import duckdb
 
-engine = Engine(
-    conn=duckdb.connect(database=":memory:"),
-    llm=OpenAIProvider(),
-)
+# Module-level storage for per-session engines (not in State to avoid pickling issues)
+_session_engines: dict[str, Engine] = {}
+_session_llms: dict[str, OpenAIProvider] = {}
+
+
+def _get_session_llm(token: str) -> OpenAIProvider:
+    """Get or create LLM for this session."""
+    if token not in _session_llms:
+        _session_llms[token] = OpenAIProvider()
+    return _session_llms[token]
+
+
+def _get_session_engine(token: str) -> Engine:
+    """Get or create engine for this session."""
+    if token not in _session_engines:
+        llm = _get_session_llm(token)
+        _session_engines[token] = Engine(
+            conn=duckdb.connect(database=":memory:"), llm=llm
+        )
+    return _session_engines[token]
 
 
 class State(rx.State):
@@ -23,6 +39,48 @@ class State(rx.State):
     export_dialog_open: bool = False
     export_filename: str = "query_results.csv"
     is_loading: bool = False
+
+    # Token/cost tracking state variables (trigger re-renders)
+    cumulative_input_tokens: int = 0
+    cumulative_output_tokens: int = 0
+    cumulative_cost: float = 0.0
+    query_count: int = 0
+    current_query_input_tokens: int = 0
+    current_query_output_tokens: int = 0
+    current_query_cost: float = 0.0
+
+    @property
+    def _engine(self) -> Engine:
+        """Get per-session engine instance."""
+        return _get_session_engine(self.router.session.client_token)
+
+    @property
+    def _llm(self) -> OpenAIProvider:
+        """Get per-session LLM instance."""
+        return _get_session_llm(self.router.session.client_token)
+
+    @rx.var
+    def cumulative_total_tokens(self) -> int:
+        """Get total tokens (input + output) for session."""
+        return self.cumulative_input_tokens + self.cumulative_output_tokens
+
+    @rx.var
+    def current_query_total_tokens(self) -> int:
+        """Get total tokens (input + output) for current query."""
+        return self.current_query_input_tokens + self.current_query_output_tokens
+
+    def _update_token_stats(self):
+        """Update token/cost statistics from LLM provider to trigger re-render."""
+        session_stats = self._llm.get_session_stats()
+        self.cumulative_input_tokens = session_stats["total_input_tokens"]
+        self.cumulative_output_tokens = session_stats["total_output_tokens"]
+        self.cumulative_cost = session_stats["total_cost"]
+        self.query_count = session_stats["query_count"]
+
+        query_stats = self._llm.get_current_query_stats()
+        self.current_query_input_tokens = query_stats["input_tokens"]
+        self.current_query_output_tokens = query_stats["output_tokens"]
+        self.current_query_cost = query_stats["cost"]
 
     @rx.event
     def set_export_filename(self, filename: str):
@@ -62,11 +120,15 @@ class State(rx.State):
         """Execute the SQL query and update results."""
         try:
             self._reset_before_query_execution()
+            self._llm.reset_current_query_stats()
             self.is_loading = True
             yield
-            result = engine.execute(sql_query)
+            result = self._engine.execute(sql_query)
             self.query_results_df = result.df
-            self.available_tables = engine.list_tables()
+            self.available_tables = self._engine.list_tables()
+
+            # Update token stats to trigger re-render
+            self._update_token_stats()
 
             logging.info(
                 f"Query executed successfully: {len(self.query_results_df)} rows returned"
@@ -100,13 +162,13 @@ class State(rx.State):
                     f.write(upload_data)
 
                 # Load into DuckDB and return the results
-                created_table_name, created_table_exec_result = engine.load_csv(
+                created_table_name, created_table_exec_result = self._engine.load_csv(
                     file_path=file_path
                 )
                 self.query_results_df = created_table_exec_result.df
 
                 # Update available tables list
-                self.available_tables = engine.list_tables()
+                self.available_tables = self._engine.list_tables()
 
                 self.success_message = f"Successfully loaded {file.filename} as table '{created_table_name}'"
                 logging.info(
