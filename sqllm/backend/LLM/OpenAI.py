@@ -14,7 +14,7 @@ class OpenAIProvider(LLMProvider):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "gpt-4.1-04-14" if rxconfig.isProd() else "gpt-4.1-2025-04-14",
+        model: str = "gpt-4.1-nano-04-14" if rxconfig.isProd() else "gpt-4.1-2025-04-14",
         token_limit: int = 190000,
         azure_endpoint: Optional[str] = None,
         api_version: str = "2024-12-01-preview",
@@ -57,10 +57,10 @@ class OpenAIProvider(LLMProvider):
         self._current_query_output_tokens: int = 0
         self._current_query_cost: float = 0.0
         self._input_token_price: float = (
-            0.000002  # GPT-4.1 input pricing ($2/1M tokens)
+            0.0000001  # GPT-4.1-nano input pricing ($0.10/1M tokens)
         )
         self._output_token_price: float = (
-            0.000008  # GPT-4.1 output pricing ($8/1M tokens)
+            0.000004  # GPT-4.1-nano output pricing ($0.40/1M tokens)
         )
 
     def _get_client(self) -> AzureOpenAI | OpenAI:
