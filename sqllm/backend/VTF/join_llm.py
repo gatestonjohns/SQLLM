@@ -6,11 +6,12 @@ from sqlglot import expressions as exp
 from typing import Any
 import concurrent.futures
 
-
+from dev_utils import dev_cache
 from .base import VTFCall
 from .join_algorithm import parse_algorithm, SimilarityScorer
 
 MAX_ALLOWED_ROWS_FOR_JOIN = 10000
+
 
 class LLMJoinVTF:
     function_name = "llm_join"
@@ -54,7 +55,9 @@ class LLMJoinVTF:
 
     def materialize(self, call: VTFCall, engine) -> str:
         """Execute the LLM join and materialize result table."""
-        new_table_name, left_table, right_table, algorithm_str, prompt = self._parse_args(call.args)
+        new_table_name, left_table, right_table, algorithm_str, prompt = (
+            self._parse_args(call.args)
+        )
 
         # Parse algorithm
         algorithm = parse_algorithm(algorithm_str)
@@ -74,7 +77,9 @@ class LLMJoinVTF:
         right_df = engine.conn.execute(right_sql).fetchdf()
 
         if not self._dfs_under_allowed_size(left_df):
-            raise ValueError(f"Allowed Cost Threshold Exceeded: Left dataframe is too large to perform per-row LLM join on (max allowed rows: {MAX_ALLOWED_ROWS_FOR_JOIN}). Please reduce the number of rows in the left dataframe.")
+            raise ValueError(
+                f"Allowed Cost Threshold Exceeded: Left dataframe is too large to perform per-row LLM join on (max allowed rows: {MAX_ALLOWED_ROWS_FOR_JOIN}). Please reduce the number of rows in the left dataframe."
+            )
 
         # Pre-compute similarities
         logging.info(
@@ -89,7 +94,7 @@ class LLMJoinVTF:
 
         # Materialize result
         table_name = engine._generate_new_table_name(new_table_name)
-        engine._materialize_df(result_df, table_name, temporary = False)
+        engine._materialize_df(result_df, table_name, temporary=False)
 
         logging.info(f"llm_join: Materialized {len(result_df)} rows to {table_name}")
         call.rewrite_to_table(table_name)
@@ -99,7 +104,7 @@ class LLMJoinVTF:
         """Execute the join for all left rows (parallelized)."""
         # Extract columns mentioned in the algorithm criteria
         algorithm_columns = [criterion.column for criterion in algorithm.criteria]
-        
+
         def process_row(left_idx):
             left_row = left_df.iloc[left_idx].to_dict()
 
@@ -125,7 +130,7 @@ class LLMJoinVTF:
             return result_row
 
         # Use ThreadPoolExecutor (or ProcessPoolExecutor if tasks are more cpu-bound)
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
             results = list(executor.map(process_row, range(len(left_df))))
 
         return pd.DataFrame(results)
@@ -147,16 +152,23 @@ class LLMJoinVTF:
         else:
             return obj
 
-    def _call_llm_for_decision(self, left_row, candidates, right_df, prompt, llm, algorithm_columns):
+    @dev_cache(cache_args=["left_row", "candidates"], cache_delay_seconds=10)
+    def _call_llm_for_decision(
+        self, left_row, candidates, right_df, prompt, llm, algorithm_columns
+    ):
         """Call LLM to select best candidate."""
         # Filter left_row to only include algorithm columns
-        filtered_left_row = {k: v for k, v in left_row.items() if k in algorithm_columns}
-        
+        filtered_left_row = {
+            k: v for k, v in left_row.items() if k in algorithm_columns
+        }
+
         candidate_data = []
         for idx, (right_idx, score, breakdown) in enumerate(candidates, 1):
             right_row = right_df.iloc[right_idx].to_dict()
             # Filter right_row to only include algorithm columns
-            filtered_right_row = {k: v for k, v in right_row.items() if k in algorithm_columns}
+            filtered_right_row = {
+                k: v for k, v in right_row.items() if k in algorithm_columns
+            }
             candidate_data.append(
                 {
                     "candidate_number": idx,
@@ -191,10 +203,11 @@ Candidate matches from right table (pre-ranked by similarity):
 Task: {user_prompt}
 
 Select the candidate number that best matches the left row, or return null if no candidate is a good match."""
-# Provide a very brief (1-2 point, ~20 word) reasoning for your final decision that is formatted as concise reasoning steps as bullet points separated by newlines.
-# If the decision is obvious, just say why it is obvious in one point. 
-# If the decision was close, concisely explain how you chose between the top candidates. 
-# You do not need to mention candidates that were not good matches unless it is a NULL match decision (where no good match was decided)."""
+
+    # Provide a very brief (1-2 point, ~20 word) reasoning for your final decision that is formatted as concise reasoning steps as bullet points separated by newlines.
+    # If the decision is obvious, just say why it is obvious in one point.
+    # If the decision was close, concisely explain how you chose between the top candidates.
+    # You do not need to mention candidates that were not good matches unless it is a NULL match decision (where no good match was decided)."""
 
     def _build_response_schema(self):
         """Build JSON schema for LLM response."""
@@ -217,7 +230,7 @@ Select the candidate number that best matches the left row, or return null if no
                     #     "description": "Explanation for the decision",
                     # },
                 },
-                "required": ["selected_candidate", "confidence"], # "reasoning"],
+                "required": ["selected_candidate", "confidence"],  # "reasoning"],
                 "additionalProperties": False,
             },
             "strict": True,

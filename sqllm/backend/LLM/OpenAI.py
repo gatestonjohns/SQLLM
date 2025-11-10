@@ -14,7 +14,7 @@ class OpenAIProvider(LLMProvider):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "gpt-4.1-nano-04-14" if rxconfig.isProd() else "gpt-4.1-2025-04-14",
+        model: str = "gpt-4.1-nano" if rxconfig.isProd() else "gpt-4.1-nano-2025-04-14",
         token_limit: int = 190000,
         azure_endpoint: Optional[str] = None,
         api_version: str = "2024-12-01-preview",
