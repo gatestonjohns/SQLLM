@@ -465,7 +465,7 @@ def index() -> rx.Component:
                     ),
                     rx.box(
                         rx.cond(
-                            State.results_present,
+                            State.results_present & State.show_results,
                             rx.data_table(
                                 data=State.query_results_df,
                                 pagination=True,

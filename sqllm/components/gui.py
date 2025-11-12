@@ -70,32 +70,13 @@ class BatchState(rx.State):
     async def run_pdf_batch_ingest(self):
         """Execute batch PDF ingestion into a single table."""
         try:
-            # Get the main state to access shared functionality
-            main_state = await self.get_state(State)
-
-            # Validate inputs
             table_name = self.pdf_batch_table_name.strip()
-            if not table_name:
-                main_state.error_message = "Table name is required"
-                return
-
-            if not self.pdf_batch_columns:
-                main_state.error_message = "At least one column must be defined"
-                return
-
-            if not self.pdf_batch_selected_pdfs:
-                main_state.error_message = "At least one PDF must be selected"
-                return
 
             # Build schema string
             schema_parts = []
             for col in self.pdf_batch_columns:
                 col_name = col.get("name", "").strip()
                 col_type = col.get("type", "TEXT").strip().upper()
-
-                if not col_name:
-                    main_state.error_message = "All columns must have a name"
-                    return
 
                 schema_parts.append(f"{col_name} {col_type}")
 
@@ -143,7 +124,7 @@ class BatchState(rx.State):
             full_sql = f"{create_table_sql}\n{return_new_table_sql}"
             print("full_sql from gui:", full_sql)
             
-            return main_state.execute_query(full_sql)
+            return State.execute_query(full_sql)
 
         except Exception as e:
             main_state = await self.get_state(State)

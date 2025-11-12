@@ -17,6 +17,6 @@
 - do per-session engine / llm clients in a better way
 - users with auth?
 - test join logic (improve UI for this) and perhaps kick off full process on the backend?
-
+- make the test sample rows stay the same through  multiple test runs unless explicitly recalc'd / shuffled
 - persistent SQLite FS DB?
 - make it so that pdf to table can handle bigger pdfs by splitting up

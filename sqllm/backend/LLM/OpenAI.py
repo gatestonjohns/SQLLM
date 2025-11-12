@@ -6,6 +6,8 @@ import logging
 from openai import AzureOpenAI, OpenAI
 import tiktoken
 import rxconfig
+import uuid
+import threading
 
 
 class OpenAIProvider(LLMProvider):
@@ -49,6 +51,7 @@ class OpenAIProvider(LLMProvider):
         self._system_prompt_msg = {"role": "system", "content": self._system_prompt}
 
         # Token counting and cost tracking
+        self._stats_lock = threading.Lock()  # Thread-safe lock for usage stats
         self._cumulative_input_tokens: int = 0
         self._cumulative_output_tokens: int = 0
         self._cumulative_cost: float = 0.0
@@ -76,7 +79,7 @@ class OpenAIProvider(LLMProvider):
             )
 
     def _update_usage_stats(self, response):
-        """Update token usage and cost statistics from API response."""
+        """Update token usage and cost statistics from API response (thread-safe)."""
         usage = response.usage
         input_tokens = usage.prompt_tokens
         output_tokens = usage.completion_tokens
@@ -84,15 +87,17 @@ class OpenAIProvider(LLMProvider):
             output_tokens * self._output_token_price
         )
 
-        # Update cumulative stats
-        self._cumulative_input_tokens += input_tokens
-        self._cumulative_output_tokens += output_tokens
-        self._cumulative_cost += call_cost
+        # Thread-safe update of usage stats
+        with self._stats_lock:
+            # Update cumulative stats
+            self._cumulative_input_tokens += input_tokens
+            self._cumulative_output_tokens += output_tokens
+            self._cumulative_cost += call_cost
 
-        # Update current query stats
-        self._current_query_input_tokens += input_tokens
-        self._current_query_output_tokens += output_tokens
-        self._current_query_cost += call_cost
+            # Update current query stats
+            self._current_query_input_tokens += input_tokens
+            self._current_query_output_tokens += output_tokens
+            self._current_query_cost += call_cost
 
         logging.info(
             f"LLM call: {input_tokens} in, {output_tokens} out, ${call_cost:.6f}"
@@ -121,6 +126,8 @@ class OpenAIProvider(LLMProvider):
         self, prompt: str, output_schema: JSONSchema
     ) -> dict[str, Any]:
         try:
+            debug_rand_string = str(uuid.uuid4())
+            print(f"Generating structured response for prompt {debug_rand_string}")
             response = self._client.chat.completions.create(
                 model=self._model,
                 messages=[
@@ -136,8 +143,64 @@ class OpenAIProvider(LLMProvider):
                 },
                 temperature=self._temperature,
             )
+            print(f"Generated structured response for prompt {debug_rand_string}")
             self._update_usage_stats(response)
             return json.loads(response.choices[0].message.content)
+        except Exception as e:
+            logging.error(f"Error generating structured response: {str(e)}")
+            raise RuntimeError(f"OpenAI API error: {str(e)}")
+
+    def generate_structured_response_with_usage(
+        self, prompt: str, output_schema: JSONSchema
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Generate structured response and return both response and per-call usage stats.
+
+        Returns:
+            Tuple of (response_dict, usage_dict) where usage_dict contains:
+                - input_tokens: int
+                - output_tokens: int
+                - cost: float
+        """
+        try:
+            debug_rand_string = str(uuid.uuid4())
+            print(f"Generating structured response for prompt {debug_rand_string}")
+            response = self._client.chat.completions.create(
+                model=self._model,
+                messages=[
+                    self._system_prompt_msg,
+                    {
+                        "role": "user",
+                        "content": self._truncate_to_token_limit_if_necessary(prompt),
+                    },
+                ],
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": output_schema,
+                },
+                temperature=self._temperature,
+            )
+            print(f"Generated structured response for prompt {debug_rand_string}")
+
+            # Calculate per-call usage before updating stats
+            usage = response.usage
+            input_tokens = usage.prompt_tokens
+            output_tokens = usage.completion_tokens
+            call_cost = (input_tokens * self._input_token_price) + (
+                output_tokens * self._output_token_price
+            )
+
+            # Update cumulative stats
+            self._update_usage_stats(response)
+
+            # Return both response and per-call usage
+            parsed_response = json.loads(response.choices[0].message.content)
+            usage_stats = {
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "cost": call_cost
+            }
+
+            return parsed_response, usage_stats
         except Exception as e:
             logging.error(f"Error generating structured response: {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
@@ -163,29 +226,32 @@ class OpenAIProvider(LLMProvider):
         return prompt
 
     def get_session_stats(self) -> dict[str, Any]:
-        """Get cumulative session statistics."""
-        return {
-            "total_input_tokens": self._cumulative_input_tokens,
-            "total_output_tokens": self._cumulative_output_tokens,
-            "total_tokens": self._cumulative_input_tokens
-            + self._cumulative_output_tokens,
-            "total_cost": round(self._cumulative_cost, 6),
-            "query_count": self._query_count,
-        }
+        """Get cumulative session statistics (thread-safe)."""
+        with self._stats_lock:
+            return {
+                "total_input_tokens": self._cumulative_input_tokens,
+                "total_output_tokens": self._cumulative_output_tokens,
+                "total_tokens": self._cumulative_input_tokens
+                + self._cumulative_output_tokens,
+                "total_cost": round(self._cumulative_cost, 6),
+                "query_count": self._query_count,
+            }
 
     def get_current_query_stats(self) -> dict[str, Any]:
-        """Get accumulated statistics for the current query."""
-        return {
-            "input_tokens": self._current_query_input_tokens,
-            "output_tokens": self._current_query_output_tokens,
-            "total_tokens": self._current_query_input_tokens
-            + self._current_query_output_tokens,
-            "cost": round(self._current_query_cost, 6),
-        }
+        """Get accumulated statistics for the current query (thread-safe)."""
+        with self._stats_lock:
+            return {
+                "input_tokens": self._current_query_input_tokens,
+                "output_tokens": self._current_query_output_tokens,
+                "total_tokens": self._current_query_input_tokens
+                + self._current_query_output_tokens,
+                "cost": round(self._current_query_cost, 6),
+            }
 
     def reset_current_query_stats(self) -> None:
-        """Reset per-query statistics at the start of a new query."""
-        self._current_query_input_tokens = 0
-        self._current_query_output_tokens = 0
-        self._current_query_cost = 0.0
-        self._query_count += 1
+        """Reset per-query statistics at the start of a new query (thread-safe)."""
+        with self._stats_lock:
+            self._current_query_input_tokens = 0
+            self._current_query_output_tokens = 0
+            self._current_query_cost = 0.0
+            self._query_count += 1
