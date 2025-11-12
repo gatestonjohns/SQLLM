@@ -2,6 +2,8 @@ import reflex as rx
 import logging
 import json
 import pandas as pd
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from ..state import State
@@ -280,55 +282,6 @@ class JoinerState(rx.State):
     async def execute_test_join(self):
         """Execute test join."""
         try:
-            # Get main state
-            main_state = await self.get_state(State)
-
-            # Check test mode is enabled
-            if not self.test_mode_enabled:
-                main_state.error_message = (
-                    "Test mode must be enabled to execute test join"
-                )
-                main_state.is_loading = False
-                return
-
-            # Validate tables
-            if self.left_table is None or self.right_table is None:
-                main_state.error_message = "Both left and right tables must be selected"
-                main_state.is_loading = False
-                return
-
-            # Validate tables are different
-            if self.left_table_name == self.right_table_name:
-                main_state.error_message = "Left and right tables must be different"
-                main_state.is_loading = False
-                return
-
-            # Validate criteria
-            if not self.join_criteria:
-                main_state.error_message = "At least one join criterion must be defined"
-                main_state.is_loading = False
-                return
-
-            # Validate prompt
-            if not self.join_prompt.strip():
-                main_state.error_message = "Join prompt is required"
-                main_state.is_loading = False
-                return
-
-            # Validate test size
-            if self.test_size <= 0:
-                main_state.error_message = "Test size must be greater than 0"
-                main_state.is_loading = False
-                return
-
-            # Validate each criterion
-            for idx, criterion in enumerate(self.join_criteria):
-                is_valid, error_msg = self._validate_criterion(criterion)
-                if not is_valid:
-                    main_state.error_message = f"Criterion {idx + 1}: {error_msg}"
-                    main_state.is_loading = False
-                    return
-
             # Generate default test SQL if not set
             if not self.current_test_left_sql:
                 import random
@@ -359,18 +312,27 @@ class JoinerState(rx.State):
                 print("=" * 80 + "\n")
                 logging.warning(f"Could not format SQL for debug output: {e}")
 
-            # Execute the query
+            # Execute the query directly in thread pool (wait for result)
             logging.info(
                 f"Executing test join: {self.left_table_name} ⋈ {self.right_table_name} (test_size={self.test_size}, mode={self.test_mode_type})"
             )
-            for _ in main_state.execute_query(sql, show_results=False):
-                yield
 
-            # Get result
-            result_df = main_state.query_results_df
+            # Get main state to access engine
+            main_state = await self.get_state(State)
 
-            # Unpack JSON results
-            self.test_results = self._unpack_test_results(result_df)
+            # Execute in thread pool and wait for result
+            loop = asyncio.get_event_loop()
+            with ThreadPoolExecutor() as executor:
+                result = await loop.run_in_executor(
+                    executor, main_state._engine.execute, sql
+                )
+
+            # Update main state's LLM stats to reflect this query's token usage
+            main_state._update_token_stats()
+
+            # Now we have the result immediately, no stale data!
+            results_df = result.df
+            self.test_results = self._unpack_test_results(results_df)
 
             # Calculate cost estimate
             await self._calculate_cost_estimate()
@@ -554,7 +516,7 @@ class JoinerState(rx.State):
             logging.info(
                 f"Executing LLM join: {self.left_table_name} ⋈ {self.right_table_name}"
             )
-            return main_state.execute_query(sql)
+            return State.execute_query(sql)
 
         except Exception as e:
             raise RuntimeError(f"Error executing join: {str(e)}")

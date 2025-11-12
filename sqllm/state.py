@@ -2,6 +2,8 @@ import reflex as rx
 import os
 import pandas as pd
 import logging
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from .backend.Engine.engine import Engine, TableRepresentationObject
 from .backend.LLM.OpenAI import OpenAIProvider
 import duckdb
@@ -122,22 +124,38 @@ class State(rx.State):
         """Toggle the export dialog open state."""
         self.export_dialog_open = value
 
+    def _execute_query_blocking(self, sql_query: str) -> tuple:
+        """Execute query and list tables synchronously (runs in thread pool)."""
+        result = self._engine.execute(sql_query)
+        tables = self._engine.list_tables()
+        return result, tables
+
     @rx.event(background=True)
     async def execute_query(self, sql_query: str, show_results: bool = True):
         """Execute the SQL query and update results."""
         try:
+            # Step 1: Set loading state and notify frontend
             async with self:
                 self._reset_before_query_execution()
                 self._llm.reset_current_query_stats()
                 self.is_loading = True
-                yield
+            yield  # Push loading state to frontend immediately
 
-            result = self._engine.execute(sql_query)
+            # Step 2: Run blocking database operations in thread pool
+            loop = asyncio.get_event_loop()
+            with ThreadPoolExecutor() as executor:
+                result, tables = await loop.run_in_executor(
+                    executor, self._execute_query_blocking, sql_query
+                )
 
+            # Note: Debug sleep removed - if needed for testing, use:
+            # await asyncio.sleep(300)  # Non-blocking alternative
+
+            # Step 3: Update state with results and notify frontend
             async with self:
                 self.show_results = show_results
                 self.query_results_df = result.df
-                self.available_tables = self._engine.list_tables()
+                self.available_tables = tables
 
                 # Update token stats to trigger re-render
                 self._update_token_stats()
@@ -148,6 +166,7 @@ class State(rx.State):
                     self.success_message = "Query executed with warnings."
                 else:
                     self.success_message = "Query executed successfully."
+            # Automatically yields when exiting context
 
             logging.info(
                 f"Query executed successfully: {len(self.query_results_df)} rows returned"
@@ -176,10 +195,16 @@ class State(rx.State):
                 with open(file_path, "wb") as f:
                     f.write(upload_data)
 
-                # Load into DuckDB and return the results
-                created_table_name, created_table_exec_result = self._engine.load_csv(
-                    file_path=file_path
-                )
+                # Run blocking DuckDB operation in thread pool
+                loop = asyncio.get_event_loop()
+                with ThreadPoolExecutor() as executor:
+                    (
+                        created_table_name,
+                        created_table_exec_result,
+                    ) = await loop.run_in_executor(
+                        executor, self._engine.load_csv, file_path
+                    )
+
                 self.query_results_df = created_table_exec_result.df
 
                 # Update available tables list
