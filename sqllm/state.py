@@ -5,7 +5,6 @@ import logging
 from .backend.Engine.engine import Engine, TableRepresentationObject
 from .backend.LLM.OpenAI import OpenAIProvider
 import duckdb
-import time
 
 # Module-level storage for per-session engines (not in State to avoid pickling issues)
 _session_engines: dict[str, Engine] = {}
@@ -134,7 +133,7 @@ class State(rx.State):
                 yield
 
             result = self._engine.execute(sql_query)
-            
+
             async with self:
                 self.show_results = show_results
                 self.query_results_df = result.df
@@ -153,7 +152,6 @@ class State(rx.State):
             logging.info(
                 f"Query executed successfully: {len(self.query_results_df)} rows returned"
             )
-            
 
         except Exception as e:
             async with self:
