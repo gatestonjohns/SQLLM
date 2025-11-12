@@ -39,6 +39,7 @@ class State(rx.State):
     export_dialog_open: bool = False
     export_filename: str = "query_results.csv"
     is_loading: bool = False
+    show_results: bool = True
 
     # Token/cost tracking state variables (trigger re-renders)
     cumulative_input_tokens: int = 0
@@ -101,6 +102,7 @@ class State(rx.State):
 
     def _reset_before_query_execution(self):
         """Reset the state before executing a query."""
+        self.show_results = True
         self.error_message = ""
         self.success_message = ""
         self.query_results_df = pd.DataFrame()
@@ -120,33 +122,41 @@ class State(rx.State):
         """Toggle the export dialog open state."""
         self.export_dialog_open = value
 
-    @rx.event
-    def execute_query(self, sql_query: str):
+    @rx.event(background=True)
+    async def execute_query(self, sql_query: str, show_results: bool = True):
         """Execute the SQL query and update results."""
         try:
-            self._reset_before_query_execution()
-            self._llm.reset_current_query_stats()
-            self.is_loading = True
-            yield
-            result = self._engine.execute(sql_query)
-            self.query_results_df = result.df
-            self.available_tables = self._engine.list_tables()
+            async with self:
+                self._reset_before_query_execution()
+                self._llm.reset_current_query_stats()
+                self.is_loading = True
+                yield
 
-            # Update token stats to trigger re-render
-            self._update_token_stats()
+            result = self._engine.execute(sql_query)
+
+            async with self:
+                self.show_results = show_results
+                self.query_results_df = result.df
+                self.available_tables = self._engine.list_tables()
+
+                # Update token stats to trigger re-render
+                self._update_token_stats()
+
+                self.is_loading = False
+
+                if result.warnings:
+                    self.success_message = "Query executed with warnings."
+                else:
+                    self.success_message = "Query executed successfully."
 
             logging.info(
                 f"Query executed successfully: {len(self.query_results_df)} rows returned"
             )
-            self.is_loading = False
-            if result.warnings:
-                self.success_message = "Query executed with warnings."
-            else:
-                self.success_message = "Query executed successfully."
 
         except Exception as e:
-            self.is_loading = False
-            self.error_message = f"Error: {str(e)}"
+            async with self:
+                self.is_loading = False
+                self.error_message = f"Error: {str(e)}"
             logging.error(f"✗ Query error: {e}")
 
     @rx.event

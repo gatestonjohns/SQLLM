@@ -15,8 +15,7 @@ class EditorState(rx.State):
     @rx.event
     async def run_query(self):
         """Run the query using global state event handler."""
-        state = await self.get_state(State)
-        return state.execute_query(self.sql_query)
+        return State.execute_query(self.sql_query)
 
     @rx.event
     def set_sql_query(self, sql_query: str):
