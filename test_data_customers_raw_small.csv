@@ -1,0 +1,101 @@
+id,name,email,signup_date
+1,Jon Smith,jon.smth@email.com,2024-01-15
+2,Jane Doe,j.doe@company.com,2024-02-20
+3,Bob Johnson,bob.j@mail.com,2024-03-10
+4,Alice Williams,awilliams@example.com,2024-04-05
+5,Mike Brown,m.brown@test.org,2024-05-12
+6,,samuel.turner@example,2024-05-15
+7,Liz,elizabeth@@company.com,2024-06-11
+8,Robert,,2024-10-31
+9,James Smith,james.smith@email.com,not-a-date
+10,Jessica Taylor,j.taylor@email,2024-07-03
+11,Samuel Turner,samuel.turner@example,2024-10-13
+12,null,null,2024-08-16
+13,Marco Polo,mpolo@example.com,2023-13-01
+14,Nulla Ipsum,nulla@email.com,NA
+15,Anna-Marie O'Leary,annaleary@company,2023-11-05
+16,TestUser1,xyz,2024-06-22
+17,Phil Brown,phil.brown&test.org,2024-06-31
+18,Ana,ana@email,2021-02-28
+19,Kate Wood,,2022-05-22
+20,Bart Simpson,bart_simpson@@springfield.com,2023-09-04
+21,Pat,pat@@test.com,2022-12-12
+22,John Doe,,2021-07-14
+23,,,
+24,Sophia Turner,sophia.t@email.com,2024-12-31
+25,,timothy.t@example.com,2019-01-01
+26,Oscar Grant,oscar.grant@email.com,2023-05-06
+27,Marysia Jablonska,m.jablonska@company.com,2024-02-30
+28,Bad Data,not an email,not a date
+29,Jane,janey@email.com,2024-06-10
+30,Vincent Vega,vincent@vega.com,2023-09-26
+31,Jack,,2024-08-16
+32,April O'Neil,april.oneil@mail,2023-11-12
+33,Luca Bianchi,,NA
+34,Nina Ricci,ninaricci.@@company.org,
+35,Hugo Boss,hugo@bosssite,
+36,Peter Kowalski,kowal.peter@company,2024-01-19
+37,Paul Lee,plee@email,2022-02-29
+38,Zara Abc,zarabc@email.com,2024-13-15
+39,Test McTester,test.mctester@email.com,2021/04/27
+40,Mark,mark@example.com,2022-04-31
+41,Maggie Simpson,,
+42,James,invalid@email,2024-02-30
+43,Jack Smith,jack.smith@email.com,2025-02-29
+44,Missing,missing@email.com,missing_date
+45,User,missing@,2023-05-02
+46, , , 
+47,Chris, ,2024-05-13
+48,Helena Bonham Carter,helena@@bonhamcarter.com,
+49,Benedict,benedict.com,2020-09-11
+50,Omar Little,omar.little@baltimore.net,2022-04-17
+51,Marisa Tomei,marisa@email.com,2023-01-10
+52,No Email,,2023-07-15
+53,"",nothing@email,2022-06-01
+54,V.,v@email.com,2022-02-15
+55,One Field,,
+56,Ashley King,ashley.king@company.com,2021-10-20
+57,Toby,missing@email,
+58,Camila,purple,2023-03-25
+59,Hannah,Hannah,2022-08-08
+60,Sean O'Connell,seano@,2024-02-28
+61,Weird Name,lord4@email.com,2024-03-29
+62,True,true@true.com,True
+63,Berta,,2021-02-14
+64,,invalid@email.com,2023-12-12
+65,Akira Kurosawa,akira@kurosawa.jp,2023-05-09
+66,François Rabelais,francois@email.com,2024-12-09
+67,João Paulo,joao.paulo@email.pt,2022-03-18
+68,M.K.,mk@email,2023-06-28
+69,Unknown,,2023-06-28
+70,Lucia Lucia,lucia@email.com,not_a_date
+71,Lucas,lu@email.com,2024-09-22
+72,Susie Q.,susie.q@company.com,2023-02-13
+73,Anders S.,anders@email,2022-04-19
+74,Sigrid,,
+75,Patrick O'Brian,patrick.o@email.com,2020-11-11
+76,Casey,casey@email.com,2024-07-12
+77,Multiple Names,first.last@email.com,2023-04-15
+78,Alberto José Alvez,alberto@email.pt,2022-08-06
+79, , no@email.com,2023-12-01
+80,Test McTest,,2022-03-11
+81,Rick Road,,2024-01-01
+82,,,
+83,Bad,Value,
+84,,,
+85,Stephanie Powers,supers@power.com,2023-05-17
+86,Sam S,sams@email.com,2023-07-20
+87,test,,2024-03-05
+88,Eve,evie@email@foo,2024-03-05
+89,,eve@email,not_a real date
+90,NoName,,2022-01-13
+91, Pascal, bad@email.com,
+92,Jackie,Jaqueline@email,2025-05-07
+93,Pierre,,2021-05-27
+94,Jens,nan@nan,NaN
+95,Stefan,stefan@email.com,2023-05-31
+96,Nick,nick@email.com,2022-02-29
+97,Luke Skywalker,luke@starwars.com,1977-05-25
+98,Leia Organa,leia@alderaan.gov,1977-05-25
+99,Han Solo,han@falcon.com,1977-05-25
+100,Anakin Skywalker,,1977-05-25

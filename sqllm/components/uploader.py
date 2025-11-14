@@ -1,5 +1,7 @@
 import reflex as rx
-from ..state import State
+import os
+import logging
+from ..state import State, engine
 
 
 class UploaderState(rx.State):
@@ -9,6 +11,17 @@ class UploaderState(rx.State):
     is_uploading: bool = False
     upload_dialog_open: bool = False
 
+    async def _save_uploaded_file(self, file: rx.UploadFile) -> str:
+        """Save the uploaded file to the upload directory."""
+        upload_dir = rx.get_upload_dir()
+        file_path = os.path.join(upload_dir, file.filename)
+
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+
+        return file_path
+
+    # TODO: add better visibility on file upload progress
     @rx.event
     async def handle_upload(self, files: list[rx.UploadFile]):
         """Upload files using the appropriate handlers for each type."""
@@ -17,23 +30,54 @@ class UploaderState(rx.State):
         yield
 
         # separate csv and pdf files
-        csv_files: list[rx.UploadFile] = []
-        pdf_files: list[rx.UploadFile] = []
+        csv_filepaths: list[str] = []
+        pdf_filepaths: list[str] = []
         for file in files:
             if file.content_type == "text/csv":
-                csv_files.append(file)
+                csv_filepaths.append(await self._save_uploaded_file(file))
             elif file.content_type == "application/pdf":
-                pdf_files.append(file)
+                pdf_filepaths.append(await self._save_uploaded_file(file))
 
         # upload csv and pdf files using appropriate handlers
-        state = await self.get_state(State)
-        if len(csv_files) > 0:
-            await state.handle_csv_upload(csv_files)
-        if len(pdf_files) > 0:
-            await state.handle_pdf_upload(pdf_files)
+        if len(csv_filepaths) > 0:
+            yield UploaderState.handle_csv_upload(csv_filepaths)
+        if len(pdf_filepaths) > 0:
+            yield UploaderState.handle_pdf_upload(pdf_filepaths)
 
         self.is_uploading = False
         self.upload_dialog_open = False
+        yield rx.clear_selected_files("csv_pdf_upload")
+
+    @rx.event
+    async def handle_csv_upload(self, csv_filepaths: list[str]):
+        """Handle CSV file upload and load into DuckDB."""
+        print("got to handle_csv_upload with filepaths: ", csv_filepaths)
+        for filepath in csv_filepaths:
+            try:
+                # QOL: use the exec result obj and write it to the results pane (currently ignored)
+
+                created_table_name, _ = engine.load_csv(
+                    filepath
+                )
+
+                yield State.update_available_tables()
+
+                print(f"Loaded {filepath} into DuckDB as table '{created_table_name}'")
+
+            except Exception as e:
+                print(f"✗ Error uploading {filepath}: {e}")
+
+    @rx.event
+    async def handle_pdf_upload(self, filepaths: list[str]):
+        """Handle PDF upload and store on disk for later ingestion."""
+        for filepath in filepaths:
+            try:
+                yield State.add_available_pdf(filepath)
+
+                logging.info(f"Stored PDF {filepath} at {filepath}")
+
+            except Exception as e:
+                logging.error(f"✗ Error uploading {filepath}: {e}")
 
     @rx.event
     def close_upload_dialog(self):
@@ -117,12 +161,15 @@ def uploader_section() -> rx.Component:
                 rx.spinner(),
                 "Upload Files",
             ),
-            on_click=UploaderState.handle_upload(rx.upload_files(upload_id="csv_pdf_upload")),
+            on_click=UploaderState.handle_upload(
+                rx.upload_files(upload_id="csv_pdf_upload")
+            ),
             size="3",
             color_scheme="teal",
             width="100%",
             cursor="pointer",
-            disabled=UploaderState.is_uploading | ~rx.selected_files("csv_pdf_upload") > 0,
+            disabled=UploaderState.is_uploading | ~rx.selected_files("csv_pdf_upload")
+            > 0,
         ),
         spacing="4",
         width="100%",

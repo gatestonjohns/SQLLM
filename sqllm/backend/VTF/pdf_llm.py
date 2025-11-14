@@ -42,7 +42,7 @@ class LLMPDFToTableVTF:
                     )
         return calls
 
-    def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine) -> str:
         pdf_id, schema_str, prompt_text, options = self._parse_args(call.args)
         schema_spec = parse_schema_grammar(schema_str)
         json_schema = build_json_schema(schema_spec)
@@ -53,7 +53,7 @@ class LLMPDFToTableVTF:
         force = bool(options.get("force_recreate", False))
 
         if not table_exists or force:
-            df = self._ingest_pdf_to_df(
+            df = await self._ingest_pdf_to_df(
                 pdf_id,
                 schema_spec,
                 json_schema,
@@ -68,7 +68,7 @@ class LLMPDFToTableVTF:
         call.rewrite_to_table(table_name)
         return table_name
 
-    def _ingest_pdf_to_df(
+    async def _ingest_pdf_to_df(
         self,
         pdf_id: str,
         schema_spec,
@@ -81,7 +81,7 @@ class LLMPDFToTableVTF:
         full_pdf_text = extract_full_pdf_text(pdf_id)
         prompt = self._build_prompt(schema_spec, full_pdf_text, prompt_text)
         token_count = llm.count_tokens(prompt)
-        obj = llm.generate_structured_response_sync(prompt, json_schema)
+        obj = await llm.generate_structured_response(prompt, json_schema)
         logging.info("llm_pdf_to_table(%s) prompt tokens=%s", pdf_id, token_count)
         rows = obj.get("rows", obj)
         if not isinstance(rows, list):

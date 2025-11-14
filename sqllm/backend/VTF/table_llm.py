@@ -47,7 +47,7 @@ class LLMTableToTableVTF:
 
         return calls
 
-    def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine) -> str:
         raw_sql, schema_str, prompt_text, options = self._parse_args(call.args)
         schema_spec = parse_schema_grammar(schema_str)
         json_schema = build_json_schema(schema_spec)
@@ -64,7 +64,7 @@ class LLMTableToTableVTF:
 
         if not table_exists or force:
             source_df = self._run_source_sql(raw_sql, engine)
-            df = self._transform_df(
+            df = await self._transform_df(
                 source_df,
                 raw_sql,
                 schema_spec,
@@ -90,7 +90,7 @@ class LLMTableToTableVTF:
                 f"Failed to execute source SQL for llm_table_to_table: {exc}"
             )
 
-    def _transform_df(
+    async def _transform_df(
         self,
         source_df: pd.DataFrame,
         raw_sql: str,
@@ -111,7 +111,7 @@ class LLMTableToTableVTF:
         )
 
         token_count = llm.count_tokens(prompt)
-        obj = llm.generate_structured_response_sync(prompt, json_schema)
+        obj = await llm.generate_structured_response(prompt, json_schema)
         logging.info(
             "llm_table_to_table source_sql_hash=%s prompt_tokens=%s",
             self._sql_hash(raw_sql),

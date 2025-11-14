@@ -348,7 +348,7 @@ class JoinerState(rx.State):
         self.test_results_all_expanded = not self.test_results_all_expanded
 
     @rx.event
-    async def reset_all_inputs(self):
+    def reset_all_inputs(self):
         """Reset all input elements to their default/empty values."""
         self.new_table_name = ""
         self.left_table_name = ""
@@ -371,9 +371,6 @@ class JoinerState(rx.State):
         self.test_cost_estimate = 0.0
         self.test_cost_note = ""
         self._test_sample_seed = 42  # Reset to default seed
-
-        state = await self.get_state(State)
-        state._reset_before_query_execution()
 
     def _get_column_type(self, table: TableRepresentationObject, col_name: str) -> str:
         """Get the type of a column in a table."""
@@ -451,75 +448,42 @@ class JoinerState(rx.State):
         return errors
 
     @rx.event
-    async def validate_and_execute_join(self):
+    def validate_and_execute_join(self):
         """Validate inputs and execute the join."""
+        # Note: UI already validates via can_execute_join, but keep defensive check
+        if not self.can_execute_join:
+            raise ValueError("Cannot execute join: validation requirements not met")
+
+        # Generate SQL
+        sql = self._generate_join_sql()
+
+        # Pretty print SQL for debugging
         try:
-            # Get main state
-            main_state = await self.get_state(State)
+            import sqlglot
 
-            # Validate tables
-            if self.left_table is None or self.right_table is None:
-                main_state.error_message = "Both left and right tables must be selected"
-                main_state.is_loading = False
-                return
-
-            # Validate tables are different
-            if self.left_table_name == self.right_table_name:
-                main_state.error_message = "Left and right tables must be different. Please select two different tables to join."
-                main_state.is_loading = False
-                return
-
-            # Validate criteria
-            if not self.join_criteria:
-                main_state.error_message = "At least one join criterion must be defined"
-                main_state.is_loading = False
-                return
-
-            # Validate prompt
-            if not self.join_prompt.strip():
-                main_state.error_message = "Join prompt is required"
-                main_state.is_loading = False
-                return
-
-            # Validate each criterion
-            for idx, criterion in enumerate(self.join_criteria):
-                is_valid, error_msg = self._validate_criterion(criterion)
-                if not is_valid:
-                    main_state.error_message = f"Criterion {idx + 1}: {error_msg}"
-                    main_state.is_loading = False
-                    return
-
-            # Generate SQL
-            sql = self._generate_join_sql()
-
-            # Pretty print SQL for debugging
-            try:
-                import sqlglot
-
-                formatted_sql = sqlglot.parse_one(sql).sql(
-                    dialect="duckdb", pretty=True
-                )
-                print("\n" + "=" * 80)
-                print("GENERATED LLM JOIN SQL:")
-                print("=" * 80)
-                print(formatted_sql)
-                print("=" * 80 + "\n")
-            except Exception as e:
-                print("\n" + "=" * 80)
-                print("GENERATED LLM JOIN SQL (unformatted):")
-                print("=" * 80)
-                print(sql)
-                print("=" * 80 + "\n")
-                logging.warning(f"Could not format SQL for debug output: {e}")
-
-            # Execute the query
-            logging.info(
-                f"Executing LLM join: {self.left_table_name} ⋈ {self.right_table_name}"
-            )
-            return State.execute_query(sql)
-
+            formatted_sql = sqlglot.parse_one(sql).sql(dialect="duckdb", pretty=True)
+            print("\n" + "=" * 80)
+            print("GENERATED LLM JOIN SQL:")
+            print("=" * 80)
+            print(formatted_sql)
+            print("=" * 80 + "\n")
         except Exception as e:
-            raise RuntimeError(f"Error executing join: {str(e)}")
+            print("\n" + "=" * 80)
+            print("GENERATED LLM JOIN SQL (unformatted):")
+            print("=" * 80)
+            print(sql)
+            print("=" * 80 + "\n")
+            logging.warning(f"Could not format SQL for debug output: {e}")
+
+        # Submit to execution task system
+        logging.info(
+            f"Executing LLM join: {self.left_table_name} ⋈ {self.right_table_name}"
+        )
+        return State.submit_execution_task(
+            "SMART_JOIN",
+            sql,
+            f"`{self.left_table_name}` ⋈ `{self.right_table_name}`",
+        )
 
     def _generate_join_sql(self) -> str:
         """Generate the SQL for the join with column renaming."""

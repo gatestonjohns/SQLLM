@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from sqlglot import expressions as exp
 from typing import Any
-import concurrent.futures
+import asyncio
 import uuid
 
 from dev_utils import dev_cache
@@ -59,17 +59,17 @@ class LLMJoinVTF:
         """
         return all(len(df) <= MAX_ALLOWED_ROWS_FOR_JOIN for df in dfs)
 
-    def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine) -> str:
         """Execute the LLM join or test and materialize result table."""
         # Branch based on function type
         function_name = getattr(call, "function_name", "llm_join")
 
         if function_name == "llm_join_test":
-            return self._materialize_test(call, engine)
+            return await self._materialize_test(call, engine)
         else:
-            return self._materialize_join(call, engine)
+            return await self._materialize_join(call, engine)
 
-    def _materialize_join(self, call: VTFCall, engine) -> str:
+    async def _materialize_join(self, call: VTFCall, engine) -> str:
         """Execute the production LLM join and materialize result table."""
         new_table_name, left_table, right_table, algorithm_str, prompt = (
             self._parse_args(call.args, "llm_join")
@@ -104,7 +104,7 @@ class LLMJoinVTF:
         scorer = SimilarityScorer(left_df, right_df, algorithm.criteria)
 
         # Execute join
-        result_df = self._execute_join(
+        result_df = await self._execute_join(
             left_df, right_df, algorithm, scorer, prompt, engine.llm
         )
 
@@ -116,7 +116,7 @@ class LLMJoinVTF:
         call.rewrite_to_table(table_name)
         return table_name
 
-    def _materialize_test(self, call: VTFCall, engine) -> str:
+    async def _materialize_test(self, call: VTFCall, engine) -> str:
         """Execute the test LLM join and materialize test results table."""
         left_table, right_table, algorithm_str, prompt, test_size, test_mode = (
             self._parse_args(call.args, "llm_join_test")
@@ -164,7 +164,7 @@ class LLMJoinVTF:
         scorer = SimilarityScorer(left_df, right_df, algorithm.criteria)
 
         # Execute test join
-        result_df = self._execute_test_join(
+        result_df = await self._execute_test_join(
             left_df, right_df, algorithm, scorer, prompt, engine.llm, test_mode
         )
 
@@ -186,81 +186,87 @@ class LLMJoinVTF:
         call.rewrite_to_table(table_name)
         return table_name
 
-    def _execute_join(self, left_df, right_df, algorithm, scorer, prompt, llm):
-        """Execute the join for all left rows (parallelized)."""
+    async def _execute_join(self, left_df, right_df, algorithm, scorer, prompt, llm):
+        """Execute the join for all left rows (parallelized with concurrency limit)."""
         # Extract columns mentioned in the algorithm criteria
         algorithm_columns = [criterion.column for criterion in algorithm.criteria]
 
-        def process_row(left_idx):
-            left_row = left_df.iloc[left_idx].to_dict()
+        # Create semaphore to limit concurrent LLM calls
+        semaphore = asyncio.Semaphore(100)
 
-            # Get top k candidates
-            candidates = scorer.get_top_candidates(left_idx, algorithm.k_value)
+        async def process_row(left_idx):
+            async with semaphore:
+                left_row = left_df.iloc[left_idx].to_dict()
 
-            # If no good candidates (all scores near 0), skip LLM call
-            if not candidates or candidates[0][1] < 0.01:
-                logging.debug(f"llm_join: No good candidates for left row {left_idx}")
-                return self._create_null_result(left_row, right_df.columns)
+                # Get top k candidates
+                candidates = scorer.get_top_candidates(left_idx, algorithm.k_value)
 
-            # Call LLM to pick best match
-            print(f"llm_join: Calling LLM for left row {left_idx}")
-            llm_result = self._call_llm_for_decision(
-                left_row, candidates, right_df, prompt, llm, algorithm_columns
-            )
-            print(f"llm_join: Received LLM result for left row {left_idx}")
+                # If no good candidates (all scores near 0), skip LLM call
+                if not candidates or candidates[0][1] < 0.01:
+                    logging.debug(f"llm_join: No good candidates for left row {left_idx}")
+                    return self._create_null_result(left_row, right_df.columns)
 
-            # Build result row
-            result_row = self._build_result_row(
-                left_row, llm_result, right_df, candidates
-            )
-            return result_row
+                # Call LLM to pick best match
+                print(f"llm_join: Calling LLM for left row {left_idx}")
+                llm_result = await self._call_llm_for_decision(
+                    left_row, candidates, right_df, prompt, llm, algorithm_columns
+                )
+                print(f"llm_join: Received LLM result for left row {left_idx}")
 
-        # Use ThreadPoolExecutor (or ProcessPoolExecutor if tasks are more cpu-bound)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
-            results = list(executor.map(process_row, range(len(left_df))))
+                # Build result row
+                result_row = self._build_result_row(
+                    left_row, llm_result, right_df, candidates
+                )
+                return result_row
+
+        # Use asyncio.gather() for concurrent execution
+        results = await asyncio.gather(*[process_row(left_idx) for left_idx in range(len(left_df))])
 
         return pd.DataFrame(results)
 
-    def _execute_test_join(
+    async def _execute_test_join(
         self, left_df, right_df, algorithm, scorer, prompt, llm, test_mode
     ):
-        """Execute test join and return diagnostic data for all left rows (parallelized)."""
+        """Execute test join and return diagnostic data for all left rows (parallelized with concurrency limit)."""
         # Extract columns mentioned in the algorithm criteria
         algorithm_columns = [criterion.column for criterion in algorithm.criteria]
 
-        def process_test_row(left_idx):
-            left_row = left_df.iloc[left_idx].to_dict()
+        # Create semaphore to limit concurrent LLM calls
+        semaphore = asyncio.Semaphore(100)
 
-            # Get top k candidates
-            candidates = scorer.get_top_candidates(left_idx, algorithm.k_value)
+        async def process_test_row(left_idx):
+            async with semaphore:
+                left_row = left_df.iloc[left_idx].to_dict()
 
-            # Call LLM if in full test mode and candidates exist
-            llm_result = None
-            row_cost = 0.0
+                # Get top k candidates
+                candidates = scorer.get_top_candidates(left_idx, algorithm.k_value)
 
-            if test_mode == "full" and candidates and candidates[0][1] >= 0.01:
-                print(f"llm_join_test: Calling LLM for test row {left_idx}")
-                llm_result, row_cost = self._call_llm_for_decision_with_cost(
-                    left_row, candidates, right_df, prompt, llm, algorithm_columns
+                # Call LLM if in full test mode and candidates exist
+                llm_result = None
+                row_cost = 0.0
+
+                if test_mode == "full" and candidates and candidates[0][1] >= 0.01:
+                    print(f"llm_join_test: Calling LLM for test row {left_idx}")
+                    llm_result, row_cost = await self._call_llm_for_decision_with_cost(
+                        left_row, candidates, right_df, prompt, llm, algorithm_columns
+                    )
+                    print(f"llm_join_test: Received LLM result for test row {left_idx}")
+
+                # Build test result row
+                test_result = self._build_test_result_row(
+                    left_idx,
+                    left_row,
+                    candidates,
+                    llm_result,
+                    right_df,
+                    algorithm_columns,
+                    test_mode,
+                    row_cost,
                 )
-                print(f"llm_join_test: Received LLM result for test row {left_idx}")
+                return test_result
 
-            # Build test result row
-            test_result = self._build_test_result_row(
-                left_idx,
-                left_row,
-                candidates,
-                llm_result,
-                right_df,
-                algorithm_columns,
-                test_mode,
-                row_cost,
-            )
-            return test_result
-
-        # Use ThreadPoolExecutor for parallelization
-        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
-            results = list(executor.map(process_test_row, range(len(left_df))))
+        # Use asyncio.gather() for concurrent execution
+        results = await asyncio.gather(*[process_test_row(left_idx) for left_idx in range(len(left_df))])
 
         return pd.DataFrame(results)
 
@@ -333,7 +339,7 @@ class LLMJoinVTF:
             return obj
 
     @dev_cache(cache_args=["left_row", "candidates"], cache_delay_seconds=10)
-    def _call_llm_for_decision(
+    async def _call_llm_for_decision(
         self, left_row, candidates, right_df, prompt, llm, algorithm_columns
     ):
         """Call LLM to select best candidate."""
@@ -367,10 +373,10 @@ class LLMJoinVTF:
         )
         json_schema = self._build_response_schema()
 
-        response = llm.generate_structured_response_sync(llm_prompt, json_schema)
+        response = await llm.generate_structured_response(llm_prompt, json_schema)
         return response
 
-    def _call_llm_for_decision_with_cost(
+    async def _call_llm_for_decision_with_cost(
         self, left_row, candidates, right_df, prompt, llm, algorithm_columns
     ):
         """Call LLM to select best candidate and return per-call cost."""
@@ -404,7 +410,7 @@ class LLMJoinVTF:
         )
         json_schema = self._build_response_schema()
 
-        response, usage = llm.generate_structured_response_with_usage_sync(
+        response, usage = await llm.generate_structured_response_with_usage(
             llm_prompt, json_schema
         )
         return response, usage["cost"]

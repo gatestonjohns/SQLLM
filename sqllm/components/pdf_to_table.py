@@ -1,6 +1,5 @@
 import reflex as rx
 import os
-import logging
 from ..state import State
 
 
@@ -69,68 +68,57 @@ class BatchState(rx.State):
     @rx.event
     async def run_pdf_batch_ingest(self):
         """Execute batch PDF ingestion into a single table."""
-        try:
-            table_name = self.pdf_batch_table_name.strip()
+        table_name = self.pdf_batch_table_name.strip()
 
-            # Build schema string
-            schema_parts = []
-            for col in self.pdf_batch_columns:
-                col_name = col.get("name", "").strip()
-                col_type = col.get("type", "TEXT").strip().upper()
+        # Build schema string
+        schema_parts = []
+        for col in self.pdf_batch_columns:
+            col_name = col.get("name", "").strip()
+            col_type = col.get("type", "TEXT").strip().upper()
+            schema_parts.append(f"{col_name} {col_type}")
 
-                schema_parts.append(f"{col_name} {col_type}")
+        schema_str = ", ".join(schema_parts)
 
-            schema_str = ", ".join(schema_parts)
+        # Build SQL query
+        create_clause = (
+            "CREATE OR REPLACE TABLE"
+            if self.pdf_batch_force_recreate
+            else "CREATE TABLE IF NOT EXISTS"
+        )
 
-            # Build SQL query
-            create_clause = (
-                "CREATE OR REPLACE TABLE"
-                if self.pdf_batch_force_recreate
-                else "CREATE TABLE IF NOT EXISTS"
-            )
+        # Build SELECT statements for each PDF
+        selects = []
+        for pdf_path in self.pdf_batch_selected_pdfs:
+            basename = os.path.basename(pdf_path)
+            escaped_path = pdf_path.replace("'", "''")
+            escaped_prompt = self.pdf_batch_prompt.replace("'", "''")
 
-            # Build SELECT statements for each PDF
-            selects = []
-            for pdf_path in self.pdf_batch_selected_pdfs:
-                # Get basename for source column
-                basename = os.path.basename(pdf_path)
+            # Build llm_pdf_to_table call
+            if self.pdf_batch_prompt.strip():
+                llm_call = f"llm_pdf_to_table('{escaped_path}', '{schema_str}', '{escaped_prompt}')"
+            else:
+                llm_call = f"llm_pdf_to_table('{escaped_path}', '{schema_str}')"
 
-                # Escape single quotes in path and prompt
-                escaped_path = pdf_path.replace("'", "''")
-                escaped_prompt = self.pdf_batch_prompt.replace("'", "''")
+            # Build SELECT with optional source column
+            if self.pdf_batch_include_source:
+                select_stmt = f"SELECT '{basename}' AS source_pdf, * FROM {llm_call}"
+            else:
+                select_stmt = f"SELECT * FROM {llm_call}"
 
-                # Build llm_pdf_to_table call
-                if self.pdf_batch_prompt.strip():
-                    llm_call = f"llm_pdf_to_table('{escaped_path}', '{schema_str}', '{escaped_prompt}')"
-                else:
-                    llm_call = f"llm_pdf_to_table('{escaped_path}', '{schema_str}')"
+            selects.append(select_stmt)
 
-                # Build SELECT with optional source column
-                if self.pdf_batch_include_source:
-                    select_stmt = (
-                        f"SELECT '{basename}' AS source_pdf, * FROM {llm_call}"
-                    )
-                else:
-                    select_stmt = f"SELECT * FROM {llm_call}"
+        # Combine with UNION ALL
+        union_query = " UNION ALL ".join(selects)
 
-                selects.append(select_stmt)
+        # Final SQL statement
+        create_table_sql = f"{create_clause} {table_name} AS {union_query};"
+        return_new_table_sql = f"SELECT * FROM {table_name};"
+        full_sql = f"{create_table_sql}\n{return_new_table_sql}"
 
-            # Combine with UNION ALL
-            union_query = " UNION ALL ".join(selects)
+        print("full_sql from gui:", full_sql)
 
-            # Final SQL statement
-            create_table_sql = f"{create_clause} {table_name} AS {union_query};"
-            return_new_table_sql = f"SELECT * FROM {table_name};"
-            full_sql = f"{create_table_sql}\n{return_new_table_sql}"
-            print("full_sql from gui:", full_sql)
-            
-            return State.execute_query(full_sql)
-
-        except Exception as e:
-            main_state = await self.get_state(State)
-            main_state.is_loading = False
-            main_state.error_message = f"Error during batch ingestion: {str(e)}"
-            logging.error(f"✗ Batch ingestion error: {e}")
+        # Submit to the execution task system (following editor.py pattern)
+        return State.submit_execution_task("PDF_TO_TABLE", full_sql, f"Creating `{table_name}` from PDFs")
 
     @rx.event
     def set_pdf_batch_table_name(self, value: str):
@@ -170,6 +158,7 @@ class BatchState(rx.State):
         self.pdf_batch_prompt = ""
         self.pdf_batch_force_recreate = False
         self.pdf_batch_include_source = False
+
 
 def gui_section() -> rx.Component:
     return rx.card(

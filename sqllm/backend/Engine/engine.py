@@ -4,6 +4,7 @@ import pandas as pd
 from dataclasses import dataclass
 import sqlglot
 import re
+from typing import AsyncIterator
 from ..LLM.OpenAI import OpenAIProvider
 from ..VTF.base import VTFCall
 from ..VTF.register import get_vtf_handlers
@@ -40,25 +41,50 @@ class Engine:
         self.handlers = get_vtf_handlers()
         register_all_udfs(self.conn, llm_provider=self.llm)
 
-    def execute(self, sql: str) -> ExecResult:
+    async def execute(self, sql: str) -> AsyncIterator[tuple[int, bool, ExecResult | None]]:
         warnings: list[str] = []
+
+        # Phase 1: Parsing (0-5%)
+        yield (0, False, None)
+
         trees = sqlglot.parse(sql, read="duckdb")
 
         if not trees:
             raise ValueError("No valid SQL statements provided.")
 
+        yield (5, False, None)
+
         df: pd.DataFrame | None = None  # Will store the result of the last statement
 
-        # Process each SQL statement in order
+        # Phase 2: VTF Discovery (5-10%)
+        all_vtf_calls: list[tuple[int, VTFCall, sqlglot.Expression]] = []
         for i, tree in enumerate(trees):
-            # Discover and materialize VTF calls for this statement
             calls: list[VTFCall] = []
             for handler in self.handlers:
                 calls.extend(handler.discover(tree))
-
             for call in calls:
-                table_name = call.handler.materialize(call, self)
+                all_vtf_calls.append((i, call, tree))
+
+        yield (10, False, None)
+
+        # Phase 3: VTF Materialization (10-85%)
+        total_vtf_count = len(all_vtf_calls)
+        if total_vtf_count > 0:
+            for vtf_index, (stmt_index, call, tree) in enumerate(all_vtf_calls):
+                progress = 10 + int(((vtf_index + 1) / total_vtf_count) * 75)
+                yield (progress, False, None)
+
+                table_name = await call.handler.materialize(call, self)
                 call.rewrite_to_table(table_name)
+
+        yield (85, False, None)
+
+        # Phase 4: DuckDB Execution (85-100%)
+        total_stmt_count = len(trees)
+        for i, tree in enumerate(trees):
+            if total_stmt_count > 0:
+                progress = 85 + int(((i + 1) / total_stmt_count) * 15)
+                yield (progress, False, None)
 
             rewritten_sql = tree.sql(dialect="duckdb")
             print(f"rewritten_sql (statement {i + 1}/{len(trees)}):", rewritten_sql)
@@ -72,7 +98,7 @@ class Engine:
         # Only print the final result
         print("df:", df.head())
 
-        return ExecResult(df=df, warnings=warnings)
+        yield (100, True, ExecResult(df=df, warnings=warnings))
 
     def _materialize_df(self, df: pd.DataFrame, table_name: str, temporary: bool = True) -> None:
         temp_df_table_name = f"__reg_{table_name}"
@@ -129,6 +155,11 @@ class Engine:
 
         df = self.conn.execute(f"SELECT * FROM {cleaned_table_name}").fetchdf()
 
+        print("df: ", df.head())
+        print("cleaned_table_name: ", cleaned_table_name)
+
+        print("all_existing_table_names from list_tables: ", self._get_existing_table_names())
+
         return cleaned_table_name, ExecResult(df=df, warnings=[])
 
     def list_tables(
@@ -139,6 +170,8 @@ class Engine:
         all_existing_table_names: list[str] = self._get_existing_table_names(
             include_temp=include_temp
         )
+
+        print("all_existing_table_names from list_tables: ", all_existing_table_names)
 
         for table_name in all_existing_table_names:
             columns = [
