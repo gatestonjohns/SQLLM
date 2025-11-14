@@ -5,10 +5,10 @@ JSONSchema = Mapping[str, Any]
 
 
 class LLMProvider(ABC):
-    """Abstract base class for LLM providers."""
+    """Abstract base class for LLM providers with both async and sync interfaces."""
 
     @abstractmethod
-    def generate_text_response(self, prompt: str) -> str:
+    async def generate_text_response(self, prompt: str) -> str:
         """
         Generate a simple text response from the LLM.
 
@@ -21,7 +21,7 @@ class LLMProvider(ABC):
         ...
 
     @abstractmethod
-    def generate_structured_response(
+    async def generate_structured_response(
         self, prompt: str, output_schema: JSONSchema
     ) -> dict[str, Any]:
         """
@@ -33,6 +33,73 @@ class LLMProvider(ABC):
 
         Returns:
             dict: Response data that adheres to the specified schema
+        """
+        ...
+
+    @abstractmethod
+    async def generate_structured_response_with_usage(
+        self, prompt: str, output_schema: JSONSchema
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """
+        Generate a structured response and return both response and per-call usage stats.
+
+        Args:
+            prompt: The full prompt including context
+            output_schema: JSON schema defining the response structure
+
+        Returns:
+            Tuple of (response_dict, usage_dict) where usage_dict contains:
+                - input_tokens: int
+                - output_tokens: int
+                - cost: float
+        """
+        ...
+
+    @abstractmethod
+    def generate_text_response_sync(self, prompt: str) -> str:
+        """
+        Generate a simple text response from the LLM (sync, for UDF functions).
+
+        Args:
+            prompt: The full prompt including context
+
+        Returns:
+            str: The text response from the LLM
+        """
+        ...
+
+    @abstractmethod
+    def generate_structured_response_sync(
+        self, prompt: str, output_schema: JSONSchema
+    ) -> dict[str, Any]:
+        """
+        Generate a structured response from the LLM using JSON Schema.
+
+        Args:
+            prompt: The full prompt including context
+            output_schema: JSON schema (Mapping[str, Any]) defining the response structure
+
+        Returns:
+            dict: Response data that adheres to the specified schema
+        """
+        ...
+
+    @abstractmethod
+    def generate_structured_response_with_usage_sync(
+        self, prompt: str, output_schema: JSONSchema
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """
+        Generate a structured response and return both response and per-call usage stats.
+
+        Args:
+            prompt: The full prompt including context
+            output_schema: JSON schema defining the response structure
+
+        Returns:
+            Tuple of (response_dict, usage_dict) where usage_dict contains:
+                - input_tokens: int
+                - output_tokens: int
+                - cost: float
         """
         ...
 

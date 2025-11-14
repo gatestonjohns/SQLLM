@@ -81,7 +81,7 @@ class LLMPDFToTableVTF:
         full_pdf_text = extract_full_pdf_text(pdf_id)
         prompt = self._build_prompt(schema_spec, full_pdf_text, prompt_text)
         token_count = llm.count_tokens(prompt)
-        obj = llm.generate_structured_response(prompt, json_schema)
+        obj = llm.generate_structured_response_sync(prompt, json_schema)
         logging.info("llm_pdf_to_table(%s) prompt tokens=%s", pdf_id, token_count)
         rows = obj.get("rows", obj)
         if not isinstance(rows, list):

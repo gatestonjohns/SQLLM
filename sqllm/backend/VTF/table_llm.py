@@ -111,7 +111,7 @@ class LLMTableToTableVTF:
         )
 
         token_count = llm.count_tokens(prompt)
-        obj = llm.generate_structured_response(prompt, json_schema)
+        obj = llm.generate_structured_response_sync(prompt, json_schema)
         logging.info(
             "llm_table_to_table source_sql_hash=%s prompt_tokens=%s",
             self._sql_hash(raw_sql),

@@ -1,44 +1,78 @@
 from .base import LLMProvider, JSONSchema
-from typing import Optional, Any
+from typing import Optional, Any, Literal
 import os
 import json
 import logging
-from openai import AzureOpenAI, OpenAI
+from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 import tiktoken
 import rxconfig
 import uuid
 import threading
 
+ProviderType = Literal["openai", "azure"]
+
 
 class OpenAIProvider(LLMProvider):
-    """OpenAI implementation of LLM provider."""
+    """
+    OpenAI/AzureOpenAI implementation with lazy-initialized sync and async clients.
+    """
 
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "gpt-4.1-nano" if rxconfig.isProd() else "gpt-4.1-nano-2025-04-14",
+        model: Optional[str] = None,
+        provider_type: Optional[ProviderType] = None,
         token_limit: int = 190000,
         azure_endpoint: Optional[str] = None,
         api_version: str = "2024-12-01-preview",
     ):
         """
-        Initialize Azure OpenAI provider.
+        Initialize OpenAI provider.
 
         Args:
-            api_key: Azure OpenAI API key (defaults to AZURE_OPENAI_API_KEY env var)
-            model: Model deployment name in Azure
-            azure_endpoint: Azure OpenAI endpoint (defaults to AZURE_OPENAI_ENDPOINT env var)
-            api_version: Azure API version
+            api_key: API key (auto-detects from env if not provided)
+            model: Model name (auto-selects based on environment if not provided)
+            provider_type: "openai" or "azure" (auto-detects from rxconfig if not provided)
+            token_limit: Maximum tokens for prompt
+            azure_endpoint: Azure endpoint (only needed for Azure)
+            api_version: Azure API version (only needed for Azure)
         """
-        self._api_key = api_key or (
-            os.getenv("AZURE_OPENAI_API_KEY")
-            if rxconfig.isProd()
-            else os.getenv("OPENAI_API_KEY")
-        )
+        # Determine provider type
+        if provider_type is None:
+            self._provider_type: ProviderType = (
+                "azure" if rxconfig.isProd() else "openai"
+            )
+        else:
+            self._provider_type = provider_type
+
+        # Set API key based on provider type
+        if api_key is None:
+            if self._provider_type == "azure":
+                self._api_key = os.getenv("AZURE_OPENAI_API_KEY")
+            else:
+                self._api_key = os.getenv("OPENAI_API_KEY")
+        else:
+            self._api_key = api_key
+
+        # Set model based on provider type
+        if model is None:
+            if self._provider_type == "azure":
+                self._model = "gpt-4.1-nano"
+            else:
+                self._model = "gpt-4.1-nano-2025-04-14"
+        else:
+            self._model = model
+
+        # Azure-specific settings
         self._azure_endpoint = azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
         self._api_version = api_version
-        self._model = model
-        self._client = self._get_client()
+
+        # Lazy-initialized clients
+        self._async_client: Optional[AsyncAzureOpenAI | AsyncOpenAI] = None
+        self._sync_client: Optional[AzureOpenAI | OpenAI] = None
+        self._client_lock = threading.Lock() # thread safe lazy initialization
+
+        # Configuration
         self._token_limit = token_limit
         self._temperature = 0.3
         self._system_prompt = (
@@ -50,8 +84,8 @@ class OpenAIProvider(LLMProvider):
         )
         self._system_prompt_msg = {"role": "system", "content": self._system_prompt}
 
-        # Token counting and cost tracking
-        self._stats_lock = threading.Lock()  # Thread-safe lock for usage stats
+        # Token counting and cost tracking (thread-safe)
+        self._stats_lock = threading.Lock()
         self._cumulative_input_tokens: int = 0
         self._cumulative_output_tokens: int = 0
         self._cumulative_cost: float = 0.0
@@ -59,24 +93,58 @@ class OpenAIProvider(LLMProvider):
         self._current_query_input_tokens: int = 0
         self._current_query_output_tokens: int = 0
         self._current_query_cost: float = 0.0
-        self._input_token_price: float = (
-            0.0000001  # GPT-4.1-nano input pricing ($0.10/1M tokens)
-        )
-        self._output_token_price: float = (
-            0.000004  # GPT-4.1-nano output pricing ($0.40/1M tokens)
-        )
 
-    def _get_client(self) -> AzureOpenAI | OpenAI:
-        if rxconfig.isProd():
+        # Pricing (GPT-4.1-nano)
+        self._input_token_price: float = 0.0000001  # $0.10/1M tokens
+        self._output_token_price: float = 0.000004  # $0.40/1M tokens
+
+    @property
+    def async_client(self) -> AsyncAzureOpenAI | AsyncOpenAI:
+        """Lazy-initialize and return async client."""
+        if self._async_client is None:
+            with self._client_lock:
+                if self._async_client is None: # check again after getting lock
+                    self._async_client = self._create_async_client()
+        return self._async_client
+
+    @property
+    def sync_client(self) -> AzureOpenAI | OpenAI:
+        """Lazy-initialize and return sync client."""
+        if self._sync_client is None:
+            with self._client_lock:
+                if self._sync_client is None: # check again after getting lock
+                    self._sync_client = self._create_sync_client()
+        return self._sync_client
+
+    def _create_async_client(self) -> AsyncAzureOpenAI | AsyncOpenAI:
+        """Create the appropriate async client based on provider type."""
+        if self._provider_type == "azure":
+            if not self._azure_endpoint:
+                raise ValueError("azure_endpoint required for Azure provider")
+            logging.info("Initializing AsyncAzureOpenAI client")
+            return AsyncAzureOpenAI(
+                api_key=self._api_key,
+                azure_endpoint=self._azure_endpoint,
+                api_version=self._api_version,
+            )
+        else:
+            logging.info("Initializing AsyncOpenAI client")
+            return AsyncOpenAI(api_key=self._api_key)
+
+    def _create_sync_client(self) -> AzureOpenAI | OpenAI:
+        """Create the appropriate sync client based on provider type."""
+        if self._provider_type == "azure":
+            if not self._azure_endpoint:
+                raise ValueError("azure_endpoint required for Azure provider")
+            logging.info("Initializing AzureOpenAI sync client")
             return AzureOpenAI(
                 api_key=self._api_key,
                 azure_endpoint=self._azure_endpoint,
                 api_version=self._api_version,
             )
         else:
-            return OpenAI(
-                api_key=self._api_key,
-            )
+            logging.info("Initializing OpenAI sync client")
+            return OpenAI(api_key=self._api_key)
 
     def _update_usage_stats(self, response):
         """Update token usage and cost statistics from API response (thread-safe)."""
@@ -103,9 +171,10 @@ class OpenAIProvider(LLMProvider):
             f"LLM call: {input_tokens} in, {output_tokens} out, ${call_cost:.6f}"
         )
 
-    def generate_text_response(self, prompt: str) -> str:
+    async def generate_text_response(self, prompt: str) -> str:
+        """Generate text response using async client."""
         try:
-            response = self._client.chat.completions.create(
+            response = await self.async_client.chat.completions.create(
                 model=self._model,
                 messages=[
                     self._system_prompt_msg,
@@ -122,13 +191,15 @@ class OpenAIProvider(LLMProvider):
             logging.error(f"Error generating text response: {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
-    def generate_structured_response(
+    async def generate_structured_response(
         self, prompt: str, output_schema: JSONSchema
     ) -> dict[str, Any]:
+        """Generate structured response using async client."""
         try:
+            # TODO: delete this later
             debug_rand_string = str(uuid.uuid4())
             print(f"Generating structured response for prompt {debug_rand_string}")
-            response = self._client.chat.completions.create(
+            response = await self.async_client.chat.completions.create(
                 model=self._model,
                 messages=[
                     self._system_prompt_msg,
@@ -150,21 +221,15 @@ class OpenAIProvider(LLMProvider):
             logging.error(f"Error generating structured response: {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
-    def generate_structured_response_with_usage(
+    async def generate_structured_response_with_usage(
         self, prompt: str, output_schema: JSONSchema
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """Generate structured response and return both response and per-call usage stats.
-
-        Returns:
-            Tuple of (response_dict, usage_dict) where usage_dict contains:
-                - input_tokens: int
-                - output_tokens: int
-                - cost: float
-        """
+        """Generate structured response with per-call usage stats using async client."""
         try:
+            # TODO: delete this later
             debug_rand_string = str(uuid.uuid4())
             print(f"Generating structured response for prompt {debug_rand_string}")
-            response = self._client.chat.completions.create(
+            response = await self.async_client.chat.completions.create(
                 model=self._model,
                 messages=[
                     self._system_prompt_msg,
@@ -197,12 +262,121 @@ class OpenAIProvider(LLMProvider):
             usage_stats = {
                 "input_tokens": input_tokens,
                 "output_tokens": output_tokens,
-                "cost": call_cost
+                "cost": call_cost,
             }
 
             return parsed_response, usage_stats
         except Exception as e:
             logging.error(f"Error generating structured response: {str(e)}")
+            raise RuntimeError(f"OpenAI API error: {str(e)}")
+
+    def generate_text_response_sync(self, prompt: str) -> str:
+        """Generate text response using sync client."""
+        try:
+            response = self.sync_client.chat.completions.create(
+                model=self._model,
+                messages=[
+                    self._system_prompt_msg,
+                    {
+                        "role": "user",
+                        "content": self._truncate_to_token_limit_if_necessary(prompt),
+                    },
+                ],
+                temperature=self._temperature,
+            )
+            self._update_usage_stats(response)
+            return response.choices[0].message.content
+        except Exception as e:
+            logging.error(f"Error generating text response (sync): {str(e)}")
+            raise RuntimeError(f"OpenAI API error: {str(e)}")
+
+    def generate_structured_response_sync(
+        self, prompt: str, output_schema: JSONSchema
+    ) -> dict[str, Any]:
+        """Generate structured response using sync client."""
+        try:
+            # TODO: delete this later
+            debug_rand_string = str(uuid.uuid4())
+            print(
+                f"Generating structured response (sync) for prompt {debug_rand_string}"
+            )
+            response = self.sync_client.chat.completions.create(
+                model=self._model,
+                messages=[
+                    self._system_prompt_msg,
+                    {
+                        "role": "user",
+                        "content": self._truncate_to_token_limit_if_necessary(prompt),
+                    },
+                ],
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": output_schema,
+                },
+                temperature=self._temperature,
+            )
+            print(
+                f"Generated structured response (sync) for prompt {debug_rand_string}"
+            )
+            self._update_usage_stats(response)
+            return json.loads(response.choices[0].message.content)
+        except Exception as e:
+            logging.error(f"Error generating structured response (sync): {str(e)}")
+            raise RuntimeError(f"OpenAI API error: {str(e)}")
+
+    def generate_structured_response_with_usage_sync(
+        self, prompt: str, output_schema: JSONSchema
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Generate structured response with per-call usage stats using sync client."""
+        try:
+            # TODO: delete this later
+            debug_rand_string = str(uuid.uuid4())
+            print(
+                f"Generating structured response (sync) for prompt {debug_rand_string}"
+            )
+            response = self.sync_client.chat.completions.create(
+                model=self._model,
+                messages=[
+                    self._system_prompt_msg,
+                    {
+                        "role": "user",
+                        "content": self._truncate_to_token_limit_if_necessary(prompt),
+                    },
+                ],
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": output_schema,
+                },
+                temperature=self._temperature,
+            )
+            print(
+                f"Generated structured response (sync) for prompt {debug_rand_string}"
+            )
+
+            # Calculate per-call usage before updating stats
+            usage = response.usage
+            input_tokens = usage.prompt_tokens
+            output_tokens = usage.completion_tokens
+            call_cost = (input_tokens * self._input_token_price) + (
+                output_tokens * self._output_token_price
+            )
+
+            # Update cumulative stats
+            self._update_usage_stats(response)
+
+            # Return both response and per-call usage
+            parsed_response = json.loads(response.choices[0].message.content)
+            usage_stats = {
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "cost": call_cost,
+            }
+
+            return parsed_response, usage_stats
+        except Exception as e:
+            logging.error(
+                f"Error generating structured response with usage (sync): {str(e)}"
+            )
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
     def _encode_as_tokens(self, prompt: str) -> list[int]:
@@ -217,12 +391,12 @@ class OpenAIProvider(LLMProvider):
     def _truncate_to_token_limit_if_necessary(self, prompt: str) -> str:
         if self.count_tokens(prompt) > self._token_limit:
             logging.warning(
-                f"User message prompt exceeds {self._token_limit} tokens; truncating. (System prompt tokens not counted-- truncation may be under true API limit.)"
+                f"User message prompt exceeds {self._token_limit} tokens; truncating. "
+                "(System prompt tokens not counted-- truncation may be under true API limit.)"
             )
             return self._decode_from_tokens(
                 self._encode_as_tokens(prompt)[: self._token_limit]
             )
-
         return prompt
 
     def get_session_stats(self) -> dict[str, Any]:
