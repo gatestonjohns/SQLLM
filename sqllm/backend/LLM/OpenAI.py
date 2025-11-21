@@ -59,7 +59,7 @@ class OpenAIProvider(LLMProvider):
             if self._provider_type == "azure":
                 self._model = "gpt-4.1-nano"
             else:
-                self._model = "gpt-4.1-nano-2025-04-14"
+                self._model = "gpt-4.1-2025-04-14"
         else:
             self._model = model
 
@@ -70,14 +70,14 @@ class OpenAIProvider(LLMProvider):
         # Lazy-initialized clients
         self._async_client: Optional[AsyncAzureOpenAI | AsyncOpenAI] = None
         self._sync_client: Optional[AzureOpenAI | OpenAI] = None
-        self._client_lock = threading.Lock() # thread safe lazy initialization
+        self._client_lock = threading.Lock()  # thread safe lazy initialization
 
         # Configuration
         self._token_limit = token_limit
-        self._temperature = 0.3
+        self._temperature = 0.1
         self._system_prompt = (
             "You are an assistant to a data analyst. "
-            "Your responsibility is to assist in standardizing, enriching, and improving data. "
+            "Your responsibility is to assist in extracting, standardizing, and enriching data. "
             "Be concise and accurate in your responses. "
             "Your responses are fed directly into an SQL environment; "
             "therefore, ensure that your outputs are structured as succinct data points, not as prose.\n"
@@ -103,7 +103,7 @@ class OpenAIProvider(LLMProvider):
         """Lazy-initialize and return async client."""
         if self._async_client is None:
             with self._client_lock:
-                if self._async_client is None: # check again after getting lock
+                if self._async_client is None:  # check again after getting lock
                     self._async_client = self._create_async_client()
         return self._async_client
 
@@ -112,7 +112,7 @@ class OpenAIProvider(LLMProvider):
         """Lazy-initialize and return sync client."""
         if self._sync_client is None:
             with self._client_lock:
-                if self._sync_client is None: # check again after getting lock
+                if self._sync_client is None:  # check again after getting lock
                     self._sync_client = self._create_sync_client()
         return self._sync_client
 
@@ -174,9 +174,9 @@ class OpenAIProvider(LLMProvider):
     async def generate_text_response(self, prompt: str) -> str:
         """Generate text response using async client."""
         try:
-            response = await self.async_client.chat.completions.create(
+            response = await self.async_client.responses.create(
                 model=self._model,
-                messages=[
+                input=[
                     self._system_prompt_msg,
                     {
                         "role": "user",
@@ -185,8 +185,7 @@ class OpenAIProvider(LLMProvider):
                 ],
                 temperature=self._temperature,
             )
-            self._update_usage_stats(response)
-            return response.choices[0].message.content
+            return response.output_text
         except Exception as e:
             logging.error(f"Error generating text response: {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
@@ -199,191 +198,123 @@ class OpenAIProvider(LLMProvider):
             # TODO: delete this later
             debug_rand_string = str(uuid.uuid4())
             print(f"Generating structured response for prompt {debug_rand_string}")
-            response = await self.async_client.chat.completions.create(
+            response = await self.async_client.responses.create(
                 model=self._model,
-                messages=[
+                input=[
                     self._system_prompt_msg,
                     {
                         "role": "user",
                         "content": self._truncate_to_token_limit_if_necessary(prompt),
                     },
                 ],
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": output_schema,
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": "structured_response",
+                        "schema": output_schema,
+                        "strict": True,
+                    }
                 },
                 temperature=self._temperature,
             )
             print(f"Generated structured response for prompt {debug_rand_string}")
-            self._update_usage_stats(response)
-            return json.loads(response.choices[0].message.content)
+            return json.loads(response.output_text)
         except Exception as e:
             logging.error(f"Error generating structured response: {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
-    async def generate_structured_response_with_usage(
-        self, prompt: str, output_schema: JSONSchema
-    ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """Generate structured response with per-call usage stats using async client."""
+    def generate_text_response_sync(self, prompt: str, b64_png_strings: list[str] | None = None) -> str:
+        """Generate text response using sync client, supporting image input."""
         try:
-            # TODO: delete this later
-            debug_rand_string = str(uuid.uuid4())
-            print(f"Generating structured response for prompt {debug_rand_string}")
-            response = await self.async_client.chat.completions.create(
+            # Build the user message content, just like in generate_structured_response_sync
+            user_content: list[dict] = []
+            # Add input_text (prompt)
+            user_content.append({
+                "type": "input_text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            })
+            # Add input_image objects if present
+            if b64_png_strings:
+                for b64_png_string in b64_png_strings:
+                    user_content.append({
+                        "type": "input_image",
+                        "image_url": f"data:image/png;base64,{b64_png_string}",
+                    })
+            # Compose input message array
+            input_messages = [
+                self._system_prompt_msg,
+                {
+                    "role": "user",
+                    "content": user_content,
+                }
+            ]
+            response = self.sync_client.responses.create(
                 model=self._model,
-                messages=[
-                    self._system_prompt_msg,
-                    {
-                        "role": "user",
-                        "content": self._truncate_to_token_limit_if_necessary(prompt),
-                    },
-                ],
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": output_schema,
-                },
+                input=input_messages,
                 temperature=self._temperature,
             )
-            print(f"Generated structured response for prompt {debug_rand_string}")
-
-            # Calculate per-call usage before updating stats
-            usage = response.usage
-            input_tokens = usage.prompt_tokens
-            output_tokens = usage.completion_tokens
-            call_cost = (input_tokens * self._input_token_price) + (
-                output_tokens * self._output_token_price
-            )
-
-            # Update cumulative stats
-            self._update_usage_stats(response)
-
-            # Return both response and per-call usage
-            parsed_response = json.loads(response.choices[0].message.content)
-            usage_stats = {
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "cost": call_cost,
-            }
-
-            return parsed_response, usage_stats
-        except Exception as e:
-            logging.error(f"Error generating structured response: {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
-
-    def generate_text_response_sync(self, prompt: str) -> str:
-        """Generate text response using sync client."""
-        try:
-            response = self.sync_client.chat.completions.create(
-                model=self._model,
-                messages=[
-                    self._system_prompt_msg,
-                    {
-                        "role": "user",
-                        "content": self._truncate_to_token_limit_if_necessary(prompt),
-                    },
-                ],
-                temperature=self._temperature,
-            )
-            self._update_usage_stats(response)
-            return response.choices[0].message.content
+            return response.output_text
         except Exception as e:
             logging.error(f"Error generating text response (sync): {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
     def generate_structured_response_sync(
-        self, prompt: str, output_schema: JSONSchema
+        self, prompt: str, output_schema: JSONSchema,
+        b64_png_strings: list[str] | None = None
     ) -> dict[str, Any]:
-        """Generate structured response using sync client."""
+        """Generate structured response using sync client, supporting image input."""
         try:
-            # TODO: delete this later
-            debug_rand_string = str(uuid.uuid4())
-            print(
-                f"Generating structured response (sync) for prompt {debug_rand_string}"
-            )
-            response = self.sync_client.chat.completions.create(
+            # Build the structured user message content
+            user_content: list[dict] = []
+            # Add input_text (prompt)
+            user_content.append({
+                "type": "input_text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            })
+            # Add input_image objects if present
+            if b64_png_strings:
+                for b64_png_string in b64_png_strings:
+                    user_content.append({
+                        "type": "input_image",
+                        "image_url": f"data:image/png;base64,{b64_png_string}",
+                    })
+            # Compose input message array
+            input_messages = [
+                self._system_prompt_msg,  # unchanged system prompt
+                {
+                    "role": "user",
+                    "content": user_content,
+                }
+            ]
+            response = self.sync_client.responses.create(
                 model=self._model,
-                messages=[
-                    self._system_prompt_msg,
-                    {
-                        "role": "user",
-                        "content": self._truncate_to_token_limit_if_necessary(prompt),
-                    },
-                ],
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": output_schema,
+                input=input_messages,
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": "structured_response",
+                        "schema": output_schema,
+                        "strict": True,
+                    }
                 },
                 temperature=self._temperature,
             )
-            print(
-                f"Generated structured response (sync) for prompt {debug_rand_string}"
-            )
-            self._update_usage_stats(response)
-            return json.loads(response.choices[0].message.content)
+            return json.loads(response.output_text)
         except Exception as e:
             logging.error(f"Error generating structured response (sync): {str(e)}")
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
-    def generate_structured_response_with_usage_sync(
-        self, prompt: str, output_schema: JSONSchema
-    ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """Generate structured response with per-call usage stats using sync client."""
-        try:
-            # TODO: delete this later
-            debug_rand_string = str(uuid.uuid4())
-            print(
-                f"Generating structured response (sync) for prompt {debug_rand_string}"
-            )
-            response = self.sync_client.chat.completions.create(
-                model=self._model,
-                messages=[
-                    self._system_prompt_msg,
-                    {
-                        "role": "user",
-                        "content": self._truncate_to_token_limit_if_necessary(prompt),
-                    },
-                ],
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": output_schema,
-                },
-                temperature=self._temperature,
-            )
-            print(
-                f"Generated structured response (sync) for prompt {debug_rand_string}"
-            )
-
-            # Calculate per-call usage before updating stats
-            usage = response.usage
-            input_tokens = usage.prompt_tokens
-            output_tokens = usage.completion_tokens
-            call_cost = (input_tokens * self._input_token_price) + (
-                output_tokens * self._output_token_price
-            )
-
-            # Update cumulative stats
-            self._update_usage_stats(response)
-
-            # Return both response and per-call usage
-            parsed_response = json.loads(response.choices[0].message.content)
-            usage_stats = {
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "cost": call_cost,
-            }
-
-            return parsed_response, usage_stats
-        except Exception as e:
-            logging.error(
-                f"Error generating structured response with usage (sync): {str(e)}"
-            )
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
-
     def _encode_as_tokens(self, prompt: str) -> list[int]:
-        return tiktoken.encoding_for_model(self._model).encode(prompt)
+        try:
+            return tiktoken.encoding_for_model(self._model).encode(prompt)
+        except KeyError:
+            return tiktoken.get_encoding("o200k_base").encode(prompt)
 
     def _decode_from_tokens(self, tokens: list[int]) -> str:
-        return tiktoken.encoding_for_model(self._model).decode(tokens)
+        try:
+            return tiktoken.encoding_for_model(self._model).decode(tokens)
+        except KeyError:
+            return tiktoken.get_encoding("o200k_base").decode(tokens)
 
     def count_tokens(self, prompt: str) -> int:
         return len(self._encode_as_tokens(prompt))

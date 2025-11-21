@@ -37,25 +37,6 @@ class LLMProvider(ABC):
         ...
 
     @abstractmethod
-    async def generate_structured_response_with_usage(
-        self, prompt: str, output_schema: JSONSchema
-    ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """
-        Generate a structured response and return both response and per-call usage stats.
-
-        Args:
-            prompt: The full prompt including context
-            output_schema: JSON schema defining the response structure
-
-        Returns:
-            Tuple of (response_dict, usage_dict) where usage_dict contains:
-                - input_tokens: int
-                - output_tokens: int
-                - cost: float
-        """
-        ...
-
-    @abstractmethod
     def generate_text_response_sync(self, prompt: str) -> str:
         """
         Generate a simple text response from the LLM (sync, for UDF functions).
@@ -81,25 +62,6 @@ class LLMProvider(ABC):
 
         Returns:
             dict: Response data that adheres to the specified schema
-        """
-        ...
-
-    @abstractmethod
-    def generate_structured_response_with_usage_sync(
-        self, prompt: str, output_schema: JSONSchema
-    ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """
-        Generate a structured response and return both response and per-call usage stats.
-
-        Args:
-            prompt: The full prompt including context
-            output_schema: JSON schema defining the response structure
-
-        Returns:
-            Tuple of (response_dict, usage_dict) where usage_dict contains:
-                - input_tokens: int
-                - output_tokens: int
-                - cost: float
         """
         ...
 
