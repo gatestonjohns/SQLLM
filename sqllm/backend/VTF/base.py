@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol, Any, Callable
 import sqlglot
+from ...models.token_usage import TokenUsage
 
 
 @dataclass

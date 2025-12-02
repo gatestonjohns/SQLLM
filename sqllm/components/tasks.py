@@ -14,16 +14,29 @@ def execution_tasks_section() -> rx.Component:
                         State.execution_tasks,
                         lambda task: rx.card(
                             rx.vstack(
-                                rx.badge(
-                                    task.type,
-                                    color_scheme="purple",
-                                    variant="soft",
-                                    mr="2",
+                                rx.vstack(
+                                    rx.badge(
+                                        task.type,
+                                        color_scheme="purple",
+                                        variant="soft",
+                                        mr="2",
+                                    ),
+                                    rx.cond(
+                                        task.usage,
+                                        rx.badge(
+                                            f"${task.usage.cost:.6f}",
+                                            variant="solid",
+                                            size="1",
+                                        ),
+                                        None,
+                                    ),
+                                    width="100%",
+                                    justify="between",
+                                    align="start",
                                 ),
                                 rx.markdown(task.summary, size="2"),
                                 rx.cond(
                                     task.result,
-                                    # Show Results button if result is present
                                     rx.button(
                                         rx.icon("table"),
                                         "Show Results",
@@ -34,7 +47,6 @@ def execution_tasks_section() -> rx.Component:
                                         disabled=False,
                                         width="100%",
                                     ),
-                                    # Otherwise show the progress bar
                                     rx.progress(
                                         value=task.percent_done,
                                         show_value=True,
@@ -53,16 +65,10 @@ def execution_tasks_section() -> rx.Component:
                                 align_items="start",
                                 width="100%",
                             ),
-                            max_width="50%",
-                            min_width="20%",
                             variant="surface",
-                            box_shadow="sm",
                         ),
                     ),
-                    align_items="stretch",
-                    width="100%",
-                    height="100%",
-                    overflow_x="scroll",
+                    align="center",
                 ),
                 rx.text("No execution tasks yet.", italic=True, color="gray"),
             ),
@@ -70,7 +76,5 @@ def execution_tasks_section() -> rx.Component:
             width="100%",
         ),
         width="100%",
-        overflow_y="none",
-        p="4",
         variant="classic",
     )

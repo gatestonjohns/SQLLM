@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Mapping
+from ...models.token_usage import TokenUsage
 
 JSONSchema = Mapping[str, Any]
 
@@ -8,12 +9,15 @@ class LLMProvider(ABC):
     """Abstract base class for LLM providers with both async and sync interfaces."""
 
     @abstractmethod
-    async def generate_text_response(self, prompt: str) -> str:
+    async def generate_text_response(
+        self, prompt: str, b64_png_strings: list[str] | None = None
+    ) -> str:
         """
-        Generate a simple text response from the LLM.
+        Async method to generate a simple text response from the LLM.
 
         Args:
             prompt: The full prompt including context
+            b64_png_strings: Optional list of base64-encoded PNG strings
 
         Returns:
             str: The text response from the LLM
@@ -22,14 +26,18 @@ class LLMProvider(ABC):
 
     @abstractmethod
     async def generate_structured_response(
-        self, prompt: str, output_schema: JSONSchema
+        self,
+        prompt: str,
+        output_schema: JSONSchema,
+        b64_png_strings: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Generate a structured response from the LLM using JSON Schema.
+        Async method to generate a structured response from the LLM using JSON Schema.
 
         Args:
             prompt: The full prompt including context
             output_schema: JSON schema (Mapping[str, Any]) defining the response structure
+            b64_png_strings: Optional list of base64-encoded PNG strings
 
         Returns:
             dict: Response data that adheres to the specified schema
@@ -37,12 +45,15 @@ class LLMProvider(ABC):
         ...
 
     @abstractmethod
-    def generate_text_response_sync(self, prompt: str) -> str:
+    def generate_text_response_sync(
+        self, prompt: str, b64_png_strings: list[str] | None = None
+    ) -> str:
         """
-        Generate a simple text response from the LLM (sync, for UDF functions).
+        Sync method to generate a simple text response from the LLM (for UDF functions).
 
         Args:
             prompt: The full prompt including context
+            b64_png_strings: Optional list of base64-encoded PNG strings
 
         Returns:
             str: The text response from the LLM
@@ -51,14 +62,18 @@ class LLMProvider(ABC):
 
     @abstractmethod
     def generate_structured_response_sync(
-        self, prompt: str, output_schema: JSONSchema
+        self,
+        prompt: str,
+        output_schema: JSONSchema,
+        b64_png_strings: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Generate a structured response from the LLM using JSON Schema.
+        Sync method to generate a structured response from the LLM using JSON Schema.
 
         Args:
             prompt: The full prompt including context
             output_schema: JSON schema (Mapping[str, Any]) defining the response structure
+            b64_png_strings: Optional list of base64-encoded PNG strings
 
         Returns:
             dict: Response data that adheres to the specified schema
@@ -69,34 +84,11 @@ class LLMProvider(ABC):
     def count_tokens(self, prompt: str) -> int:
         """
         Count the number of tokens in the prompt.
-        """
-        ...
 
-    @abstractmethod
-    def get_session_stats(self) -> dict[str, Any]:
-        """
-        Get cumulative session statistics including total input tokens, total output tokens,
-        total cost, and number of queries executed.
+        Args:
+            prompt: The prompt to count tokens for
 
         Returns:
-            dict: Dictionary containing 'total_input_tokens', 'total_output_tokens',
-                  'total_tokens', 'total_cost', and 'query_count'.
-        """
-        ...
-
-    @abstractmethod
-    def get_current_query_stats(self) -> dict[str, Any]:
-        """
-        Get accumulated statistics for the current query (which may include multiple LLM calls).
-
-        Returns:
-            dict: Dictionary containing 'input_tokens', 'output_tokens', 'total_tokens', and 'cost'.
-        """
-        ...
-
-    @abstractmethod
-    def reset_current_query_stats(self) -> None:
-        """
-        Reset the per-query statistics accumulator at the start of a new query execution.
+            int: The number of tokens in the prompt
         """
         ...

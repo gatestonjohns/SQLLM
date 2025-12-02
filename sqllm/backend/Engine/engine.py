@@ -1,20 +1,16 @@
 from __future__ import annotations
-import duckdb
+from duckdb import DuckDBPyConnection
 import pandas as pd
 from dataclasses import dataclass
 import sqlglot
 import re
 from typing import AsyncIterator
-from ..LLM.OpenAI import OpenAIProvider
+from ..LLM.base import LLMProvider, TokenUsage
+from ..LLM import context as llm_context
 from ..VTF.base import VTFCall
 from ..VTF.register import get_vtf_handlers
 from ..UDF.register import register_all_udfs
-
-
-@dataclass(frozen=True)
-class ExecResult:
-    df: pd.DataFrame
-    warnings: list[str]
+from ...models.execution_task import ExecResult
 
 
 @dataclass(frozen=True)
@@ -31,28 +27,42 @@ class TableRepresentationObject:
 
 
 class Engine:
+    """
+    The top level object for performing SQL and LLM powered operations.
+    """
+
     def __init__(
         self,
-        conn: duckdb.DuckDBPyConnection,
-        llm: OpenAIProvider,
+        conn: DuckDBPyConnection,
+        llm: LLMProvider,
     ):
+        """
+        Initialize the Engine. Also brings all VTFs into scope and registers all UDFs.
+
+        Args:
+            conn: The DuckDB database connection object
+            llm: The LLM provider object
+        """
         self.conn = conn
         self.llm = llm
         self.handlers = get_vtf_handlers()
         register_all_udfs(self.conn, llm_provider=self.llm)
 
-    async def execute(self, sql: str) -> AsyncIterator[tuple[int, bool, ExecResult | None]]:
+    async def execute(
+        self, sql: str
+    ) -> AsyncIterator[tuple[int, bool, ExecResult | None, TokenUsage | None]]:
         warnings: list[str] = []
+        task_total_usage = llm_context.init_usage()
 
         # Phase 1: Parsing (0-5%)
-        yield (0, False, None)
+        yield (0, False, None, None)
 
         trees = sqlglot.parse(sql, read="duckdb")
 
         if not trees:
             raise ValueError("No valid SQL statements provided.")
 
-        yield (5, False, None)
+        yield (5, False, None, None)
 
         df: pd.DataFrame | None = None  # Will store the result of the last statement
 
@@ -65,26 +75,26 @@ class Engine:
             for call in calls:
                 all_vtf_calls.append((i, call, tree))
 
-        yield (10, False, None)
+        yield (10, False, None, None)
 
         # Phase 3: VTF Materialization (10-85%)
         total_vtf_count = len(all_vtf_calls)
         if total_vtf_count > 0:
             for vtf_index, (stmt_index, call, tree) in enumerate(all_vtf_calls):
                 progress = 10 + int(((vtf_index + 1) / total_vtf_count) * 75)
-                yield (progress, False, None)
+                yield (progress, False, None, None)
 
                 table_name = await call.handler.materialize(call, self)
                 call.rewrite_to_table(table_name)
 
-        yield (85, False, None)
+        yield (85, False, None, task_total_usage)
 
         # Phase 4: DuckDB Execution (85-100%)
         total_stmt_count = len(trees)
         for i, tree in enumerate(trees):
             if total_stmt_count > 0:
                 progress = 85 + int(((i + 1) / total_stmt_count) * 15)
-                yield (progress, False, None)
+                yield (progress, False, None, None)
 
             rewritten_sql = tree.sql(dialect="duckdb")
             print(f"rewritten_sql (statement {i + 1}/{len(trees)}):", rewritten_sql)
@@ -98,13 +108,24 @@ class Engine:
         # Only print the final result
         print("df:", df.head())
 
-        yield (100, True, ExecResult(df=df, warnings=warnings))
+        yield (100, True, ExecResult(df=df, warnings=warnings), task_total_usage)
 
-    def _materialize_df(self, df: pd.DataFrame, table_name: str, temporary: bool = True) -> None:
+    def _materialize_df(
+        self, df: pd.DataFrame, table_name: str, temporary: bool = True
+    ):
+        """
+        Materialize a DataFrame into a DuckDB table.
+        Essentially creates a (temporary) DuckDB table in the database from the provided DataFrame.
+
+        Args:
+            df (pd.DataFrame): The DataFrame to materialize
+            table_name (str): The name of the table to materialize the DataFrame into
+            temporary (bool): Whether the table should be temporary
+        """
         temp_df_table_name = f"__reg_{table_name}"
         self.conn.register(temp_df_table_name, df)
         self.conn.execute(
-            f"CREATE OR REPLACE {"TEMP" if temporary else ""} TABLE {table_name} AS SELECT * FROM {temp_df_table_name}"
+            f"CREATE OR REPLACE {'TEMP' if temporary else ''} TABLE {table_name} AS SELECT * FROM {temp_df_table_name}"
         )
         self.conn.unregister(temp_df_table_name)
 
@@ -158,7 +179,10 @@ class Engine:
         print("df: ", df.head())
         print("cleaned_table_name: ", cleaned_table_name)
 
-        print("all_existing_table_names from list_tables: ", self._get_existing_table_names())
+        print(
+            "all_existing_table_names from list_tables: ",
+            self._get_existing_table_names(),
+        )
 
         return cleaned_table_name, ExecResult(df=df, warnings=[])
 

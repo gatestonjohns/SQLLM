@@ -2,12 +2,11 @@ import reflex as rx
 import logging
 import json
 import pandas as pd
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
-from ..state import State
-from ..backend.Engine.engine import TableRepresentationObject
+from ...state import State
+from ...models.execution_task import ExecutionTask
+from ...backend.Engine.engine import TableRepresentationObject
 
 
 # Type definitions for test results
@@ -312,32 +311,15 @@ class JoinerState(rx.State):
                 print("=" * 80 + "\n")
                 logging.warning(f"Could not format SQL for debug output: {e}")
 
-            # Execute the query directly in thread pool (wait for result)
-            logging.info(
-                f"Executing test join: {self.left_table_name} ⋈ {self.right_table_name} (test_size={self.test_size}, mode={self.test_mode_type})"
+            # Create execution task for test join
+            task = ExecutionTask(
+                sql=sql,
+                summary=f"TEST JOIN {self.left_table_name} ⋈ {self.right_table_name}",
+                type="JOIN_TEST",
             )
 
-            # Get main state to access engine
-            main_state = await self.get_state(State)
-
-            # Execute in thread pool and wait for result
-            loop = asyncio.get_event_loop()
-            with ThreadPoolExecutor() as executor:
-                result = await loop.run_in_executor(
-                    executor, main_state._engine.execute, sql
-                )
-
-            # Update main state's LLM stats to reflect this query's token usage
-            main_state._update_token_stats()
-
-            # Now we have the result immediately, no stale data!
-            results_df = result.df
-            self.test_results = self._unpack_test_results(results_df)
-
-            # Calculate cost estimate
-            await self._calculate_cost_estimate()
-
-            logging.info(f"Test join completed with {len(self.test_results)} results")
+            # Submit to execution system
+            return State.submit_execution_task(task)
 
         except Exception as e:
             raise RuntimeError(f"Error executing test join: {str(e)}")
@@ -479,11 +461,12 @@ class JoinerState(rx.State):
         logging.info(
             f"Executing LLM join: {self.left_table_name} ⋈ {self.right_table_name}"
         )
-        return State.submit_execution_task(
-            "SMART_JOIN",
-            sql,
-            f"`{self.left_table_name}` ⋈ `{self.right_table_name}`",
+        task = ExecutionTask(
+            sql=sql,
+            summary=f"`{self.left_table_name}` ⋈ `{self.right_table_name}`",
+            type="SMART_JOIN",
         )
+        return State.submit_execution_task(task)
 
     def _generate_join_sql(self) -> str:
         """Generate the SQL for the join with column renaming."""

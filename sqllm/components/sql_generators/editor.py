@@ -1,6 +1,7 @@
 import reflex as rx
 from reflex_monaco import monaco
-from ..state import State
+from ...state import State
+from ...models.execution_task import ExecutionTask
 
 DEFAULT_SQL_QUERY = (
     "SELECT llm('What is the color of the sky in hexadecimal?') as sky_color_hex;"
@@ -12,10 +13,23 @@ class EditorState(rx.State):
 
     sql_query: str = DEFAULT_SQL_QUERY
 
+    def _get_query_summary(self) -> str:
+        """Get the summary of the SQL query by truncating."""
+        if len(self.sql_query) > 50:
+            return self.sql_query[:50] + "..."
+        else:
+            return self.sql_query
+
     @rx.event
     async def run_query(self):
         """Run the query using global state event handler."""
-        return State.submit_execution_task("EDITOR", self.sql_query, self.sql_query[:50] + "..." if len(self.sql_query) > 50 else self.sql_query)
+        task = ExecutionTask(
+            sql=self.sql_query,
+            summary=self._get_query_summary(),
+            type="EDITOR",
+        )
+
+        return State.submit_execution_task(task)
 
     @rx.event
     def set_sql_query(self, sql_query: str):

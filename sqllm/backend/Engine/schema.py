@@ -4,14 +4,11 @@ from typing import List
 import re
 
 _DUCK_TYPES = {
-    "TEXT",
     "VARCHAR",
     "INTEGER",
-    "BIGINT",
-    "DOUBLE",
+    "FLOAT",
     "BOOLEAN",
-    "DATE",
-    "TIMESTAMP",
+    "TIME",
 }
 
 
@@ -50,7 +47,6 @@ def parse_schema_grammar(spec: str) -> SchemaSpec:
     for p in parts:
         name, ty = p.split(None, 1)
         tnorm = ty.upper().replace("INT ", "INTEGER ").replace("INT", "INTEGER")
-        tnorm = tnorm.replace("VARCHAR", "TEXT")
         tnorm = tnorm.replace("FLOAT", "DOUBLE")
         tmain = tnorm.split("(")[0].strip()
         if tmain not in _DUCK_TYPES:

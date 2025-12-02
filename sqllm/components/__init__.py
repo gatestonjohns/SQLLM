@@ -1,7 +1,7 @@
-from .editor import editor_section
-from .pdf_to_table import gui_section
+from .sql_generators.editor import editor_section
+from .sql_generators.pdf_to_table import gui_section
+from .sql_generators.smart_join import joiner_section
 from .uploader import uploader_section
-from .smart_join import joiner_section
 from .results import results_section
 from .tasks import execution_tasks_section
 

@@ -12,12 +12,12 @@ class ResultsState(rx.State):
     @rx.var
     async def results_df(self) -> pd.DataFrame:
         """Get the results dataframe."""
-        return await self.get_var_value(State.latest_results_df)
+        return await self.get_var_value(State.displayed_results_df)
 
     @rx.var
     async def results_df_present(self) -> bool:
         """Check if the results dataframe is present."""
-        results_df = await self.get_var_value(State.latest_results_df)
+        results_df = await self.get_var_value(State.displayed_results_df)
         return not results_df.empty
 
     @rx.event

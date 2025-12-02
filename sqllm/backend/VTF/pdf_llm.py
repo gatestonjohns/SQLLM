@@ -5,7 +5,8 @@ import pandas as pd
 from sqlglot import expressions as exp
 from .base import VTFCall
 from ..Engine.schema import parse_schema_grammar, build_json_schema
-from ..PDF.utils import extract_full_pdf_text
+from ..workflows.pdftodf import pdf_to_dataframe
+from ..LLM.base import TokenUsage
 
 
 class LLMPDFToTableVTF:
@@ -53,12 +54,10 @@ class LLMPDFToTableVTF:
         force = bool(options.get("force_recreate", False))
 
         if not table_exists or force:
-            df = await self._ingest_pdf_to_df(
-                pdf_id,
-                schema_spec,
-                json_schema,
-                prompt_text,
-                options,
+            df = await pdf_to_dataframe(
+                pdf_path=pdf_id,
+                json_schema=json_schema,
+                prompt=prompt_text or "",
                 llm=engine.llm,
             )
             engine._materialize_df(df, table_name)
@@ -67,31 +66,6 @@ class LLMPDFToTableVTF:
 
         call.rewrite_to_table(table_name)
         return table_name
-
-    async def _ingest_pdf_to_df(
-        self,
-        pdf_id: str,
-        schema_spec,
-        json_schema: dict[str, Any],
-        prompt_text: str | None,
-        options: dict[str, Any],
-        *,
-        llm,
-    ) -> pd.DataFrame:
-        full_pdf_text = extract_full_pdf_text(pdf_id)
-        prompt = self._build_prompt(schema_spec, full_pdf_text, prompt_text)
-        token_count = llm.count_tokens(prompt)
-        obj = await llm.generate_structured_response(prompt, json_schema)
-        logging.info("llm_pdf_to_table(%s) prompt tokens=%s", pdf_id, token_count)
-        rows = obj.get("rows", obj)
-        if not isinstance(rows, list):
-            raise ValueError("LLM response did not include a 'rows' array")
-        df = pd.DataFrame.from_records(
-            rows, columns=[c.name for c in schema_spec.columns]
-        )
-        for col, dtype in schema_spec.pandas_dtypes.items():
-            df[col] = df[col].astype(dtype, errors="ignore")
-        return df
 
     def _build_prompt(
         self,

@@ -4,6 +4,7 @@ from duckdb.typing import VARCHAR
 from .base import BaseUDF
 from ..LLM.base import LLMProvider
 
+
 class LLMUDF(BaseUDF):
     name = "llm"
 
@@ -15,7 +16,8 @@ class LLMUDF(BaseUDF):
             "Given the following prompt, produce a concise, text answer to be inserted directly into a table cell. Only include the text of the answer, no other formatting, reasoning, or anyting else.\n"
             f"Prompt: {prompt}\n"
         )
-        return self._llm_provider.generate_text_response_sync(full_prompt)
+        result = self._llm_provider.generate_text_response_sync(full_prompt)
+        return result
 
     def register(self, conn: duckdb.DuckDBPyConnection) -> None:
         conn.create_function(

@@ -1,7 +1,7 @@
 import reflex as rx
 import os
-from ..state import State
-
+from ...state import State
+from ...models.execution_task import ExecutionTask
 
 class BatchState(rx.State):
     """State management for batch PDF processing."""
@@ -117,8 +117,15 @@ class BatchState(rx.State):
 
         print("full_sql from gui:", full_sql)
 
+        # Create a new execution task
+        task = ExecutionTask(
+            sql=full_sql,
+            summary=f"CREATE `{table_name}`",
+            type="PDF_TO_TABLE",
+        )
+
         # Submit to the execution task system (following editor.py pattern)
-        return State.submit_execution_task("PDF_TO_TABLE", full_sql, f"Creating `{table_name}` from PDFs")
+        return State.submit_execution_task(task)
 
     @rx.event
     def set_pdf_batch_table_name(self, value: str):
