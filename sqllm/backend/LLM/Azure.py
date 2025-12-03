@@ -37,9 +37,6 @@ class AzureProvider(LLMProvider):
         self._azure_endpoint = azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
         self._api_version = api_version
 
-        if not self._azure_endpoint:
-            raise ValueError("azure_endpoint required for Azure provider")
-
         # Lazy-initialized clients
         self._async_client: Optional[AsyncAzureOpenAI] = None
         self._sync_client: Optional[AzureOpenAI] = None

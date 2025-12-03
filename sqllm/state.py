@@ -3,13 +3,15 @@ import pandas as pd
 import logging
 from .backend.Engine.engine import Engine, TableRepresentationObject
 from .backend.LLM.OpenAI import OpenAIProvider
-from .backend.LLM.base import TokenUsage
+from .backend.LLM.Azure import AzureProvider
+from rxconfig import isProd
+from .backend.LLM.base import TokenUsage, LLMProvider
 from .models.execution_task import ExecutionTask
 import duckdb
 
 # TODO: these need to exist on session level
-llm = OpenAIProvider()
-engine = Engine(conn=duckdb.connect(":memory:"), llm=llm)
+llm: LLMProvider = AzureProvider() if isProd() else OpenAIProvider()
+engine: Engine = Engine(conn=duckdb.connect(":memory:"), llm=llm)
 
 
 class State(rx.State):
