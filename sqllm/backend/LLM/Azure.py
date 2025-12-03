@@ -4,38 +4,46 @@ import os
 import json
 import logging
 from .context import accumulate_usage
-from openai import AsyncOpenAI, OpenAI
-from openai.types.responses import Response
+from openai import AsyncAzureOpenAI, AzureOpenAI
 import tiktoken
 import threading
 
 
-class OpenAIProvider(LLMProvider):
+class AzureProvider(LLMProvider):
     """
-    OpenAI implementation with lazy-initialized sync and async clients.
+    Azure OpenAI implementation using chat completions endpoint.
     """
 
     def __init__(
         self,
         api_key: Optional[str] = None,
         model: Optional[str] = None,
+        azure_endpoint: Optional[str] = None,
+        api_version: str = "2024-12-01-preview",
         token_limit: int = 190000,
     ):
         """
-        Initialize OpenAI provider.
+        Initialize Azure OpenAI provider.
 
         Args:
             api_key: API key (auto-detects from env if not provided)
-            model: Model name (auto-selects based on environment if not provided)
+            model: Model name (defaults to gpt-4.1-nano)
+            azure_endpoint: Azure endpoint (required, auto-detects from env)
+            api_version: Azure API version
             token_limit: Maximum tokens for prompt
         """
-        self._api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self._model = model or "gpt-4.1-2025-04-14"
+        self._api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY")
+        self._model = model or "gpt-4.1-nano"
+        self._azure_endpoint = azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
+        self._api_version = api_version
+
+        if not self._azure_endpoint:
+            raise ValueError("azure_endpoint required for Azure provider")
 
         # Lazy-initialized clients
-        self._async_client: Optional[AsyncOpenAI] = None
-        self._sync_client: Optional[OpenAI] = None
-        self._client_lock = threading.Lock()  # thread safe lazy initialization
+        self._async_client: Optional[AsyncAzureOpenAI] = None
+        self._sync_client: Optional[AzureOpenAI] = None
+        self._client_lock = threading.Lock()
 
         # Configuration
         self._token_limit = token_limit
@@ -54,32 +62,38 @@ class OpenAIProvider(LLMProvider):
         self._output_token_price: float = 0.000004  # $0.40/1M tokens
 
     @property
-    def async_client(self) -> AsyncOpenAI:
+    def async_client(self) -> AsyncAzureOpenAI:
         """Lazy-initialize and return async client."""
         if self._async_client is None:
             with self._client_lock:
-                if self._async_client is None:  # check again after getting lock
+                if self._async_client is None:
                     self._async_client = self._create_async_client()
         return self._async_client
 
     @property
-    def sync_client(self) -> OpenAI:
+    def sync_client(self) -> AzureOpenAI:
         """Lazy-initialize and return sync client."""
         if self._sync_client is None:
             with self._client_lock:
-                if self._sync_client is None:  # check again after getting lock
+                if self._sync_client is None:
                     self._sync_client = self._create_sync_client()
         return self._sync_client
 
-    def _create_async_client(self) -> AsyncOpenAI:
-        """Create the async client."""
-        logging.info("Initializing AsyncOpenAI client")
-        return AsyncOpenAI(api_key=self._api_key)
+    def _create_async_client(self) -> AsyncAzureOpenAI:
+        logging.info("Initializing AsyncAzureOpenAI client")
+        return AsyncAzureOpenAI(
+            api_key=self._api_key,
+            azure_endpoint=self._azure_endpoint,
+            api_version=self._api_version,
+        )
 
-    def _create_sync_client(self) -> OpenAI:
-        """Create the sync client."""
-        logging.info("Initializing OpenAI sync client")
-        return OpenAI(api_key=self._api_key)
+    def _create_sync_client(self) -> AzureOpenAI:
+        logging.info("Initializing AzureOpenAI sync client")
+        return AzureOpenAI(
+            api_key=self._api_key,
+            azure_endpoint=self._azure_endpoint,
+            api_version=self._api_version,
+        )
 
     async def generate_text_response(
         self, prompt: str, b64_png_strings: list[str] | None = None
@@ -88,38 +102,36 @@ class OpenAIProvider(LLMProvider):
             user_content: list[dict] = []
             user_content.append(
                 {
-                    "type": "input_text",
+                    "type": "text",
                     "text": self._truncate_to_token_limit_if_necessary(prompt),
                 }
             )
-            # Add input_image objects if present
             if b64_png_strings:
                 for b64_png_string in b64_png_strings:
                     user_content.append(
                         {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{b64_png_string}"
+                            },
                         }
                     )
-            # Compose input message array
-            input_messages = [
+
+            messages = [
                 self._system_prompt_msg,
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
+                {"role": "user", "content": user_content},
             ]
 
-            response = await self.async_client.responses.create(
+            response = await self.async_client.chat.completions.create(
                 model=self._model,
-                input=input_messages,
+                messages=messages,
                 temperature=self._temperature,
             )
             self._get_token_usage(response)
-            return response.output_text
+            return response.choices[0].message.content or ""
         except Exception as e:
             logging.error(f"Error generating text response: {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
 
     async def generate_structured_response(
         self,
@@ -131,46 +143,47 @@ class OpenAIProvider(LLMProvider):
             user_content: list[dict] = []
             user_content.append(
                 {
-                    "type": "input_text",
+                    "type": "text",
                     "text": self._truncate_to_token_limit_if_necessary(prompt),
                 }
             )
-            # Add input_image objects if present
             if b64_png_strings:
                 for b64_png_string in b64_png_strings:
                     user_content.append(
                         {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{b64_png_string}"
+                            },
                         }
                     )
-            # Compose input message array
-            input_messages = [
+
+            messages = [
                 self._system_prompt_msg,
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
+                {"role": "user", "content": user_content},
             ]
 
-            response = await self.async_client.responses.create(
+            response = await self.async_client.chat.completions.create(
                 model=self._model,
-                input=input_messages,
-                text={
-                    "format": {
-                        "type": "json_schema",
+                messages=messages,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
                         "name": "structured_response",
                         "schema": output_schema["schema"],
                         "strict": True,
-                    }
+                    },
                 },
                 temperature=self._temperature,
             )
             self._get_token_usage(response)
-            return json.loads(response.output_text)
+            content = response.choices[0].message.content
+            if not content:
+                raise ValueError("Empty response from Azure OpenAI")
+            return json.loads(content)
         except Exception as e:
             logging.error(f"Error generating structured response: {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
 
     def generate_text_response_sync(
         self, prompt: str, b64_png_strings: list[str] | None = None
@@ -179,37 +192,36 @@ class OpenAIProvider(LLMProvider):
             user_content: list[dict] = []
             user_content.append(
                 {
-                    "type": "input_text",
+                    "type": "text",
                     "text": self._truncate_to_token_limit_if_necessary(prompt),
                 }
             )
-            # Add input_image objects if present
             if b64_png_strings:
                 for b64_png_string in b64_png_strings:
                     user_content.append(
                         {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{b64_png_string}"
+                            },
                         }
                     )
-            # Compose input message array
-            input_messages = [
+
+            messages = [
                 self._system_prompt_msg,
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
+                {"role": "user", "content": user_content},
             ]
-            response = self.sync_client.responses.create(
+
+            response = self.sync_client.chat.completions.create(
                 model=self._model,
-                input=input_messages,
+                messages=messages,
                 temperature=self._temperature,
             )
             self._get_token_usage(response)
-            return response.output_text
+            return response.choices[0].message.content or ""
         except Exception as e:
             logging.error(f"Error generating text response (sync): {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
 
     def generate_structured_response_sync(
         self,
@@ -217,50 +229,51 @@ class OpenAIProvider(LLMProvider):
         output_schema: JSONSchema,
         b64_png_strings: list[str] | None = None,
     ) -> dict[str, Any]:
-        """Generate structured response using sync client, supporting image input."""
         try:
             user_content: list[dict] = []
             user_content.append(
                 {
-                    "type": "input_text",
+                    "type": "text",
                     "text": self._truncate_to_token_limit_if_necessary(prompt),
                 }
             )
-            # Add input_image objects if present
             if b64_png_strings:
                 for b64_png_string in b64_png_strings:
                     user_content.append(
                         {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{b64_png_string}"
+                            },
                         }
                     )
-            # Compose input message array
-            input_messages = [
-                self._system_prompt_msg,  # unchanged system prompt
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
+
+            messages = [
+                self._system_prompt_msg,
+                {"role": "user", "content": user_content},
             ]
-            response = self.sync_client.responses.create(
+
+            response = self.sync_client.chat.completions.create(
                 model=self._model,
-                input=input_messages,
-                text={
-                    "format": {
-                        "type": "json_schema",
+                messages=messages,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
                         "name": "structured_response",
                         "schema": output_schema["schema"],
                         "strict": True,
-                    }
+                    },
                 },
                 temperature=self._temperature,
             )
             self._get_token_usage(response)
-            return json.loads(response.output_text)
+            content = response.choices[0].message.content
+            if not content:
+                raise ValueError("Empty response from Azure OpenAI")
+            return json.loads(content)
         except Exception as e:
             logging.error(f"Error generating structured response (sync): {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
 
     def _encode_as_tokens(self, prompt: str) -> list[int]:
         try:
@@ -288,9 +301,10 @@ class OpenAIProvider(LLMProvider):
             )
         return prompt
 
-    def _get_token_usage(self, response: Response) -> TokenUsage:
-        input_tokens = response.usage.input_tokens
-        output_tokens = response.usage.output_tokens
+    def _get_token_usage(self, response) -> TokenUsage:
+        # Chat completions usage format
+        input_tokens = response.usage.prompt_tokens
+        output_tokens = response.usage.completion_tokens
         total_tokens = input_tokens + output_tokens
         cost = (input_tokens * self._input_token_price) + (
             output_tokens * self._output_token_price
