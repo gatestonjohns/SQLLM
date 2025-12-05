@@ -2,7 +2,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol, Any, Callable
 import sqlglot
-from ...models.token_usage import TokenUsage
 
 
 @dataclass
@@ -22,5 +21,5 @@ class VirtualTableFunction(Protocol):
     def discover(self, tree: sqlglot.Expression) -> list[VTFCall]:
         """Traverse the parsed SQL tree and return every invocation of this VTF as `VTFCall` objects."""
 
-    async def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine, tracker=None) -> str:
         """Create or reuse the physical table backing `call` and return the replacement table name."""

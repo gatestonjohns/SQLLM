@@ -18,6 +18,7 @@ from docling_core.types.doc.document import ProvenanceItem
 
 import io
 import base64
+import asyncio
 
 
 def _get_table_markdown_and_b64_img(
@@ -55,7 +56,24 @@ def _get_table_markdown_and_b64_img(
     return b64_str, ordered_text
 
 
-def _get_relevant_section_content(
+async def _process_table_element(
+    llm: LLMProvider,
+    pdfplumber_document: PlumberPDF,
+    prov: ProvenanceItem,
+) -> tuple[str, str]:
+    """
+    Process a single table element: crop image and get markdown from LLM.
+    Returns (markdown_text, b64_image_string).
+    """
+    new_b64_str, _ = _get_table_markdown_and_b64_img(pdfplumber_document, prov)
+    new_table_str = await llm.generate_text_response(
+        "Please extract a markdown representation of the table in the image. Do not include any other text in your response.",
+        [new_b64_str],
+    )
+    return new_table_str, new_b64_str
+
+
+async def _get_relevant_section_content(
     llm: LLMProvider,
     pdfplumber_document: PlumberPDF,
     document_elements: list[NodeItem],
@@ -64,40 +82,47 @@ def _get_relevant_section_content(
     result_str = ""
     b64_imgs: list[str] = []
 
+    # Identify tasks to run in parallel
+    pending_tasks = []
+    # Store placeholders in the result stream to maintain order
+    ordered_results: list[str | asyncio.Task] = []
+
     for contiguous_range in relevant_section_ranges:
         for element in document_elements[
             contiguous_range[0] : (contiguous_range[1] + 1)
         ]:
             if isinstance(element, TextItem):
-                result_str += element.text
+                # Text is immediate
+                ordered_results.append(element.text)
             elif isinstance(element, TableItem):
                 for prov in element.prov:
-                    new_b64_str, _ = _get_table_markdown_and_b64_img(
-                        pdfplumber_document, prov
+                    # Tables need async processing
+                    task = asyncio.create_task(
+                        _process_table_element(llm, pdfplumber_document, prov)
                     )
-                    b64_imgs.append(new_b64_str)
-                    new_table_str = llm.generate_text_response_sync(
-                        "Please extract a markdown representation of the table in the image. Do not include any other text in your response.",
-                        [new_b64_str],
-                    )
-                    result_str += new_table_str
+                    pending_tasks.append(task)
+                    ordered_results.append(task)
+
+    # Wait for all table processing to complete
+    if pending_tasks:
+        await asyncio.gather(*pending_tasks)
+
+    # Assemble final ordered result
+    for item in ordered_results:
+        if isinstance(item, str):
+            result_str += item
+        else:
+            # It's a completed task returning (markdown, b64_img)
+            markdown, img_b64 = item.result()
+            result_str += markdown
+            b64_imgs.append(img_b64)
 
     return result_str, b64_imgs
-
-
-def _build_prompt(
-    pdf_text: str,
-    prompt: str,
-) -> str:
-    return f"Extract structured data from the following PDF text into the specified JSON schema. Prompt: {prompt}\n\nPDF Text: {pdf_text}"
 
 
 def _get_docling_document(pdf_path: str) -> DoclingDocument:
     pdf_options = PdfPipelineOptions()
     pdf_options.do_ocr = False  # disable OCR
-    # pdf_options.do_table_structure = True  # keep table parsing
-    pdf_options.images_scale = 2.0  # 1.0 ~ 72 DPI; bump for higher res
-    pdf_options.generate_page_images = True  # <-- important
 
     converter = DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
@@ -184,13 +209,13 @@ RELEVANT_SECTIONS_JSON_SCHEMA = {
 }
 
 
-def _get_relevant_sections(
+async def _get_relevant_sections(
     llm: LLMProvider,
     row_json_schema: dict[str, Any],
     user_description: str,
     custom_element_tree: str,
 ) -> list[dict[str, Any]]:
-    relevant_sections = llm.generate_structured_response_sync(
+    relevant_sections = await llm.generate_structured_response(
         f"""
         You are the first step in a multi-step workflow to extract structured, row-based data from a document.
         Your task is to identify high-level, semantically coherent sections of the document that contain the data necessary to generate rows for the target output table.
@@ -220,7 +245,7 @@ def _get_relevant_sections(
     return relevant_sections["relevant_sections"]
 
 
-def _single_section_extraction_pass(
+async def _single_section_extraction_pass(
     llm: LLMProvider,
     output_table: dict[int, dict],
     row_json_schema: dict[str, Any],
@@ -251,7 +276,7 @@ The content of the current section to extract new or modify existing rows in the
 
 {content_str}
 """
-    response = llm.generate_structured_response_sync(
+    response = await llm.generate_structured_response(
         prompt,
         {
             "schema": {
@@ -290,11 +315,20 @@ async def pdf_to_dataframe(
     prompt: str,
     *,
     llm,
+    tracker=None,  # ProgressTracker
 ) -> pd.DataFrame:
     output_table: dict[int, dict] = {}
 
+    # Initial Analysis Phase (approx 10% of this task)
+    phase_analysis = tracker.add_phase("Analysis", 0.1) if tracker else None
+    phase_extraction = tracker.add_phase("Extraction", 0.9) if tracker else None
+
+    if phase_analysis:
+        phase_analysis.set_total(1)
+
     pdfplumber_document = pdfplumber.open(pdf_path)
-    docling_document = _get_docling_document(pdf_path)
+    # Offload the blocking docling processing to a thread
+    docling_document = await asyncio.to_thread(_get_docling_document, pdf_path)
 
     print(json_schema)
 
@@ -304,16 +338,23 @@ async def pdf_to_dataframe(
         docling_document
     )
 
-    relevant_sections = _get_relevant_sections(
+    relevant_sections = await _get_relevant_sections(
         llm, json_schema, prompt, custom_element_tree
     )
 
+    if phase_analysis:
+        phase_analysis.increment()
+
+    # Extraction Phase
+    if phase_extraction:
+        phase_extraction.set_total(len(relevant_sections))
+
     for rs in relevant_sections:
-        content_str, b64_pngs = _get_relevant_section_content(
+        content_str, b64_pngs = await _get_relevant_section_content(
             llm, pdfplumber_document, custom_elements, rs["ranges"]
         )
 
-        response_output_table = _single_section_extraction_pass(
+        response_output_table = await _single_section_extraction_pass(
             llm,
             output_table,
             row_json_schema,
@@ -329,6 +370,9 @@ async def pdf_to_dataframe(
         }
 
         output_table.update(new_output_table)
+
+        if phase_extraction:
+            phase_extraction.increment()
 
     output_table_row_dicts = [
         output_table_row_dict for output_table_row_dict in output_table.values()

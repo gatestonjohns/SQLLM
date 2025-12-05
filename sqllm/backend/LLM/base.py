@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Any, Mapping
-from ...models.token_usage import TokenUsage
 
 JSONSchema = Mapping[str, Any]
 

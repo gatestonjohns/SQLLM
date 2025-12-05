@@ -5,8 +5,9 @@ from .backend.Engine.engine import Engine, TableRepresentationObject
 from .backend.LLM.OpenAI import OpenAIProvider
 from .backend.LLM.Azure import AzureProvider
 from rxconfig import isProd
-from .backend.LLM.base import TokenUsage, LLMProvider
+from .backend.LLM.base import LLMProvider
 from .models.execution_task import ExecutionTask
+from .models.token_usage import TokenUsage
 import duckdb
 
 # TODO: these need to exist on session level
@@ -38,7 +39,9 @@ class State(rx.State):
         yield
 
         try:
-            async for progress, is_done, result, usage in engine.execute(task.sql):
+            async for progress, is_done, result, usage in engine.execute(
+                str(task.id), task.sql
+            ):
                 async with self:
                     task.percent_done = progress
 
@@ -62,6 +65,12 @@ class State(rx.State):
             if task.result is not None:
                 self.displayed_results_df = task.result.df
                 self.available_tables = engine.list_tables()
+
+    @rx.event
+    def cancel_execution_task(self, task: ExecutionTask):
+        """Cancel a running execution task."""
+        engine.cancel_task(str(task.id))
+        self.execution_tasks = [t for t in self.execution_tasks if t.id != task.id]
 
     @rx.event
     def update_available_tables(self):

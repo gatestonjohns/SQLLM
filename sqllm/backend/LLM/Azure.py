@@ -1,4 +1,4 @@
-from .base import LLMProvider, JSONSchema, TokenUsage
+from .base import LLMProvider, JSONSchema
 from typing import Optional, Any
 import os
 import json
@@ -7,6 +7,7 @@ from .context import accumulate_usage
 from openai import AsyncAzureOpenAI, AzureOpenAI
 import tiktoken
 import threading
+from ...models.token_usage import TokenUsage
 
 
 class AzureProvider(LLMProvider):
@@ -95,40 +96,36 @@ class AzureProvider(LLMProvider):
     async def generate_text_response(
         self, prompt: str, b64_png_strings: list[str] | None = None
     ) -> str:
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{b64_png_string}"
-                            },
-                        }
-                    )
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{b64_png_string}"
+                        },
+                    }
+                )
 
-            messages = [
-                self._system_prompt_msg,
-                {"role": "user", "content": user_content},
-            ]
+        messages = [
+            self._system_prompt_msg,
+            {"role": "user", "content": user_content},
+        ]
 
-            response = await self.async_client.chat.completions.create(
-                model=self._model,
-                messages=messages,
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            return response.choices[0].message.content or ""
-        except Exception as e:
-            logging.error(f"Error generating text response: {str(e)}")
-            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
+        response = await self.async_client.chat.completions.create(
+            model=self._model,
+            messages=messages,
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        return response.choices[0].message.content or ""
 
     async def generate_structured_response(
         self,
@@ -136,89 +133,81 @@ class AzureProvider(LLMProvider):
         output_schema: JSONSchema,
         b64_png_strings: list[str] | None = None,
     ) -> dict[str, Any]:
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{b64_png_string}"
-                            },
-                        }
-                    )
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{b64_png_string}"
+                        },
+                    }
+                )
 
-            messages = [
-                self._system_prompt_msg,
-                {"role": "user", "content": user_content},
-            ]
+        messages = [
+            self._system_prompt_msg,
+            {"role": "user", "content": user_content},
+        ]
 
-            response = await self.async_client.chat.completions.create(
-                model=self._model,
-                messages=messages,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "structured_response",
-                        "schema": output_schema["schema"],
-                        "strict": True,
-                    },
+        response = await self.async_client.chat.completions.create(
+            model=self._model,
+            messages=messages,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "structured_response",
+                    "schema": output_schema["schema"],
+                    "strict": True,
                 },
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            content = response.choices[0].message.content
-            if not content:
-                raise ValueError("Empty response from Azure OpenAI")
-            return json.loads(content)
-        except Exception as e:
-            logging.error(f"Error generating structured response: {str(e)}")
-            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
+            },
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        content = response.choices[0].message.content
+        if not content:
+            raise ValueError("Empty response from Azure OpenAI")
+        return json.loads(content)
 
     def generate_text_response_sync(
         self, prompt: str, b64_png_strings: list[str] | None = None
     ) -> str:
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{b64_png_string}"
-                            },
-                        }
-                    )
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{b64_png_string}"
+                        },
+                    }
+                )
 
-            messages = [
-                self._system_prompt_msg,
-                {"role": "user", "content": user_content},
-            ]
+        messages = [
+            self._system_prompt_msg,
+            {"role": "user", "content": user_content},
+        ]
 
-            response = self.sync_client.chat.completions.create(
-                model=self._model,
-                messages=messages,
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            return response.choices[0].message.content or ""
-        except Exception as e:
-            logging.error(f"Error generating text response (sync): {str(e)}")
-            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
+        response = self.sync_client.chat.completions.create(
+            model=self._model,
+            messages=messages,
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        return response.choices[0].message.content or ""
 
     def generate_structured_response_sync(
         self,
@@ -226,51 +215,47 @@ class AzureProvider(LLMProvider):
         output_schema: JSONSchema,
         b64_png_strings: list[str] | None = None,
     ) -> dict[str, Any]:
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{b64_png_string}"
-                            },
-                        }
-                    )
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{b64_png_string}"
+                        },
+                    }
+                )
 
-            messages = [
-                self._system_prompt_msg,
-                {"role": "user", "content": user_content},
-            ]
+        messages = [
+            self._system_prompt_msg,
+            {"role": "user", "content": user_content},
+        ]
 
-            response = self.sync_client.chat.completions.create(
-                model=self._model,
-                messages=messages,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "structured_response",
-                        "schema": output_schema["schema"],
-                        "strict": True,
-                    },
+        response = self.sync_client.chat.completions.create(
+            model=self._model,
+            messages=messages,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "structured_response",
+                    "schema": output_schema["schema"],
+                    "strict": True,
                 },
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            content = response.choices[0].message.content
-            if not content:
-                raise ValueError("Empty response from Azure OpenAI")
-            return json.loads(content)
-        except Exception as e:
-            logging.error(f"Error generating structured response (sync): {str(e)}")
-            raise RuntimeError(f"Azure OpenAI API error: {str(e)}")
+            },
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        content = response.choices[0].message.content
+        if not content:
+            raise ValueError("Empty response from Azure OpenAI")
+        return json.loads(content)
 
     def _encode_as_tokens(self, prompt: str) -> list[int]:
         try:

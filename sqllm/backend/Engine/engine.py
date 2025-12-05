@@ -4,13 +4,16 @@ import pandas as pd
 from dataclasses import dataclass
 import sqlglot
 import re
+import asyncio
 from typing import AsyncIterator
-from ..LLM.base import LLMProvider, TokenUsage
+from ..LLM.base import LLMProvider
 from ..LLM import context as llm_context
 from ..VTF.base import VTFCall
 from ..VTF.register import get_vtf_handlers
 from ..UDF.register import register_all_udfs
 from ...models.execution_task import ExecResult
+from ...models.token_usage import TokenUsage
+from .progress import ProgressTracker
 
 
 @dataclass(frozen=True)
@@ -47,26 +50,117 @@ class Engine:
         self.llm = llm
         self.handlers = get_vtf_handlers()
         register_all_udfs(self.conn, llm_provider=self.llm)
+        self.active_tasks: dict[str, asyncio.Task] = {}
+
+    def _register_task(self, task_id: str, task: asyncio.Task) -> None:
+        """Register a task by its ID."""
+        self.active_tasks[task_id] = task
+
+    def _unregister_task(self, task_id: str) -> None:
+        """Unregister a task by its ID."""
+        if task_id in self.active_tasks:
+            del self.active_tasks[task_id]
+
+    def cancel_task(self, task_id: str) -> None:
+        """Cancel a running task by its ID."""
+        if task_id in self.active_tasks:
+            self.active_tasks[task_id].cancel()
 
     async def execute(
-        self, sql: str
+        self, task_id: str, sql: str
     ) -> AsyncIterator[tuple[int, bool, ExecResult | None, TokenUsage | None]]:
+        """
+        Execute SQL with granular progress reporting via asyncio.Queue.
+        """
+        queue = asyncio.Queue()
+
+        # Helper to push updates to the queue
+        def on_progress(p: float):
+            queue.put_nowait(int(p))
+
+        # Create root tracker
+        tracker = ProgressTracker(on_update=on_progress)
+
+        async def worker():
+            try:
+                # Run the heavy execution pipeline
+                result = await self._run_execution_pipeline(sql, tracker)
+                queue.put_nowait(result)  # Push the final result tuple
+            except asyncio.CancelledError:
+                # Signal cancellation specifically so the frontend can handle it nicely
+                queue.put_nowait(Exception("Task was cancelled"))
+            except Exception as e:
+                queue.put_nowait(e)  # Push exception to be raised in main loop
+            finally:
+                queue.put_nowait(None)  # Sentinel to signal completion
+                self._unregister_task(task_id)
+
+        # Start the heavy execution in the background
+        execution_task = asyncio.create_task(worker())
+        self._register_task(task_id, execution_task)
+
+        last_yielded_progress = 0
+
+        # Loop indefinitely reading from the queue until sentinel (None) is received
+        while True:
+            item = await queue.get()
+
+            # Sentinel value means execution is finished
+            if item is None:
+                break
+
+            # If item is an Exception, re-raise it here
+            if isinstance(item, Exception):
+                raise item
+
+            # If item is the final result tuple (100, True, result, usage)
+            if isinstance(item, tuple) and len(item) == 4 and item[1] is True:
+                yield item
+                break
+
+            # If item is progress update (int)
+            if isinstance(item, int):
+                # Ensure progress is monotonic or at least update only on change
+                if item != last_yielded_progress:
+                    print(f"Engine Debug: Yielding progress {item}")
+                    yield (item, False, None, None)
+                    last_yielded_progress = item
+
+            # Also handle if _run_execution_pipeline yields intermediate tuples (unlikely with current code but safe)
+            elif isinstance(item, tuple):
+                yield item
+
+    async def _run_execution_pipeline(
+        self, sql: str, tracker: ProgressTracker
+    ) -> tuple[int, bool, ExecResult | None, TokenUsage | None]:
+        """
+        Internal execution logic that updates the provided ProgressTracker.
+        """
         warnings: list[str] = []
         task_total_usage = llm_context.init_usage()
 
-        # Phase 1: Parsing (0-5%)
-        yield (0, False, None, None)
+        # Define Phases
+        # 1. Parsing (5%)
+        # 2. VTF Discovery (5%)
+        # 3. VTF Materialization (75%)
+        # 4. DuckDB Execution (15%)
+        phase_parsing = tracker.add_phase("Parsing", 0.05)
+        phase_discovery = tracker.add_phase("Discovery", 0.05)
+        phase_materialization = tracker.add_phase("Materialization", 0.75)
+        phase_execution = tracker.add_phase("Execution", 0.15)
 
+        # Phase 1: Parsing
+        phase_parsing.set_total(1)
         trees = sqlglot.parse(sql, read="duckdb")
-
         if not trees:
             raise ValueError("No valid SQL statements provided.")
+        phase_parsing.increment()
 
-        yield (5, False, None, None)
+        # Phase 2: VTF Discovery
+        # We don't know exactly how many calls yet, but discovery itself is quick.
+        # Let's just treat it as one unit of work per tree for simplicity.
+        phase_discovery.set_total(len(trees))
 
-        df: pd.DataFrame | None = None  # Will store the result of the last statement
-
-        # Phase 2: VTF Discovery (5-10%)
         all_vtf_calls: list[tuple[int, VTFCall, sqlglot.Expression]] = []
         for i, tree in enumerate(trees):
             calls: list[VTFCall] = []
@@ -74,28 +168,43 @@ class Engine:
                 calls.extend(handler.discover(tree))
             for call in calls:
                 all_vtf_calls.append((i, call, tree))
+            phase_discovery.increment()
 
-        yield (10, False, None, None)
-
-        # Phase 3: VTF Materialization (10-85%)
+        # Phase 3: VTF Materialization
         total_vtf_count = len(all_vtf_calls)
+        phase_materialization.set_total(total_vtf_count)
+
         if total_vtf_count > 0:
             for vtf_index, (stmt_index, call, tree) in enumerate(all_vtf_calls):
-                progress = 10 + int(((vtf_index + 1) / total_vtf_count) * 75)
-                yield (progress, False, None, None)
+                # Create a sub-tracker for this specific VTF call if desired,
+                # or just pass the materialization phase tracker and let it handle sub-progress?
+                # Better: Create a sub-tracker for THIS specific VTF call.
+                # We give each VTF call equal weight within the materialization phase for now.
+                vtf_tracker = phase_materialization.add_phase(
+                    f"VTF_{vtf_index}", 1.0 / total_vtf_count
+                )
 
-                table_name = await call.handler.materialize(call, self)
+                # Execute Materialization
+                table_name = await call.handler.materialize(call, self, vtf_tracker)
                 call.rewrite_to_table(table_name)
 
-        yield (85, False, None, task_total_usage)
+                # Ensure this VTF's tracker is marked complete if the handler didn't do it
+                if (
+                    vtf_tracker.completed_work < vtf_tracker.total_work
+                    or vtf_tracker.total_work == 0
+                ):
+                    vtf_tracker.set_total(1)
+                    vtf_tracker.increment()
+        else:
+            # If no VTFs, mark phase as done
+            phase_materialization.set_total(1)
+            phase_materialization.increment()
 
-        # Phase 4: DuckDB Execution (85-100%)
-        total_stmt_count = len(trees)
+        # Phase 4: DuckDB Execution
+        phase_execution.set_total(len(trees))
+        df: pd.DataFrame | None = None
+
         for i, tree in enumerate(trees):
-            if total_stmt_count > 0:
-                progress = 85 + int(((i + 1) / total_stmt_count) * 15)
-                yield (progress, False, None, None)
-
             rewritten_sql = tree.sql(dialect="duckdb")
             print(f"rewritten_sql (statement {i + 1}/{len(trees)}):", rewritten_sql)
 
@@ -104,11 +213,14 @@ class Engine:
 
             # Store the result (we'll return the last one)
             df = result.fetchdf()
+            phase_execution.increment()
 
         # Only print the final result
         print("df:", df.head())
 
-        yield (100, True, ExecResult(df=df, warnings=warnings), task_total_usage)
+        # Ensure we hit 100% at the end
+        # (The tracker callback logic handles intermediate updates, but we return the final payload here)
+        return (100, True, ExecResult(df=df, warnings=warnings), task_total_usage)
 
     def _materialize_df(
         self, df: pd.DataFrame, table_name: str, temporary: bool = True

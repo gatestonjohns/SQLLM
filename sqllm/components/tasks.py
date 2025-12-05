@@ -21,14 +21,33 @@ def execution_tasks_section() -> rx.Component:
                                         variant="soft",
                                         mr="2",
                                     ),
-                                    rx.cond(
-                                        task.usage,
-                                        rx.badge(
-                                            f"${task.usage.cost:.6f}",
-                                            variant="solid",
-                                            size="1",
+                                    rx.hstack(
+                                        rx.cond(
+                                            task.usage,
+                                            rx.badge(
+                                                f"${task.usage.cost:.6f}",
+                                                variant="solid",
+                                                size="1",
+                                            ),
+                                            None,
                                         ),
-                                        None,
+                                        # Cancel button: Only show if task is NOT done (no result/error)
+                                        # and percentage < 100
+                                        rx.cond(
+                                            task.percent_done < 100,
+                                            rx.icon_button(
+                                                rx.icon("x"),
+                                                size="1",
+                                                color_scheme="red",
+                                                variant="soft",
+                                                on_click=State.cancel_execution_task(
+                                                    task
+                                                ),
+                                            ),
+                                            None,
+                                        ),
+                                        align="center",
+                                        spacing="2",
                                     ),
                                     width="100%",
                                     justify="between",

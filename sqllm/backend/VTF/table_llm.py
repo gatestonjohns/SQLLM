@@ -47,7 +47,7 @@ class LLMTableToTableVTF:
 
         return calls
 
-    async def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine, tracker=None) -> str:
         raw_sql, schema_str, prompt_text, options = self._parse_args(call.args)
         schema_spec = parse_schema_grammar(schema_str)
         json_schema = build_json_schema(schema_spec)

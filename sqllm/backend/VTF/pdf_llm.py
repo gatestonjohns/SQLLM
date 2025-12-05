@@ -1,12 +1,10 @@
 from __future__ import annotations
 import logging
 from typing import Any
-import pandas as pd
 from sqlglot import expressions as exp
 from .base import VTFCall
 from ..Engine.schema import parse_schema_grammar, build_json_schema
 from ..workflows.pdftodf import pdf_to_dataframe
-from ..LLM.base import TokenUsage
 
 
 class LLMPDFToTableVTF:
@@ -43,7 +41,7 @@ class LLMPDFToTableVTF:
                     )
         return calls
 
-    async def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine, tracker=None) -> str:
         pdf_id, schema_str, prompt_text, options = self._parse_args(call.args)
         schema_spec = parse_schema_grammar(schema_str)
         json_schema = build_json_schema(schema_spec)
@@ -59,6 +57,7 @@ class LLMPDFToTableVTF:
                 json_schema=json_schema,
                 prompt=prompt_text or "",
                 llm=engine.llm,
+                tracker=tracker,
             )
             engine._materialize_df(df, table_name)
         else:

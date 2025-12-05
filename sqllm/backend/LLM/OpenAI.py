@@ -1,4 +1,4 @@
-from .base import LLMProvider, JSONSchema, TokenUsage
+from .base import LLMProvider, JSONSchema
 from typing import Optional, Any
 import os
 import json
@@ -8,6 +8,7 @@ from openai import AsyncOpenAI, OpenAI
 from openai.types.responses import Response
 import tiktoken
 import threading
+from ...models.token_usage import TokenUsage
 
 
 class OpenAIProvider(LLMProvider):
@@ -17,8 +18,8 @@ class OpenAIProvider(LLMProvider):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
+        api_key: Optional[str] = os.getenv("OPENAI_API_KEY"),
+        model: Optional[str] = "gpt-4.1-2025-04-14",
         token_limit: int = 190000,
     ):
         """
@@ -29,8 +30,8 @@ class OpenAIProvider(LLMProvider):
             model: Model name (auto-selects based on environment if not provided)
             token_limit: Maximum tokens for prompt
         """
-        self._api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self._model = model or "gpt-4.1-2025-04-14"
+        self._api_key = api_key
+        self._model = model
 
         # Lazy-initialized clients
         self._async_client: Optional[AsyncOpenAI] = None
@@ -84,42 +85,38 @@ class OpenAIProvider(LLMProvider):
     async def generate_text_response(
         self, prompt: str, b64_png_strings: list[str] | None = None
     ) -> str:
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "input_text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            # Add input_image objects if present
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
-                        }
-                    )
-            # Compose input message array
-            input_messages = [
-                self._system_prompt_msg,
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
-            ]
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "input_text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        # Add input_image objects if present
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:image/png;base64,{b64_png_string}",
+                    }
+                )
+        # Compose input message array
+        input_messages = [
+            self._system_prompt_msg,
+            {
+                "role": "user",
+                "content": user_content,
+            },
+        ]
 
-            response = await self.async_client.responses.create(
-                model=self._model,
-                input=input_messages,
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            return response.output_text
-        except Exception as e:
-            logging.error(f"Error generating text response: {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+        response = await self.async_client.responses.create(
+            model=self._model,
+            input=input_messages,
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        return response.output_text
 
     async def generate_structured_response(
         self,
@@ -127,89 +124,81 @@ class OpenAIProvider(LLMProvider):
         output_schema: JSONSchema,
         b64_png_strings: list[str] | None = None,
     ) -> dict[str, Any]:
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "input_text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            # Add input_image objects if present
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
-                        }
-                    )
-            # Compose input message array
-            input_messages = [
-                self._system_prompt_msg,
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
-            ]
-
-            response = await self.async_client.responses.create(
-                model=self._model,
-                input=input_messages,
-                text={
-                    "format": {
-                        "type": "json_schema",
-                        "name": "structured_response",
-                        "schema": output_schema["schema"],
-                        "strict": True,
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "input_text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        # Add input_image objects if present
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:image/png;base64,{b64_png_string}",
                     }
-                },
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            return json.loads(response.output_text)
-        except Exception as e:
-            logging.error(f"Error generating structured response: {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+                )
+        # Compose input message array
+        input_messages = [
+            self._system_prompt_msg,
+            {
+                "role": "user",
+                "content": user_content,
+            },
+        ]
+
+        response = await self.async_client.responses.create(
+            model=self._model,
+            input=input_messages,
+            text={
+                "format": {
+                    "type": "json_schema",
+                    "name": "structured_response",
+                    "schema": output_schema["schema"],
+                    "strict": True,
+                }
+            },
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        return json.loads(response.output_text)
 
     def generate_text_response_sync(
         self, prompt: str, b64_png_strings: list[str] | None = None
     ) -> str:
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "input_text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            # Add input_image objects if present
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
-                        }
-                    )
-            # Compose input message array
-            input_messages = [
-                self._system_prompt_msg,
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
-            ]
-            response = self.sync_client.responses.create(
-                model=self._model,
-                input=input_messages,
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            return response.output_text
-        except Exception as e:
-            logging.error(f"Error generating text response (sync): {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "input_text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        # Add input_image objects if present
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:image/png;base64,{b64_png_string}",
+                    }
+                )
+        # Compose input message array
+        input_messages = [
+            self._system_prompt_msg,
+            {
+                "role": "user",
+                "content": user_content,
+            },
+        ]
+        response = self.sync_client.responses.create(
+            model=self._model,
+            input=input_messages,
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        return response.output_text
 
     def generate_structured_response_sync(
         self,
@@ -218,49 +207,45 @@ class OpenAIProvider(LLMProvider):
         b64_png_strings: list[str] | None = None,
     ) -> dict[str, Any]:
         """Generate structured response using sync client, supporting image input."""
-        try:
-            user_content: list[dict] = []
-            user_content.append(
-                {
-                    "type": "input_text",
-                    "text": self._truncate_to_token_limit_if_necessary(prompt),
-                }
-            )
-            # Add input_image objects if present
-            if b64_png_strings:
-                for b64_png_string in b64_png_strings:
-                    user_content.append(
-                        {
-                            "type": "input_image",
-                            "image_url": f"data:image/png;base64,{b64_png_string}",
-                        }
-                    )
-            # Compose input message array
-            input_messages = [
-                self._system_prompt_msg,  # unchanged system prompt
-                {
-                    "role": "user",
-                    "content": user_content,
-                },
-            ]
-            response = self.sync_client.responses.create(
-                model=self._model,
-                input=input_messages,
-                text={
-                    "format": {
-                        "type": "json_schema",
-                        "name": "structured_response",
-                        "schema": output_schema["schema"],
-                        "strict": True,
+        user_content: list[dict] = []
+        user_content.append(
+            {
+                "type": "input_text",
+                "text": self._truncate_to_token_limit_if_necessary(prompt),
+            }
+        )
+        # Add input_image objects if present
+        if b64_png_strings:
+            for b64_png_string in b64_png_strings:
+                user_content.append(
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:image/png;base64,{b64_png_string}",
                     }
-                },
-                temperature=self._temperature,
-            )
-            self._get_token_usage(response)
-            return json.loads(response.output_text)
-        except Exception as e:
-            logging.error(f"Error generating structured response (sync): {str(e)}")
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+                )
+        # Compose input message array
+        input_messages = [
+            self._system_prompt_msg,  # unchanged system prompt
+            {
+                "role": "user",
+                "content": user_content,
+            },
+        ]
+        response = self.sync_client.responses.create(
+            model=self._model,
+            input=input_messages,
+            text={
+                "format": {
+                    "type": "json_schema",
+                    "name": "structured_response",
+                    "schema": output_schema["schema"],
+                    "strict": True,
+                }
+            },
+            temperature=self._temperature,
+        )
+        self._get_token_usage(response)
+        return json.loads(response.output_text)
 
     def _encode_as_tokens(self, prompt: str) -> list[int]:
         try:
