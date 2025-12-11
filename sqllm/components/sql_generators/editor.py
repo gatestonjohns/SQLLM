@@ -15,8 +15,8 @@ class EditorState(rx.State):
 
     def _get_query_summary(self) -> str:
         """Get the summary of the SQL query by truncating."""
-        if len(self.sql_query) > 50:
-            return self.sql_query[:50] + "..."
+        if len(self.sql_query) > 25:
+            return self.sql_query[:25] + "..."
         else:
             return self.sql_query
 

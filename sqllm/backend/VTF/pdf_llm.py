@@ -3,7 +3,7 @@ import logging
 from typing import Any
 from sqlglot import expressions as exp
 from .base import VTFCall
-from ..Engine.schema import parse_schema_grammar, build_json_schema
+from ..Engine.schema import parse_schema_grammar, build_table_json_schema
 from ..workflows.pdftodf import pdf_to_dataframe
 
 
@@ -43,8 +43,9 @@ class LLMPDFToTableVTF:
 
     async def materialize(self, call: VTFCall, engine, tracker=None) -> str:
         pdf_id, schema_str, prompt_text, options = self._parse_args(call.args)
+        print(f"prompt text for pdf to table call: {prompt_text}")
         schema_spec = parse_schema_grammar(schema_str)
-        json_schema = build_json_schema(schema_spec)
+        table_json_schema = build_table_json_schema(schema_spec)
         table_name = engine._generate_new_table_name(pdf_id, ensure_new=False)
 
         existing_tables = engine._get_existing_table_names()
@@ -53,10 +54,10 @@ class LLMPDFToTableVTF:
 
         if not table_exists or force:
             df = await pdf_to_dataframe(
-                pdf_path=pdf_id,
-                json_schema=json_schema,
-                prompt=prompt_text or "",
                 llm=engine.llm,
+                pdf_path=pdf_id,
+                table_json_schema=table_json_schema,
+                user_instructions=prompt_text or "",
                 tracker=tracker,
             )
             engine._materialize_df(df, table_name)

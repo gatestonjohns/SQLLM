@@ -1,7 +1,10 @@
 import reflex as rx
 import os
+import json
 from ...state import State
 from ...models.execution_task import ExecutionTask
+from ...backend.Engine.schema import DataType
+
 
 class BatchState(rx.State):
     """State management for batch PDF processing."""
@@ -14,17 +17,9 @@ class BatchState(rx.State):
     pdf_batch_include_source: bool = False
 
     @rx.var
-    def available_duck_types(self) -> list[str]:
-        """Get available DuckDB types for schema builder."""
-        return [
-            "VARCHAR",
-            "INTEGER",
-            "BIGINT",
-            "DOUBLE",
-            "BOOLEAN",
-            "DATE",
-            "TIMESTAMP",
-        ]
+    def available_schema_types(self) -> list[str]:
+        """Get available schema types for schema builder."""
+        return [data_type.value for data_type in DataType]
 
     @rx.var
     async def available_pdfs(self) -> list[str]:
@@ -43,7 +38,9 @@ class BatchState(rx.State):
     @rx.event
     def add_pdf_batch_column(self):
         """Add a new column to the batch schema."""
-        self.pdf_batch_columns.append({"name": "", "type": "VARCHAR"})
+        self.pdf_batch_columns.append(
+            {"name": "", "type": "string", "description": "", "pattern": ""}
+        )
 
     @rx.event
     def update_pdf_batch_column(self, index: int, field: str, value: str):
@@ -70,14 +67,39 @@ class BatchState(rx.State):
         """Execute batch PDF ingestion into a single table."""
         table_name = self.pdf_batch_table_name.strip()
 
-        # Build schema string
-        schema_parts = []
+        # Build columns list for JSON schema
+        columns_data = []
         for col in self.pdf_batch_columns:
             col_name = col.get("name", "").strip()
-            col_type = col.get("type", "TEXT").strip().upper()
-            schema_parts.append(f"{col_name} {col_type}")
+            # Basic validation
+            if not col_name:
+                continue
 
-        schema_str = ", ".join(schema_parts)
+            schema_type = col.get("type", "string").strip().lower()
+
+            col_def = {
+                "name": col_name,
+                "type": schema_type,
+            }
+
+            description = col.get("description", "").strip()
+            if description:
+                col_def["description"] = description
+
+            pattern = col.get("pattern", "").strip()
+            if pattern:
+                col_def["pattern"] = pattern
+
+            columns_data.append(col_def)
+
+        if not columns_data:
+            return  # Or show error notification
+
+        # Serialize columns to JSON
+        columns_json = json.dumps(columns_data)
+
+        # Build new schema string format: TABLE name WITH COLUMNS [...]
+        schema_str = f"TABLE {table_name} WITH COLUMNS {columns_json}"
 
         # Build SQL query
         create_clause = (
@@ -90,14 +112,20 @@ class BatchState(rx.State):
         selects = []
         for pdf_path in self.pdf_batch_selected_pdfs:
             basename = os.path.basename(pdf_path)
+            # Escape single quotes for SQL string literals
             escaped_path = pdf_path.replace("'", "''")
+
+            # Escape single quotes in schema string for SQL string literal
+            escaped_schema_str = schema_str.replace("'", "''")
+
+            # Escape prompt
             escaped_prompt = self.pdf_batch_prompt.replace("'", "''")
 
             # Build llm_pdf_to_table call
             if self.pdf_batch_prompt.strip():
-                llm_call = f"llm_pdf_to_table('{escaped_path}', '{schema_str}', '{escaped_prompt}')"
+                llm_call = f"llm_pdf_to_table('{escaped_path}', '{escaped_schema_str}', '{escaped_prompt}')"
             else:
-                llm_call = f"llm_pdf_to_table('{escaped_path}', '{schema_str}')"
+                llm_call = f"llm_pdf_to_table('{escaped_path}', '{escaped_schema_str}')"
 
             # Build SELECT with optional source column
             if self.pdf_batch_include_source:
@@ -309,45 +337,68 @@ def gui_section() -> rx.Component:
                         ),
                         rx.cond(
                             BatchState.pdf_batch_columns.length() > 0,
-                            rx.vstack(
-                                rx.foreach(
-                                    BatchState.pdf_batch_columns,
-                                    lambda col, idx: rx.hstack(
-                                        rx.input(
-                                            placeholder="col_name",
-                                            value=col["name"],
-                                            on_change=lambda v: BatchState.update_pdf_batch_column(
-                                                idx, "name", v
+                            rx.box(
+                                rx.vstack(
+                                    rx.foreach(
+                                        BatchState.pdf_batch_columns,
+                                        lambda col, idx: rx.card(
+                                            rx.vstack(
+                                                rx.hstack(
+                                                    rx.input(
+                                                        placeholder="Column Name",
+                                                        value=col["name"],
+                                                        on_change=lambda v: BatchState.update_pdf_batch_column(
+                                                            idx, "name", v
+                                                        ),
+                                                        size="2",
+                                                        width="70%",
+                                                    ),
+                                                    rx.select(
+                                                        BatchState.available_schema_types,
+                                                        value=col["type"],
+                                                        on_change=lambda v: BatchState.update_pdf_batch_column(
+                                                            idx, "type", v
+                                                        ),
+                                                        size="2",
+                                                        width="30%",
+                                                    ),
+                                                    rx.icon_button(
+                                                        rx.icon("trash-2", size=16),
+                                                        on_click=lambda: BatchState.remove_pdf_batch_column(
+                                                            idx
+                                                        ),
+                                                        size="2",
+                                                        color_scheme="red",
+                                                        variant="soft",
+                                                    ),
+                                                    width="100%",
+                                                    spacing="2",
+                                                ),
+                                                rx.vstack(
+                                                    rx.text_area(
+                                                        placeholder="Description & Examples",
+                                                        value=col["description"],
+                                                        on_change=lambda v: BatchState.update_pdf_batch_column(
+                                                            idx, "description", v
+                                                        ),
+                                                        width="100%",
+                                                    ),
+                                                    width="100%",
+                                                    spacing="2",
+                                                ),
+                                                spacing="2",
                                             ),
-                                            size="2",
-                                            width="50%",
+                                            padding="3",
+                                            variant="surface",
+                                            width="100%",
                                         ),
-                                        rx.select(
-                                            BatchState.available_duck_types,
-                                            value=col["type"],
-                                            on_change=lambda v: BatchState.update_pdf_batch_column(
-                                                idx, "type", v
-                                            ),
-                                            size="2",
-                                            width="40%",
-                                        ),
-                                        rx.icon_button(
-                                            rx.icon("trash-2", size=16),
-                                            on_click=lambda: BatchState.remove_pdf_batch_column(
-                                                idx
-                                            ),
-                                            size="2",
-                                            color_scheme="red",
-                                            variant="soft",
-                                        ),
-                                        spacing="2",
-                                        align="center",
-                                        width="100%",
                                     ),
+                                    spacing="2",
+                                    width="100%",
                                 ),
-                                spacing="2",
-                                width="100%",
                                 overflow_y="auto",
+                                height="100%",
+                                width="100%",
                             ),
                             rx.hstack(
                                 rx.icon("info", size=18, color="gray"),
@@ -367,7 +418,7 @@ def gui_section() -> rx.Component:
                     variant="surface",
                     size="1",
                     height="100%",
-                    flex="1",
+                    flex="2",  # Increased flex to accommodate wider content
                 ),
                 # Section 3: Configuration Options
                 rx.card(
@@ -378,67 +429,65 @@ def gui_section() -> rx.Component:
                             spacing="2",
                             align="center",
                         ),
+                        # Table name input
                         rx.vstack(
-                            # Table name input
-                            rx.vstack(
-                                rx.hstack(
-                                    rx.text("Table Name", size="2", weight="medium"),
-                                    rx.badge(
-                                        "Required",
-                                        color_scheme="red",
-                                        variant="soft",
-                                        size="1",
-                                    ),
-                                    spacing="2",
-                                    align="center",
-                                ),
-                                rx.input(
-                                    placeholder="Enter table name (e.g., equipment_data)",
-                                    value=BatchState.pdf_batch_table_name,
-                                    on_change=BatchState.set_pdf_batch_table_name,
-                                    size="2",
-                                    width="100%",
-                                ),
-                                spacing="1",
-                                width="100%",
-                            ),
-                            # Checkboxes
                             rx.hstack(
-                                rx.checkbox(
-                                    "Overwrite Existing Table",
-                                    checked=BatchState.pdf_batch_force_recreate,
-                                    on_change=BatchState.set_pdf_batch_force_recreate,
-                                    size="2",
+                                rx.text("Table Name", size="2", weight="medium"),
+                                rx.badge(
+                                    "Required",
+                                    color_scheme="red",
+                                    variant="soft",
+                                    size="1",
                                 ),
-                                rx.checkbox(
-                                    "Include Source Column",
-                                    checked=BatchState.pdf_batch_include_source,
-                                    on_change=BatchState.set_pdf_batch_include_source,
-                                    size="2",
-                                ),
-                                spacing="4",
-                                wrap="wrap",
+                                spacing="2",
+                                align="center",
                             ),
-                            # Optional prompt
-                            rx.vstack(
-                                rx.text(
-                                    "Extraction Prompt (Optional)",
-                                    size="2",
-                                    weight="medium",
-                                ),
-                                rx.text_area(
-                                    placeholder="Enter custom instructions for the LLM (e.g., 'Focus on technical specifications')",
-                                    value=BatchState.pdf_batch_prompt,
-                                    on_change=BatchState.set_pdf_batch_prompt,
-                                    size="2",
-                                    width="100%",
-                                    rows="15",
-                                ),
-                                spacing="1",
+                            rx.input(
+                                placeholder="Enter table name (e.g., equipment_data)",
+                                value=BatchState.pdf_batch_table_name,
+                                on_change=BatchState.set_pdf_batch_table_name,
+                                size="2",
                                 width="100%",
                             ),
-                            spacing="3",
+                            spacing="1",
                             width="100%",
+                        ),
+                        # Checkboxes
+                        rx.hstack(
+                            rx.checkbox(
+                                "Overwrite Existing Table",
+                                checked=BatchState.pdf_batch_force_recreate,
+                                on_change=BatchState.set_pdf_batch_force_recreate,
+                                size="2",
+                            ),
+                            rx.checkbox(
+                                "Include Source Column",
+                                checked=BatchState.pdf_batch_include_source,
+                                on_change=BatchState.set_pdf_batch_include_source,
+                                size="2",
+                            ),
+                            spacing="4",
+                            wrap="wrap",
+                        ),
+                        # Optional prompt - takes remaining height
+                        rx.vstack(
+                            rx.text(
+                                "Extraction Prompt (Optional)",
+                                size="2",
+                                weight="medium",
+                            ),
+                            rx.text_area(
+                                placeholder="Enter custom instructions for the LLM (e.g., 'Focus on technical specifications')",
+                                value=BatchState.pdf_batch_prompt,
+                                on_change=BatchState.set_pdf_batch_prompt,
+                                size="2",
+                                width="100%",
+                                height="100%",
+                                resize="none",
+                            ),
+                            spacing="1",
+                            width="100%",
+                            flex="1",
                         ),
                         spacing="3",
                         width="100%",

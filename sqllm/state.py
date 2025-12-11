@@ -49,6 +49,7 @@ class State(rx.State):
                         task.result = result
                         task.warnings = result.warnings
                         task.usage = usage
+                        self.total_token_usage += usage
 
                     self.execution_tasks = self.execution_tasks.copy()
                 yield
@@ -58,7 +59,7 @@ class State(rx.State):
                 task.error = e
                 task.percent_done = 100
                 self.execution_tasks = self.execution_tasks.copy()
-            logging.error(f"Task execution failed: {task.error}")
+            logging.error(f"Task execution failed: {task.error}", exc_info=True)
             yield
 
         async with self:

@@ -1,383 +1,479 @@
-from __future__ import annotations
-from typing import Any
+import asyncio
+import json
 import pandas as pd
 from ..LLM.base import LLMProvider
-from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption
-from docling.datamodel.pipeline_options import PdfPipelineOptions
-from docling_core.types.doc.document import (
-    DoclingDocument,
-    DocItem,
-    GroupItem,
-    TextItem,
-    TableItem,
-    NodeItem,
-)
-import pdfplumber
-from pdfplumber import PDF as PlumberPDF
-from docling_core.types.doc.document import ProvenanceItem
+from ..PDF.utils import extract_full_pdf_text, get_page_annotated_text
+from ..Engine.progress import ProgressTracker
 
-import io
-import base64
-import asyncio
+ARTIFICIAL_PAGE_BREAK_DELIMITER = "\n<<<< ARTIFICIAL PAGE BREAK DELIMITER FLAG >>>>\n"
 
-
-def _get_table_markdown_and_b64_img(
-    pdfplumber_document: PlumberPDF, prov: ProvenanceItem
-) -> tuple[str, str]:
-    page = pdfplumber_document.pages[prov.page_no - 1]
-
-    # Convert Docling bbox (Bottom-Left origin) to pdfplumber bbox (Top-Left origin)
-    # Docling: t=top (high y), b=bottom (low y) relative to bottom-left
-    # pdfplumber: (x0, top, x1, bottom) relative to top-left
-    x0 = prov.bbox.l
-    top = (
-        page.height - prov.bbox.t
-    )  # Flip Y: High Docling Y becomes small (top) pdfplumber Y
-    x1 = prov.bbox.r
-    bottom = (
-        page.height - prov.bbox.b
-    )  # Flip Y: Low Docling Y becomes large (bottom) pdfplumber Y
-
-    # Crop using the converted coordinates
-    cropped_page = page.crop((x0, top, x1, bottom))
-
-    # Get image as bytes, not as file
-    image = cropped_page.to_image(resolution=300)
-    img_byte_arr = io.BytesIO()
-    image.save(img_byte_arr, format="PNG")
-    img_byte_arr.seek(0)
-    b64_str = base64.b64encode(img_byte_arr.read()).decode("utf-8")
-
-    # Extract ordered text from the cropped region
-    words = cropped_page.extract_words()
-    words_sorted = sorted(words, key=lambda w: (w["top"], w["x0"]))
-    ordered_text = " ".join([w["text"] for w in words_sorted])
-
-    return b64_str, ordered_text
-
-
-async def _process_table_element(
-    llm: LLMProvider,
-    pdfplumber_document: PlumberPDF,
-    prov: ProvenanceItem,
-) -> tuple[str, str]:
-    """
-    Process a single table element: crop image and get markdown from LLM.
-    Returns (markdown_text, b64_image_string).
-    """
-    new_b64_str, _ = _get_table_markdown_and_b64_img(pdfplumber_document, prov)
-    new_table_str = await llm.generate_text_response(
-        "Please extract a markdown representation of the table in the image. Do not include any other text in your response.",
-        [new_b64_str],
-    )
-    return new_table_str, new_b64_str
-
-
-async def _get_relevant_section_content(
-    llm: LLMProvider,
-    pdfplumber_document: PlumberPDF,
-    document_elements: list[NodeItem],
-    relevant_section_ranges: list[list[int]],
-) -> tuple[str, list[str]]:
-    result_str = ""
-    b64_imgs: list[str] = []
-
-    # Identify tasks to run in parallel
-    pending_tasks = []
-    # Store placeholders in the result stream to maintain order
-    ordered_results: list[str | asyncio.Task] = []
-
-    for contiguous_range in relevant_section_ranges:
-        for element in document_elements[
-            contiguous_range[0] : (contiguous_range[1] + 1)
-        ]:
-            if isinstance(element, TextItem):
-                # Text is immediate
-                ordered_results.append(element.text)
-            elif isinstance(element, TableItem):
-                for prov in element.prov:
-                    # Tables need async processing
-                    task = asyncio.create_task(
-                        _process_table_element(llm, pdfplumber_document, prov)
-                    )
-                    pending_tasks.append(task)
-                    ordered_results.append(task)
-
-    # Wait for all table processing to complete
-    if pending_tasks:
-        await asyncio.gather(*pending_tasks)
-
-    # Assemble final ordered result
-    for item in ordered_results:
-        if isinstance(item, str):
-            result_str += item
-        else:
-            # It's a completed task returning (markdown, b64_img)
-            markdown, img_b64 = item.result()
-            result_str += markdown
-            b64_imgs.append(img_b64)
-
-    return result_str, b64_imgs
-
-
-def _get_docling_document(pdf_path: str) -> DoclingDocument:
-    pdf_options = PdfPipelineOptions()
-    pdf_options.do_ocr = False  # disable OCR
-
-    converter = DocumentConverter(
-        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
-    )
-
-    result = converter.convert(pdf_path)
-
-    return result.document
-
-
-def _get_custom_elements_and_tree(
-    docling_document: DoclingDocument,
-) -> tuple[list[NodeItem], str]:
-    texts = []
-    for ix, (item, level) in enumerate(docling_document.iterate_items()):
-        if isinstance(item, TableItem):
-            texts.append(
-                "-" * level
-                + f"{ix}: {item.label.value} with data as markdown=\n{item.export_to_markdown(docling_document)}"
-            )
-        elif isinstance(item, GroupItem):
-            texts.append(
-                "-" * level + f"{ix}: {item.label.value} with name={item.name}"
-            )
-        elif isinstance(item, TextItem):
-            texts.append(
-                "-" * level
-                + f"{ix}: {item.label.value}: {item.text[: min(len(item.text), 100)]}"
-            )
-        elif isinstance(item, DocItem):
-            texts.append("-" * level + f"{ix}: {item.label.value}")
-
-    return [item for item, _ in docling_document.iterate_items()], "\n".join(texts)
-
-
-RELEVANT_SECTIONS_JSON_SCHEMA = {
+DOCUMENT_OUTLINE_JSON_SCHEMA = {
     "schema": {
         "type": "object",
         "properties": {
-            "relevant_sections": {
+            "document_outline": {
+                "type": "string",
+                "description": "A concise, few-sentence executive summary of the document.",
+            },
+            "document_sections": {
                 "type": "array",
-                "description": (
-                    "List of sections identified as containing data relevant to the extraction task."
-                ),
+                "description": "A list of the high level, contiguous sections in the document along with a brief description of the information contained within each section.",
+                "minItems": 1,
                 "items": {
                     "type": "object",
                     "properties": {
+                        "section_id": {
+                            "type": "string",
+                            "description": "A unique identifier for the section. This should be a succinct yet readable string that is easy to remember and unique across the document.",
+                            "pattern": "^[a-zA-Z0-9_-]+$",
+                        },
                         "section_title": {
                             "type": "string",
-                            "description": "Short title identifying this section (e.g., 'Analysis of Revenues by State', 'Appendix A: Glossary of Terms')",
+                            "description": "The title of the section.",
                         },
-                        "ranges": {
-                            "type": "array",
-                            "description": (
-                                "List of inclusive element index ranges. Each range is [start_idx, end_idx]. "
-                                "Multiple ranges allow non-contiguous selections. "
-                            ),
-                            "items": {
-                                "type": "array",
-                                "minItems": 2,
-                                "maxItems": 2,
-                                "items": {"type": "integer", "minimum": 0},
-                                "additionalProperties": False,
-                            },
-                            "minItems": 1,
-                            "additionalProperties": False,
-                        },
-                        "condensed_global_context": {
+                        "section_description": {
                             "type": "string",
-                            "description": (
-                                "A synthesized brief description of what this section represents in the context of the overall document and extraction task."
-                            ),
+                            "description": "A detailed description of what this section represents in the context of the overall document.",
                         },
                     },
-                    "required": ["section_title", "ranges", "condensed_global_context"],
+                    "required": ["section_id", "section_title", "section_description"],
                     "additionalProperties": False,
                 },
-                "additionalProperties": False,
-            }
+            },
         },
-        "required": ["relevant_sections"],
+        "required": ["document_outline", "document_sections"],
         "additionalProperties": False,
     }
 }
 
 
-async def _get_relevant_sections(
-    llm: LLMProvider,
-    row_json_schema: dict[str, Any],
-    user_description: str,
-    custom_element_tree: str,
-) -> list[dict[str, Any]]:
-    relevant_sections = await llm.generate_structured_response(
-        f"""
-        You are the first step in a multi-step workflow to extract structured, row-based data from a document.
-        Your task is to identify high-level, semantically coherent sections of the document that contain the data necessary to generate rows for the target output table.
-        Note: for the sake of context size, please try to ensure that each relevant section is of a digestible size.
+def _get_relevant_sections_json_schema(section_ids: list[str]) -> dict:
+    section_id_pattern = f"^({'|'.join(section_ids)})$"
 
-        RELEVANCE & GROUPING STRATEGY:
-        - **Include by Default:** Err on the side of including anything that seems potentially relevant or useful for generating the correct output.
-        - **Exclude if Irrelevant:** Only omit content that is clearly and almost certainly unrelated to the extraction goal.
-        - **Group if Related:** If multiple sections are closely related and contain similar information, group them together.
-        - **Keep tables together:** If multiple tables are closely related and contain similar information, group them together. Do not split tables across different sections.
-
-        Here is the outline of the table that this entire pipeline aims to extract (therefore you should select all sections that are relevant to the creation of this table):
-
-        {row_json_schema}
-
-        Here is the user's description of the table/how to extract the data to create this table:
-
-        {user_description}
-
-        Here is the document element tree (note that sections have their text truncated if they exceed the preview limit):
-
-        {custom_element_tree}
-        """,
-        RELEVANT_SECTIONS_JSON_SCHEMA,
-    )
-
-    return relevant_sections["relevant_sections"]
-
-
-async def _single_section_extraction_pass(
-    llm: LLMProvider,
-    output_table: dict[int, dict],
-    row_json_schema: dict[str, Any],
-    section_title: str,
-    condensed_global_context: str,
-    content_str: str,
-    b64_png_strings: list[str],
-) -> dict[int, dict]:
-    prompt = f"""
-You are an assistant that is tasked with extracting structured, tabular data from a document.
-This extraction process step is a part of a larger, sequential pass over the input document. 
-To correctly complete this stage, you will be given a section of the document (in both text and, if applicable, picture form). 
-along with the current state of the structured output table.
-Your task is to add or update rows on the structured output table (referenced by row number).
-Note that the content chunk might have malformed markdown, so please use the provided images to supplement the text when extracting the table.
-
-The current output table:
-
-{output_table}
-
-The title and condensed global context for this section:
-
-SECTION_TITLE: {section_title}
-
-CONDENSED_GLOBAL_CONTEXT: {condensed_global_context}
-
-The content of the current section to extract new or modify existing rows in the output table:
-
-{content_str}
-"""
-    response = await llm.generate_structured_response(
-        prompt,
-        {
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "rows_to_add_or_update": {
-                        "type": "array",
-                        "description": "Rows to add new or update in the output table. Each entry must be an object with a 'row_number' (integer, next available number for new rows) and a 'row' object conforming to the provided schema.",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "row_number": {
-                                    "type": "integer",
-                                    "description": "The row number is either a reference to a pre-existing row number for rows to be updated, or in the case of a new row, is the next available row number.",
-                                },
-                                "row": row_json_schema,
+    return {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "relevant_sections": {
+                    "type": "array",
+                    "description": (
+                        "List of sections from the provided list that are identified as containing data relevant to the extraction task. "
+                    ),
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "section_id": {
+                                "type": "string",
+                                "description": "The unique identifier for the chosen section.",
+                                "pattern": section_id_pattern,
                             },
-                            "required": ["row_number", "row"],
-                            "additionalProperties": False,
+                            "section_inclusion_reasoning": {
+                                "type": "string",
+                                "description": "A brief description of why this section is relevant to the extraction task.",
+                            },
                         },
-                    }
+                        "required": ["section_id", "section_inclusion_reasoning"],
+                        "additionalProperties": False,
+                    },
                 },
-                "required": ["rows_to_add_or_update"],
-                "additionalProperties": False,
-            }
+            },
+            "required": ["relevant_sections"],
+            "additionalProperties": False,
+        }
+    }
+
+
+def _get_section_page_ranges_json_schema(section_ids: list[str]) -> dict:
+    section_id_pattern = f"^({'|'.join(section_ids)})$"
+
+    return {
+        "schema": {
+            "type": "object",
+            "description": "A mapping between each document section and its corresponding inclusive page range. Adjacent sections may share no more than one page in common (e.g. if a section starts in the middle of a page, both that section and the previous section will include that page in their inclusive page range).",
+            "properties": {
+                "section_page_ranges": {
+                    "type": "array",
+                    "description": "A list of mapping objects for each document section and the page range it spans.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "section_id": {
+                                "type": "string",
+                                "pattern": section_id_pattern,
+                                "description": "The unique identifier of a specific document section as seen in the input document outline.",
+                            },
+                            "page_range": {
+                                "type": "object",
+                                "description": "The inclusive range of pages that the section spans.",
+                                "properties": {
+                                    "start_page": {
+                                        "type": "integer",
+                                        "description": "The first page of the section's content.",
+                                    },
+                                    "end_page": {
+                                        "type": "integer",
+                                        "description": "The last page of the section's content.",
+                                    },
+                                },
+                                "required": ["start_page", "end_page"],
+                                "additionalProperties": False,
+                            },
+                        },
+                        "required": ["section_id", "page_range"],
+                        "additionalProperties": False,
+                    },
+                    "minItems": 1,
+                }
+            },
+            "required": ["section_page_ranges"],
+            "additionalProperties": False,
+        }
+    }
+
+
+CHUNKS_FOR_ROW_EXTRACTION_JSON_SCHEMA = {
+    "schema": {
+        "type": "object",
+        "properties": {
+            "chunks": {
+                "type": "array",
+                "description": "A list of chunks to be processed for row extraction. Each chunk is defined by its inclusive range of start and end page numbers. Each chunk should contain the data for one or more rows of the defined output table of the structured data extraction task.",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "data_extraction_expectation": {
+                            "type": "string",
+                            "description": "A very concise list of what rows are expected to be extracted from the chunk. Imagine this as a list of the 'primary keys' of the rows that are expected to be extracted from the chunk. Structure this string as a list of comma separated values, e.g. '1, 3, 5'.",
+                        },
+                        "start_page": {
+                            "type": "integer",
+                            "description": "The first page of the chunk (inclusive).",
+                        },
+                        "end_page": {
+                            "type": "integer",
+                            "description": "The last page of the chunk (inclusive).",
+                        },
+                    },
+                    "required": [
+                        "data_extraction_expectation",
+                        "start_page",
+                        "end_page",
+                    ],
+                    "additionalProperties": False,
+                },
+            },
         },
-        b64_png_strings,
+        "required": ["chunks"],
+        "additionalProperties": False,
+    }
+}
+
+
+async def _get_doc_outline(llm: LLMProvider, full_pdf_text: str) -> dict:
+    return await llm.generate_structured_response(
+        f""" 
+<ROLE>
+You are an administrative assistant that is an expert in document analysis.
+</ROLE>
+
+<TASK>
+Your task is to create a concise, few-sentence executive summary and high level sections outline for the document that is provided below.
+</TASK>
+
+<CRITERIA>
+- The summary must include the high level topic of the document and what specific information is contained within the document.
+- The sections outline must mirror the document's top-level structure (equivalent to H1 headings or main table of contents entries) and provide a brief description of each section's content.
+- Focus only on the highest-level sections (equivalent to main numbered sections in a table of contents, not subsections). For example, include "3. Company Overview" but not "3.1 Business Strategy".
+- If the document is quite small and appears to be a single topic, you may return a single section.
+- Further segmentation of sections will be performed later, so top level sections are preferred at this stage.
+- Non-content sections (table of contents, cover pages, references, glossaries, appendices) should be listed in the sections overview but will be filtered out in later steps as they don't contain extractable data.
+</CRITERIA>
+
+<DOCUMENT_OUTLINE>
+{full_pdf_text}
+</DOCUMENT_OUTLINE>
+""",
+        DOCUMENT_OUTLINE_JSON_SCHEMA,
     )
 
-    return response["rows_to_add_or_update"]
+
+async def _get_relevant_sections(
+    llm: LLMProvider, doc_outline: dict, TABLE_JSON_SCHEMA: dict, user_instructions: str
+) -> dict:
+    return await llm.generate_structured_response(
+        f""" 
+<ROLE>
+You are an administrative assistant that is an expert with document analysis.
+</ROLE>
+
+<TASK>
+Your task is to determine what sections of the document from the attached outline are relevant to the structured data extraction task.
+Additionally, use the provided user instructions to determine what sections are relevant to the extraction task.
+</TASK>
+
+<CRITERIA>
+- Only include sections that contain the data described by the schema below.
+- Omit any sections that do not directly contain data that you would expect to be included in the described table output (e.g. tables of contents, appendices, glossaries, etc.).
+- Adhere to the provided user instructions.
+</CRITERIA>
+
+<STRUCTURED_OUTPUT_SCHEMA>
+{json.dumps(TABLE_JSON_SCHEMA, indent=2)}
+</STRUCTURED_OUTPUT_SCHEMA>
+
+<USER_INSTRUCTIONS>
+{user_instructions}
+</USER_INSTRUCTIONS>
+
+<DOCUMENT_OUTLINE>
+{json.dumps(doc_outline, indent=2)}
+</DOCUMENT_OUTLINE>
+""",
+        _get_relevant_sections_json_schema(
+            [s["section_id"] for s in doc_outline["document_sections"]]
+        ),
+    )
+
+
+async def _get_section_page_ranges(
+    llm: LLMProvider, doc_outline: dict, page_annotated_text: str
+) -> dict:
+    return await llm.generate_structured_response(
+        f"""
+<ROLE>
+You are an administrative assistant that is an expert in document analysis and structure.
+</ROLE>
+
+<TASK>
+Your task is to map each section in the provided document outline to its page range in the document.
+To do this, you will be given a document outline and a full text, page-by-page version of the document.
+Leverage the descriptions of the sections in the document outline to map each section to its appropriate page range in the document.
+</TASK>
+
+<CRITERIA>
+- The output should be a list of mappings between each section in the document outline and the page range it spans.
+- The list of sections in the document outline is exhaustive.
+- All pages should be accounted for in your output.
+- Each section in the document outline is contiguous and spans a single, continuous page range.
+- Adjacent sections may share no more than one page in common.
+</CRITERIA>
+
+<DOCUMENT_OUTLINE>
+{json.dumps(doc_outline, indent=2)}
+</DOCUMENT_OUTLINE>
+
+<DOCUMENT_PAGES>
+{page_annotated_text}
+</DOCUMENT_PAGES>
+""",
+        _get_section_page_ranges_json_schema(
+            [s["section_id"] for s in doc_outline["document_sections"]]
+        ),
+    )
+
+
+async def _get_chunks_for_row_extraction(
+    llm: LLMProvider,
+    relevant_section_page_annotated_text: str,
+    TABLE_JSON_SCHEMA: dict,
+    user_description: str,
+) -> dict:
+    return await llm.generate_structured_response(
+        f"""
+<ROLE>
+You are an administrative assistant that is an expert in document analysis and structured data extraction.
+</ROLE>
+
+<TASK>
+Your task is to segment the provided document excerpt into chunks to produce rows in the table defined by the schema below.
+Essentially, you are segmenting the document excerpt into a list of chunks, where each chunk contains data for one or more rows of the table.
+This segmentation is necessary to ensure that each chunk is processed independently with high attention to detail to ensure that no data is lost. 
+You will define each chunk that you determine by specifying the start and end page numbers of the chunk (along with a concise description of what data/rows are expected to be extracted from the chunk).
+The end user was also given the opportunity to provide general instructions, which are also provided below and should be considered when defining the chunks.
+</TASK>
+
+<CRITERIA>
+- Each chunk should contain the data for all columns for one or more rows of the table.
+- Each chunk must be one continuous page range.
+- Data that is relevant to multiple rows should be included in the same chunk (not split up across multiple chunks).
+- Omit any chunks that do not contain any data relevant to the table.
+- The list of chunks should be mutually exclusive and cover all data relevant to the table without the risk for duplication downstream.
+- Individual chunks should be relatively small (e.g. 1-3 rows of the table per chunk) to ensure that each chunk is processed with high attention to detail.
+</CRITERIA>
+
+<TABLE_SCHEMA>
+{json.dumps(TABLE_JSON_SCHEMA, indent=2)}
+</TABLE_SCHEMA>
+
+<USER_INSTRUCTIONS>
+{user_description}
+</USER_INSTRUCTIONS>
+
+<DOCUMENT_EXCERPT>
+{relevant_section_page_annotated_text}
+</DOCUMENT_EXCERPT>
+""",
+        CHUNKS_FOR_ROW_EXTRACTION_JSON_SCHEMA,
+    )
+
+
+async def _extract_rows_from_chunk(
+    llm: LLMProvider,
+    chunk_text: str,
+    chunk_extraction_expectation: str,
+    TABLE_JSON_SCHEMA: dict,
+    user_description: str,
+) -> dict:
+    return await llm.generate_structured_response(
+        f"""
+<ROLE>
+You are an administrative assistant that is an expert in document analysis and structured data extraction.
+</ROLE>
+
+<TASK>
+Your task is to extract structured data from the provided document excerpt according to the table schema and row extraction hint below.
+The document excerpt is simply a text block from the document that contains the data for one or more rows of the table.
+The row extraction hint is a list of one or more 'primary keys' for the row(s) you are expected to extract from the document excerpt.
+Use the row extraction hint as a guideline for which rows to extract from the document excerpt.
+The user was also given the opportunity to provide general instructions, which are also provided below and should be considered when extracting the data.
+</TASK>
+
+<CRITERIA>
+- Extract the data according to the provided table schema.
+- Use the provided extraction hint (which is a list of 'primary keys' for the rows you are expected to extract) to determine which row(s) to extract from the document excerpt.
+- You are permitted to slightly deviate from the extraction hint if you believe the extraction hint was not exhaustive.
+- Adhere to the provided user instructions.
+</CRITERIA>
+
+<TABLE_SCHEMA>
+{json.dumps(TABLE_JSON_SCHEMA, indent=2)}
+</TABLE_SCHEMA>
+
+<CHUNK_EXTRACTION_EXPECTATION>
+{chunk_extraction_expectation}
+</CHUNK_EXTRACTION_EXPECTATION>
+
+<USER_INSTRUCTIONS>
+{user_description}
+</USER_INSTRUCTIONS>
+
+<DOCUMENT_EXCERPT>
+{chunk_text}
+</DOCUMENT_EXCERPT>
+""",
+        TABLE_JSON_SCHEMA,
+    )
 
 
 async def pdf_to_dataframe(
+    llm: LLMProvider,
     pdf_path: str,
-    json_schema: dict[str, Any],
-    prompt: str,
-    *,
-    llm,
-    tracker=None,  # ProgressTracker
+    table_json_schema: dict,
+    user_instructions: str,
+    tracker: ProgressTracker,
 ) -> pd.DataFrame:
-    output_table: dict[int, dict] = {}
+    # Initialize phases
+    phase_planning = tracker.add_phase("Planning", 0.2)
+    phase_chunking = tracker.add_phase("Chunking", 0.3)
+    phase_extraction = tracker.add_phase("Extraction", 0.5)
 
-    # Initial Analysis Phase (approx 10% of this task)
-    phase_analysis = tracker.add_phase("Analysis", 0.1) if tracker else None
-    phase_extraction = tracker.add_phase("Extraction", 0.9) if tracker else None
+    phase_planning.set_total(3)  # Outline, Sections, Page Ranges
 
-    if phase_analysis:
-        phase_analysis.set_total(1)
+    full_pdf_text = extract_full_pdf_text(pdf_path, ARTIFICIAL_PAGE_BREAK_DELIMITER)
 
-    pdfplumber_document = pdfplumber.open(pdf_path)
-    # Offload the blocking docling processing to a thread
-    docling_document = await asyncio.to_thread(_get_docling_document, pdf_path)
+    document_outline = await _get_doc_outline(llm, full_pdf_text)
+    phase_planning.increment()
 
-    print(json_schema)
+    # Prepare input for section_page_ranges before starting tasks
+    full_page_annotated_text = get_page_annotated_text(pdf_path)
 
-    row_json_schema = json_schema["schema"]["properties"]["rows"]["items"]
+    # Wrappers for planning tasks to track progress
+    async def _tracked_get_relevant_sections():
+        res = await _get_relevant_sections(
+            llm, document_outline, table_json_schema, user_instructions
+        )
+        phase_planning.increment()
+        return res
 
-    custom_elements, custom_element_tree = _get_custom_elements_and_tree(
-        docling_document
+    async def _tracked_get_section_page_ranges():
+        res = await _get_section_page_ranges(
+            llm, document_outline, full_page_annotated_text
+        )
+        phase_planning.increment()
+        return res
+
+    relevant_sections, section_page_ranges = await asyncio.gather(
+        _tracked_get_relevant_sections(), _tracked_get_section_page_ranges()
     )
 
-    relevant_sections = await _get_relevant_sections(
-        llm, json_schema, prompt, custom_element_tree
-    )
+    # Prepare tasks for parallel chunk extraction
+    chunk_tasks = []
+    num_sections = len(relevant_sections["relevant_sections"])
 
-    if phase_analysis:
-        phase_analysis.increment()
+    if num_sections == 0:
+        phase_chunking.set_total(1)
+        phase_chunking.increment()
+    else:
+        phase_chunking.set_total(num_sections)
 
-    # Extraction Phase
-    if phase_extraction:
-        phase_extraction.set_total(len(relevant_sections))
+    async def _tracked_get_chunks(rs_page_annotated_text):
+        res = await _get_chunks_for_row_extraction(
+            llm, rs_page_annotated_text, table_json_schema, user_instructions
+        )
+        phase_chunking.increment()
+        return res
 
-    for rs in relevant_sections:
-        content_str, b64_pngs = await _get_relevant_section_content(
-            llm, pdfplumber_document, custom_elements, rs["ranges"]
+    for rs in relevant_sections["relevant_sections"]:
+        rs_page_range: tuple[int, int] = [
+            (s["page_range"]["start_page"], s["page_range"]["end_page"])
+            for s in section_page_ranges["section_page_ranges"]
+            if rs["section_id"] == s["section_id"]
+        ][0]
+        rs_page_annotated_text = get_page_annotated_text(
+            pdf_path, rs_page_range[0], rs_page_range[1]
         )
 
-        response_output_table = await _single_section_extraction_pass(
+        chunk_tasks.append(_tracked_get_chunks(rs_page_annotated_text))
+
+    chunks_results = await asyncio.gather(*chunk_tasks)
+
+    chunks_for_row_extraction = []
+    for res in chunks_results:
+        chunks_for_row_extraction.extend(res["chunks"])
+
+    # Prepare tasks for parallel row extraction
+    row_tasks = []
+    num_chunks = len(chunks_for_row_extraction)
+
+    if num_chunks == 0:
+        phase_extraction.set_total(1)
+        phase_extraction.increment()
+    else:
+        phase_extraction.set_total(num_chunks)
+
+    async def _tracked_extract_rows(chunk_text, expectation):
+        res = await _extract_rows_from_chunk(
             llm,
-            output_table,
-            row_json_schema,
-            rs["section_title"],
-            rs["condensed_global_context"],
-            content_str,
-            b64_pngs,
+            chunk_text,
+            expectation,
+            table_json_schema,
+            user_instructions,
+        )
+        phase_extraction.increment()
+        return res
+
+    for chunk in chunks_for_row_extraction:
+        chunk_text = get_page_annotated_text(
+            pdf_path, chunk["start_page"], chunk["end_page"]
+        )
+        row_tasks.append(
+            _tracked_extract_rows(chunk_text, chunk["data_extraction_expectation"])
         )
 
-        new_output_table = {
-            response_output_table[i]["row_number"]: response_output_table[i]["row"]
-            for i in range(len(response_output_table))
-        }
+    row_results = await asyncio.gather(*row_tasks)
 
-        output_table.update(new_output_table)
+    all_rows = []
+    for res in row_results:
+        all_rows.extend(res["rows"])
 
-        if phase_extraction:
-            phase_extraction.increment()
-
-    output_table_row_dicts = [
-        output_table_row_dict for output_table_row_dict in output_table.values()
-    ]
-
-    df = pd.DataFrame.from_records(output_table_row_dicts)
-
-    return df
+    return pd.DataFrame(all_rows)

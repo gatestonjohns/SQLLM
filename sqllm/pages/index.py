@@ -7,6 +7,7 @@ from ..components import (
     joiner_section,
     results_section,
     execution_tasks_section,
+    total_usage_component,
 )
 
 
@@ -96,7 +97,8 @@ def index() -> rx.Component:
         ),
         variant="surface",
         size="2",
-        width="50%",
+        width="33%",
+        height="100%",
     )
 
     pdf_display = rx.card(
@@ -140,7 +142,8 @@ def index() -> rx.Component:
         ),
         variant="surface",
         size="2",
-        width="50%",
+        width="33%",
+        height="100%",
     )
 
     # Tabs switch between EDITOR & GUI
@@ -168,19 +171,23 @@ def index() -> rx.Component:
         width="100%",
     )
 
+    # Total usage component
+    total_usage = total_usage_component()
+
     # The container with all components
     return rx.box(
         rx.vstack(
             uploader_section(),
             execution_tasks_section(),
             rx.hstack(
+                total_usage,
                 tables_display,
                 pdf_display,
                 spacing="6",
                 align="start",
                 width="100%",
+                height="164px",
             ),
-            # usage_stats_card,
             tabs_main_view,
             # success_display,
             # error_display,
