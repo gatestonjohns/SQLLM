@@ -1,11 +1,10 @@
 from __future__ import annotations
 import logging
 from typing import Any
-import pandas as pd
 from sqlglot import expressions as exp
 from .base import VTFCall
-from ..Engine.schema import parse_schema_grammar, build_json_schema
-from ..PDF.utils import extract_full_pdf_text
+from ..Engine.schema import parse_schema_grammar, build_table_json_schema
+from ..workflows.pdftodf import pdf_to_dataframe
 
 
 class LLMPDFToTableVTF:
@@ -42,10 +41,11 @@ class LLMPDFToTableVTF:
                     )
         return calls
 
-    def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine, tracker=None) -> str:
         pdf_id, schema_str, prompt_text, options = self._parse_args(call.args)
+        print(f"prompt text for pdf to table call: {prompt_text}")
         schema_spec = parse_schema_grammar(schema_str)
-        json_schema = build_json_schema(schema_spec)
+        table_json_schema = build_table_json_schema(schema_spec)
         table_name = engine._generate_new_table_name(pdf_id, ensure_new=False)
 
         existing_tables = engine._get_existing_table_names()
@@ -53,13 +53,12 @@ class LLMPDFToTableVTF:
         force = bool(options.get("force_recreate", False))
 
         if not table_exists or force:
-            df = self._ingest_pdf_to_df(
-                pdf_id,
-                schema_spec,
-                json_schema,
-                prompt_text,
-                options,
+            df = await pdf_to_dataframe(
                 llm=engine.llm,
+                pdf_path=pdf_id,
+                table_json_schema=table_json_schema,
+                user_instructions=prompt_text or "",
+                tracker=tracker,
             )
             engine._materialize_df(df, table_name)
         else:
@@ -67,31 +66,6 @@ class LLMPDFToTableVTF:
 
         call.rewrite_to_table(table_name)
         return table_name
-
-    def _ingest_pdf_to_df(
-        self,
-        pdf_id: str,
-        schema_spec,
-        json_schema: dict[str, Any],
-        prompt_text: str | None,
-        options: dict[str, Any],
-        *,
-        llm,
-    ) -> pd.DataFrame:
-        full_pdf_text = extract_full_pdf_text(pdf_id)
-        prompt = self._build_prompt(schema_spec, full_pdf_text, prompt_text)
-        token_count = llm.count_tokens(prompt)
-        obj = llm.generate_structured_response(prompt, json_schema)
-        logging.info("llm_pdf_to_table(%s) prompt tokens=%s", pdf_id, token_count)
-        rows = obj.get("rows", obj)
-        if not isinstance(rows, list):
-            raise ValueError("LLM response did not include a 'rows' array")
-        df = pd.DataFrame.from_records(
-            rows, columns=[c.name for c in schema_spec.columns]
-        )
-        for col, dtype in schema_spec.pandas_dtypes.items():
-            df[col] = df[col].astype(dtype, errors="ignore")
-        return df
 
     def _build_prompt(
         self,

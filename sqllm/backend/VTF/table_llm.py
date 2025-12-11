@@ -8,7 +8,7 @@ import pandas as pd
 from sqlglot import expressions as exp
 
 from .base import VTFCall
-from ..Engine.schema import build_json_schema, parse_schema_grammar
+from ..Engine.schema import build_table_json_schema, parse_schema_grammar
 
 
 class LLMTableToTableVTF:
@@ -47,10 +47,10 @@ class LLMTableToTableVTF:
 
         return calls
 
-    def materialize(self, call: VTFCall, engine) -> str:
+    async def materialize(self, call: VTFCall, engine, tracker=None) -> str:
         raw_sql, schema_str, prompt_text, options = self._parse_args(call.args)
         schema_spec = parse_schema_grammar(schema_str)
-        json_schema = build_json_schema(schema_spec)
+        json_schema = build_table_json_schema(schema_spec)
 
         if schema_spec.table_name is None:
             raise ValueError(
@@ -64,7 +64,7 @@ class LLMTableToTableVTF:
 
         if not table_exists or force:
             source_df = self._run_source_sql(raw_sql, engine)
-            df = self._transform_df(
+            df = await self._transform_df(
                 source_df,
                 raw_sql,
                 schema_spec,
@@ -90,7 +90,7 @@ class LLMTableToTableVTF:
                 f"Failed to execute source SQL for llm_table_to_table: {exc}"
             )
 
-    def _transform_df(
+    async def _transform_df(
         self,
         source_df: pd.DataFrame,
         raw_sql: str,
@@ -111,7 +111,7 @@ class LLMTableToTableVTF:
         )
 
         token_count = llm.count_tokens(prompt)
-        obj = llm.generate_structured_response(prompt, json_schema)
+        obj = await llm.generate_structured_response(prompt, json_schema)
         logging.info(
             "llm_table_to_table source_sql_hash=%s prompt_tokens=%s",
             self._sql_hash(raw_sql),

@@ -6,6 +6,7 @@ import logging
 import threading
 import inspect
 import time
+import asyncio
 from pathlib import Path
 from typing import Callable
 from rxconfig import isProd
@@ -142,76 +143,149 @@ def dev_cache(
             # Use hash for compact keys
             return hashlib.sha256(key_str.encode()).hexdigest()
 
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            cache_key = _make_cache_key(args, kwargs)
+        # Check if function is async
+        if inspect.iscoroutinefunction(func):
+            @functools.wraps(func)
+            async def async_wrapper(*args, **kwargs):
+                cache_key = _make_cache_key(args, kwargs)
 
-            if mode == "RECORD":
-                # Always call function and record result
-                result = func(*args, **kwargs)
-                with cache_lock:
-                    function_cache = cache_data[module_key][function_key]
-                    function_cache[cache_key] = result
-                    _save_cache()
-                logging.debug(f"[RECORD] Cached result for {module_key}.{function_key}")
-                return result
-
-            elif mode == "USE_CACHE":
-                # Try cache first, fallback to calling function
-                cache_hit = False
-                result = None
-                with cache_lock:
-                    function_cache = cache_data[module_key][function_key]
-                    if cache_key in function_cache:
-                        cache_hit = True
-                        result = function_cache[cache_key]
-                        logging.debug(
-                            f"[USE_CACHE] Cache hit for {module_key}.{function_key}"
-                        )
-                if cache_hit:
-                    if cache_delay_seconds > 0:
-                        time.sleep(cache_delay_seconds)
+                if mode == "RECORD":
+                    # Always call function and record result
+                    result = await func(*args, **kwargs)
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        function_cache[cache_key] = result
+                        _save_cache()
+                    logging.debug(f"[RECORD] Cached result for {module_key}.{function_key}")
                     return result
 
-                # Cache miss - call function outside lock
-                logging.debug(
-                    f"[USE_CACHE] Cache miss for {module_key}.{function_key}, calling function"
-                )
-                result = func(*args, **kwargs)
+                elif mode == "USE_CACHE":
+                    # Try cache first, fallback to calling function
+                    cache_hit = False
+                    result = None
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        if cache_key in function_cache:
+                            cache_hit = True
+                            result = function_cache[cache_key]
+                            logging.debug(
+                                f"[USE_CACHE] Cache hit for {module_key}.{function_key}"
+                            )
+                    if cache_hit:
+                        if cache_delay_seconds > 0:
+                            await asyncio.sleep(cache_delay_seconds)
+                        return result
 
-                # Store result with lock
-                with cache_lock:
-                    function_cache = cache_data[module_key][function_key]
-                    function_cache[cache_key] = result
-                    _save_cache()
-                return result
+                    # Cache miss - call function outside lock
+                    logging.debug(
+                        f"[USE_CACHE] Cache miss for {module_key}.{function_key}, calling function"
+                    )
+                    result = await func(*args, **kwargs)
 
-            elif mode == "USE_CACHE_ONLY":
-                # Strict cache-only mode, error on miss
-                cache_hit = False
-                result = None
-                with cache_lock:
-                    function_cache = cache_data[module_key][function_key]
-                    if cache_key in function_cache:
-                        cache_hit = True
-                        result = function_cache[cache_key]
-                        logging.debug(
-                            f"[USE_CACHE_ONLY] Cache hit for {module_key}.{function_key}"
-                        )
-                if cache_hit:
-                    if cache_delay_seconds > 0:
-                        time.sleep(cache_delay_seconds)
+                    # Store result with lock
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        function_cache[cache_key] = result
+                        _save_cache()
                     return result
 
-                raise RuntimeError(
-                    f"Cache miss in USE_CACHE_ONLY mode for {module_key}.{function_key}. "
-                    f"No cached result found for arguments hash: {cache_key[:16]}..."
-                )
+                elif mode == "USE_CACHE_ONLY":
+                    # Strict cache-only mode, error on miss
+                    cache_hit = False
+                    result = None
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        if cache_key in function_cache:
+                            cache_hit = True
+                            result = function_cache[cache_key]
+                            logging.debug(
+                                f"[USE_CACHE_ONLY] Cache hit for {module_key}.{function_key}"
+                            )
+                    if cache_hit:
+                        if cache_delay_seconds > 0:
+                            await asyncio.sleep(cache_delay_seconds)
+                        return result
 
-            # Fallback (should never reach here)
-            return func(*args, **kwargs)
+                    raise RuntimeError(
+                        f"Cache miss in USE_CACHE_ONLY mode for {module_key}.{function_key}. "
+                        f"No cached result found for arguments hash: {cache_key[:16]}..."
+                    )
 
-        return wrapper
+                # Fallback (should never reach here)
+                return await func(*args, **kwargs)
+
+            return async_wrapper
+        else:
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                cache_key = _make_cache_key(args, kwargs)
+
+                if mode == "RECORD":
+                    # Always call function and record result
+                    result = func(*args, **kwargs)
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        function_cache[cache_key] = result
+                        _save_cache()
+                    logging.debug(f"[RECORD] Cached result for {module_key}.{function_key}")
+                    return result
+
+                elif mode == "USE_CACHE":
+                    # Try cache first, fallback to calling function
+                    cache_hit = False
+                    result = None
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        if cache_key in function_cache:
+                            cache_hit = True
+                            result = function_cache[cache_key]
+                            logging.debug(
+                                f"[USE_CACHE] Cache hit for {module_key}.{function_key}"
+                            )
+                    if cache_hit:
+                        if cache_delay_seconds > 0:
+                            time.sleep(cache_delay_seconds)
+                        return result
+
+                    # Cache miss - call function outside lock
+                    logging.debug(
+                        f"[USE_CACHE] Cache miss for {module_key}.{function_key}, calling function"
+                    )
+                    result = func(*args, **kwargs)
+
+                    # Store result with lock
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        function_cache[cache_key] = result
+                        _save_cache()
+                    return result
+
+                elif mode == "USE_CACHE_ONLY":
+                    # Strict cache-only mode, error on miss
+                    cache_hit = False
+                    result = None
+                    with cache_lock:
+                        function_cache = cache_data[module_key][function_key]
+                        if cache_key in function_cache:
+                            cache_hit = True
+                            result = function_cache[cache_key]
+                            logging.debug(
+                                f"[USE_CACHE_ONLY] Cache hit for {module_key}.{function_key}"
+                            )
+                    if cache_hit:
+                        if cache_delay_seconds > 0:
+                            time.sleep(cache_delay_seconds)
+                        return result
+
+                    raise RuntimeError(
+                        f"Cache miss in USE_CACHE_ONLY mode for {module_key}.{function_key}. "
+                        f"No cached result found for arguments hash: {cache_key[:16]}..."
+                    )
+
+                # Fallback (should never reach here)
+                return func(*args, **kwargs)
+
+            return wrapper
 
     # Support both @dev_cache and @dev_cache(cache_args=[...])
     if func is None:

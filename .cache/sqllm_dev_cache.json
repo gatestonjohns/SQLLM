@@ -1,0 +1,4586 @@
+{
+  "sqllm.backend.VTF.join_llm": {
+    "LLMJoinVTF._call_llm_for_decision": {
+      "f9a64a4279c321b57b48d31190054e2db8ac7ba6c3f34a4c20f9fe6c64b435c2": {
+        "selected_candidate": 1,
+        "confidence": 0.26
+      },
+      "3a0419bb0c7527f82dab37674093c72a97b4768553c00d5d849aab52f181fe3d": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "df78ddefb900ff692160459277c372dee429f86b11d4e98895b21e11025a1b6a": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "4c4b3afb3ed793fe581c9fe0eeb9f9d34ee2901be38e6fe682b499ed46a43a1f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "6d3ba43956b0a3959e5d699eed44aaf992319221ee8591627e5ecd0bb208bde4": {
+        "selected_candidate": 1,
+        "confidence": 0.875
+      },
+      "79ac0c847174e7a51adbb88c8ac3944b8ac6a8db660248d095675f35ae995798": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "d805d207efa1b4f9dbe53459537491fe529fe7a933de13d41a13803a08aa23ca": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "940cdc2082eafa0c0d835aff5ac77ed67678497782aa0703c09fc4b901ed803a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ddf7bd6263573863cd9066a17ec79dd51c2760fb7d9eda46f82a2e66e88cc061": {
+        "selected_candidate": 1,
+        "confidence": 0.895
+      },
+      "e4a8d6b881020358fd431fcaf0b687dbd613a74b79ccf4fdb8ba0718c715ed41": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8afd0451520d529cef60d6a235d13a24f87d06cb7ba5de39d057b718acf0d6c7": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "eec4ef287987834dcd102feffd010d1f59b342b66a6040ee8e02b866ed91cca4": {
+        "selected_candidate": null,
+        "confidence": 0.1
+      },
+      "b41acc1481f21441df844ae376fc1e0f95e3c8ee188cb09a3c9a9d4588dfa0f7": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "863226b2afaef427dd9243220e66e11af0c22d8c36fd85d699e36e0484ba2f8f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b12c7abc3d0ab81c41ed124b43bc49fa8ea4080987e45655ed285251464b48df": {
+        "selected_candidate": 1,
+        "confidence": 0.56
+      },
+      "1174a688909a654e82d12f1e2771cf77e697eee579e2dc36d2d64f022a20f448": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "481d7a615ed88b54a677f564584b8506a5a9234a1a58f873d1ff010acc1d6eda": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "3f38a9aa2696cb021368126431308d49dbf283f322380e2b7818b051907cdf70": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "f5c5e784176a6ca5afb4db21e35ef3239137c3811323ba4c1c9d08b526b4a3ce": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "fe96f88c58b06aa07aba0f0805ff20d2d37d371cfe17e2ad320308bf4b98ca00": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "caa48a7594b65da24f26fdd463e62d1393e4525d170266fbe96ce7c3e86e36d9": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f662aeb2c5e8b8b2b0bc4921301e7c113bf14ac45c1600b6023f98d7372aece3": {
+        "selected_candidate": null,
+        "confidence": 0.24
+      },
+      "0e109f53f197fe8295f956cf6fad54dd4dc1b637ff1b767ee6582770cef7d46f": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "5afb5d4f481776f79f32c201feecd43bed51a5ee05bed96d9443df7fb11b9a62": {
+        "selected_candidate": 1,
+        "confidence": 0.889
+      },
+      "a44aca7025173304559fe0956f63cc79d3f2064a3631dbb5d652a91d61ecbc7e": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "863e5a1f3a9bf13a68c47ab27dfa17bb46bf07d0f86b029fce74a24f883eba71": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "aa823b2063fd036647aafb9ba4fabfb6778abe1ef70d08acdea172ff97742a3b": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "ee8ea85eb5384db7e6466a3ad6c4a437bb1a8f4950d7533aa2bb7504402bcdf9": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "d513af97288a335d9b3f7ea809769b7657b598a3577f9f7ad8700ff06a9b125a": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "db4c66aa5aa2fa0e268a2663d699cf577f859b37dae488d96f7faa16caac9fde": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "a27377cdc5d8cdf3f849efd82feaf944948461179ea3228bab4c49bc15561f19": {
+        "selected_candidate": null,
+        "confidence": 0.1
+      },
+      "0ab7d0b6d857d265841166572744707210ce5974915add46aebe5a4de8a10e50": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f119d389d376e0d59bde378546b9d59a98330507b53c56911769269867e31722": {
+        "selected_candidate": 1,
+        "confidence": 0.29
+      },
+      "d0664f6ac50b3b7c18140869065e5b465faf72c015523381821e98e0e26c3021": {
+        "selected_candidate": null,
+        "confidence": 0.1
+      },
+      "d619338d77440278544444d4b682039cb2a631c805a69dcc6a98ba5767678e1a": {
+        "selected_candidate": 1,
+        "confidence": 0.5
+      },
+      "4b487239f73a17f92cc3f4077b3bc697f9d13589775a73dc27062660f83d03f9": {
+        "selected_candidate": null,
+        "confidence": 0.25
+      },
+      "4e5fde056d45ccd227d910873993c41fcc36f7e868e914c5ce950d1e675b6c6c": {
+        "selected_candidate": null,
+        "confidence": 0.15
+      },
+      "f77dfed720daec4058c03ec07e2a0b3e27cf39b823cea0be8404adab564bc0ca": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "25be944e684faa547aedf81844e2decad6bfbe57e04355d097c3d790a3175e39": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "66f2c296c4244a22f1c1bfc8961a20a464ef746147fcab2abb1c989008782f07": {
+        "selected_candidate": 2,
+        "confidence": 0.55
+      },
+      "ea46ee2fce44eb80c9e5723f797503b05765c1abdd20e10f723f9a0e351e0888": {
+        "selected_candidate": null,
+        "confidence": 0.28
+      },
+      "4ea3d085f04eb678b9717d12a1e2fd9c66ffc773d2c3f5bd15c7740659194ab8": {
+        "selected_candidate": 1,
+        "confidence": 0.2
+      },
+      "688ba5a27d46888ec7c59896f63b00cbf88ecbb45545dcfd260d878afb3cb16c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c75a1540a12aec1b31f38a7105c2cbb5603a0dbf35dd3815d689d42d86ad7846": {
+        "selected_candidate": null,
+        "confidence": 0.35
+      },
+      "f0c88fc138862ba9d661cd306ff6096303b07e44a75119c26a6e3530481a7b79": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d8c7531f1ef968c36dbded25a85fc19c42cc92b16617fa89d52d4ccf95166307": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "9a05ab8701b9f18124aaf6aff2588f87583cf43d2caee83ce30b70390737c8fe": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c06d0db26343bc9f98b532a7dffe71167ac8abe8f1cf6f38e1ac91990a817378": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "faeaf3e1c6154b58f3b0d0e1ca5bad0d1de78cbec447bfe472dbf243a62fe10e": {
+        "selected_candidate": 1,
+        "confidence": 0.457
+      },
+      "c884ff35bf1e27dc200e25f950ac9af6324f28ac7d83bb4b7d8cacc1aaae5631": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "c89e250cfc328109b9770d55a7ee8782d104536442f4274e41a9de174f7b2874": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "34e0fdebfcb0838a19f4f748f3cb704f009306d19461dea380978d13fb08496a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "7c5bade69028c8655791e2c988d2e16a4652696f5a2920d3a065d9a262e8df90": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "9c354c252e60ce13cf696f5b199e5cd3132ef0b995eeb80c7029ef8973e81799": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3e0926f536c068e318d15b5ddda6334b943a76e8159cdce400f2b195cd9fe993": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "2290127f654ae8907ad0d27b9d7084ce24839687693d31ccf2261aa08486661a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d819da58eeb9f93f6227ea758f36b32f994e8febf332c7be0661a951c22e5025": {
+        "selected_candidate": null,
+        "confidence": 0.1
+      },
+      "c9697ce2fd96ab21c69b5793b633a7fb8da0542ff629328d615d96fd899b82c6": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "350e3a06c0638d2c374db76f7792d01e4edc2c7b517a7b93e5a8929ea701cae0": {
+        "selected_candidate": null,
+        "confidence": 0.1
+      },
+      "766e4d774810e675d28cd5ef34fc3f33b5e2ae76f566b869e7d433581c41fcc1": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "f9be3dac9c6db952a45cbaab56ed8fd72f5fe6fd396c31d7e87e66e8b2dddb7b": {
+        "selected_candidate": 1,
+        "confidence": 0.6
+      },
+      "4ec4f83f97b9bef7b9f2bad774d2ef8cc3e0a9777bbe55484060a0e39e15d91b": {
+        "selected_candidate": 1,
+        "confidence": 0.5
+      },
+      "456bc971c1a5521ea265c48650121fb9cb0e69eb95f07005b9e0186083c92f54": {
+        "selected_candidate": null,
+        "confidence": 0.28
+      },
+      "f55cfcf0342a9aa371c24d6536af3e19fb46579c3a202660ffce1d50bc31a309": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "8a514507c59e3f0d780ad8154137a4e5d75a714a2f551cda1effa98c09c20555": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "4245033a827166cd2e708383eddd553f8a25e886868f9723981a2a22d6a63a3e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d100c79864d4c7aa947e7cf10dff9eacbe7d0a628e6a39d4f7f2da091ad66b50": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "56936fbebfb7e170b4ff56825388bcef0aab213159339b3f24c29ee814064767": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b967f80e73a261b9781d4a251588c23a304fc651aeb51b369ebb0c0bb764fd37": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "1614cc2cc565e13f51a4050006d45f6a2668f4d9b2c55527cbeaec3a9ad69946": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "012fd4651defe524594d0c911b9115af42ee772808ade85c0b885925e4e58155": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "77621476f7330c22d23a31e65f2ce2acc0c3c6afd199adc88f085ea74bfa55c6": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "0bb06d0e5f48641ddf6d471062eb07d0479f048bdfd760235ad4ff66e9045903": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "5abec79e8b07df7bad4a731f89346c04de85a466aa3a5173fb9d5e39c7095cd2": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "eb4c378fd6881054291234ac14f523930193793b42c4ec1077ccb05f71d4a90d": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "cf64171fcadbd79cd60fb026e22cb04ceebbe1374dce9aa62e2b3418304b161a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "469d7340e82a9c8150d6ea75bacfe541036e7590a2c3670ec1fc40aa28b835ac": {
+        "selected_candidate": null,
+        "confidence": 0.1
+      },
+      "cc96e23f2c61b6e901acc0bfd4b8401ebc618a3404bab08db7e39a315a2d1ef9": {
+        "selected_candidate": 1,
+        "confidence": 0.56
+      },
+      "12a30ca63c6dae8b8be924d43f37ad7a05a20cde592722dad9fc6aa46055182d": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "7dad8d114ab68041e33be90c5ac33663388d3cb819d82426863d2e1bf2b98623": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "be366627d009bd936de864c39c3a2044beb642c0ced109638241f1abaae3a82d": {
+        "selected_candidate": 1,
+        "confidence": 0.34
+      },
+      "b45aea7fcdbdc6807177ca5211ea249bc8b89bb87a3243b3ab0b66c0196dd4fe": {
+        "selected_candidate": 1,
+        "confidence": 0.692
+      },
+      "ef3f09812eb2059c91739f6a14f8396d3dfd826ab6c7d028843f14876a1d1834": {
+        "selected_candidate": null,
+        "confidence": 0.19
+      },
+      "3b394b2d8f7d7a79e72502740bf9ab42bcb10be06811bc68c51b033ec663544f": {
+        "selected_candidate": null,
+        "confidence": 0.42
+      },
+      "e5b0d4ca5c89d944e52a3962d63e8293c032619eb0950aecc092c4890d9c3ef7": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "5b8aafde5165f1685a0fed6e82c850fa3a323f55a2fb7dbe4f6c92b57740dbf9": {
+        "selected_candidate": 1,
+        "confidence": 0.895
+      },
+      "447fc2a07c56ede247225cd9cf00d68c129849d9ebb532ad06adc52487dffd3a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "fc663c1e48b6ebcdeb6d8fd2d82cd0954a668f23a87d082c1c44b929d7a06c2c": {
+        "selected_candidate": null,
+        "confidence": 0.15
+      },
+      "793fdfdbc78751fb140371b091a0329d22d066fcd5199a952aa3e8338420b874": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "915339b9b7b4ba5d8eb7229eb84b1bcb9caffed5d30522b7aab9f7f31e5ee4dd": {
+        "selected_candidate": null,
+        "confidence": 0.35
+      },
+      "bb927096424a704290dc8bde4b536fe99edac515653741c1fb3753275eeaf544": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "01158b02102b6f5eae39b4e7eb115ecbbe4f9d2e444f2811646fcca8e2891cd6": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c20b71525890644a055172ffbe73457d2ac44566f568fcf18e784a50dd2306c2": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8a76b2a5cc756ed89a0c71b8e20f8669540ef862196239e906656988121d3a37": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "842448c0195cb0a80d0d33aa278bd89a9a071e05d6220444833d0d805d9f58dd": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "1b823b7f070474c9056c992a94ee5d2e61976fb529f581e8a5274886e44e5933": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "45e4ee342427b19c3e11a10e05ce468407bbf0d0d0ae5ff5efcce575b79c20f6": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "2bacc5b70b3adf679093a522f37533bb65dff4fcef9eaf5d19a9da88a0392b6a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "6cea9757a3ede224ca64c3651ea04df85c8616657893ec43d3e1e7ee00d9fd7c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c2b5a95386835f00b709d9067a0647c18ec82361f2bb4ec885d5c22b4a7e8d10": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "87e3be2fe2a78248a590785c6f2258797921746c19d02bba3b95b2b30387b6d6": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "7b839b58c37ed4a36445838bc3837c9534823ffd28d413605ba6abd0285d50b5": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "5a38fe0b5efbf33f5d5afa5e0ec59c76114c12da6745b6a01699aab288b39827": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "2c89f34ff07372ad43e87f161ac8e37a9a74c8926127ad24e30de9e143aa5349": {
+        "selected_candidate": 1,
+        "confidence": 0.839
+      },
+      "9ee792748f29b022fb4a49e7988c78371b5c03b254ecd772ff20c989125b6882": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "bc5f160984f340bd26e31de29355cdc22a24efddb71bb812d28cc81d3c95a023": {
+        "selected_candidate": 1,
+        "confidence": 0.783
+      },
+      "0b062e6b3124bd554e523f8fc9d7d9a5acf37271bdd28dc80f46238edc0f1898": {
+        "selected_candidate": 1,
+        "confidence": 0.783
+      },
+      "8a5c6613869b56713133f48acf112b6634fe17ca4f78c6d09a833ffecc086f37": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "314a6d99c227d373ea8deb1ce065ce2db1e673a29b33573faa58d7aa5b07bd21": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "213c66d83a5f20282126e3385b18764fca831ab7334e3a7121bc7749bf2c8090": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "7aacb212bf429e38c5041554a7f51755c525f171638cb682c6feb7e1e25a75cf": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "0938e9ef9707d872e85c5c60a99aa10ecba71881918080c495613363483e9d58": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "4c73cfaa3ab36df496ac66470eab53645c43140a06b0ddbbd286e43fe1d7841f": {
+        "selected_candidate": 1,
+        "confidence": 0.625
+      },
+      "3bf53eebe69c03f983e11b9b54251d2f07fa625cf15c0a4fd0a6651fc099c343": {
+        "selected_candidate": 1,
+        "confidence": 0.571
+      },
+      "107ac9e1c4922dace3bb225771d8d1aca78667d8f0b40dd3438e14b39bc3a5da": {
+        "selected_candidate": 1,
+        "confidence": 0.625
+      },
+      "473f9adc3647ec0b1d5374537cc9855d4c40bbf1ce48665610f86a44f9894a89": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e55c16a8d71e7b798e88b93da00bba9c90d3d32b8412a95d739c928e0618398e": {
+        "selected_candidate": 1,
+        "confidence": 0.5
+      },
+      "83b82b02ea8d00e0dc56eacd36356c462b3ce9786511b9f24297c9bf8188637d": {
+        "selected_candidate": 1,
+        "confidence": 0.571
+      },
+      "360b65ec0d141660fe3df487ca09691031d8964ae524f1df1f0d58e2afa597aa": {
+        "selected_candidate": 1,
+        "confidence": 0.571
+      },
+      "d23c635d1daa42611a0aabfb64a4d8a76a1191e77726b8e7382d135b6815bca2": {
+        "selected_candidate": 1,
+        "confidence": 0.571
+      },
+      "31f36cea3d82511f419d9afe6251ae1b15cec9d3476853d862fae4c2f7715a42": {
+        "selected_candidate": 1,
+        "confidence": 0.5
+      },
+      "4d7cef2ae4d1bde75c7449cbd9dcb40d22a3e2dcead8a08819e5d151efbf130d": {
+        "selected_candidate": null,
+        "confidence": 0.29
+      },
+      "7e647128247dd04f2d508bba4787bcaa228b5bd7ca25d680d3291dffbe71fb9e": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "69316daaf95709a3a510e8b14e41be5403af05d1fda338de9299add25a812e7f": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "622f0594124374f18bf5f16cb78f3ce7d27ef31f12411dbad6df99df3bcda57f": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "07299ad2d1d9d14fb69e676bee291df8b8d6493379e30a2b6509231db577a410": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "b0d7894f6639c99ac06f7523595cfc3bbbda65ab7cf5f4cd6a91162382dd8083": {
+        "selected_candidate": 1,
+        "confidence": 0.667
+      },
+      "0ea0ebec841c6eb66560990dba0bff48c5fed892dbeb2d0d4a5dd2307a682a72": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "8e6b59f6243192189b31fc87a9f8ac74a095c052cb3bcb4f08cf931de808075c": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "9d96a4d6c28466047a57766821f5504a38e31e5e04c7c4ae5af8f19e9ae10e19": {
+        "selected_candidate": 1,
+        "confidence": 0.727
+      },
+      "e7218e14caba8fe44aaf741d0991728e4db8e8ae687afe0ebc4f7fc0f4f6e06a": {
+        "selected_candidate": null,
+        "confidence": 0.24
+      },
+      "032920731bc7b32540bf15db76b93a1d8a60b64fe6c241357ae4c653dbb08266": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "ba9d03b3fae6a827d1f4950be3c8bcd72b2628ab9d524a19ccbc3f1278459a51": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "96fc8a11da88eb0ff6ac276c6fad518b67efb1cccd64cc4994407d1f2838b30e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c14604d61e1fde0636177be55c7bd4ad2f92a15a66f581a0be1314f77fd00370": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "783cc6b7427a6dfeba8dace55db3a6700963454597a1a289123448ea8cd39b35": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "5caa2472c0234d2848583a63fcbe0b7c691c1bd26d04485124d36b83f8a20185": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c526ede7289fcfd6b9c01796e72f23ea20d8743186fc9e82a64d410dc14f2016": {
+        "selected_candidate": 1,
+        "confidence": 0.213
+      },
+      "6940be0904d4fd3711c962b5fd4ad4f65e1f0e73bc49a4913e11e6feedc24753": {
+        "selected_candidate": 1,
+        "confidence": 0.667
+      },
+      "d29868ca040c248cc8fc8b51d81380de817b421b1c7f038cc87fcd8a8e3318c9": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "a41309d44c4643962e7581b7b4d4a813a7e93b2781f8049f9d2c2ab13d6b0f31": {
+        "selected_candidate": 1,
+        "confidence": 0.61
+      },
+      "d1f04f4fa98b3c56a406ce8f73f3180e7546ae89a493aeeb6a12d05ea390b657": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3be2b264b83b7aff9fc54102193b1310e00d9a2261a2cb5ea5af260f492b8de8": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "09fa81aa991bc96da11c86db0cf6a42b4f498670f09d96d27fdcf76c24539fc0": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c106f70814a3e6b036b1660210e810c0283481dfff404c9d760e0a5d672c483c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "88d5b96c507e64977f853df37ac96a9ea5c1b5b95467f7fa94ed01e92cf31fb9": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "c5f37bd3e457b7d1e8d6742515fc2849581e8fe11f62f8016c0cc6e6adcf8c14": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "00397c69b1e092ee6a86ded5900277fbc69658a3df5b446efdf2f7599960fbb9": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "c2fe20b01e628a38b0c98f4a9a087f1144988a803e5b72cdea973fe56d14e4ce": {
+        "selected_candidate": 1,
+        "confidence": 0.6
+      },
+      "ce304d795311fde0c05f20df9408267938f749156d3e39f6ef1330493c10deb8": {
+        "selected_candidate": 1,
+        "confidence": 0.61
+      },
+      "3492be7e32d6af0effb9ac33138893c562e45acb60aa9ec95394449acc623460": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "f057283e5f08b9ebaa8e59091393388b1920636082c511d78d2ce246fcc9287f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ef5e79c4cb554f7994a7f3b35174604c0e0c390b5923428efa7fd3144001fb91": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "4d0723cc03c04bfebdb113df7d497aca94aa40d737935323adcf459ad18e9274": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8e40248bd2e408aeda7aeece0ced0a66330f6418362eff9096dbcaa3d92e9760": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "d64826e54ceb72c2a6d2777bd43a36285de778d7a63da2101ead03d4b750426b": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "f24c5fdb73b09e8e99533658ae8eb8d408dfbe2845568134bf42469f76a931af": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "d5a0a1b43bc216ae8e0945bb78e46208446499cc050eda941a591d3c6f9f5d91": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "8069e3919896f25e10636c270c26610da2c8ba7784dd52ad19509c24289028d6": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "f8837b97a077081e6d2142d4461609b1d181b790b97867bb8d3450bb116183f8": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "2b0065d380b7c4688699c31b88dbdae7b3d11b1d84d17743745c5e7b38f5968c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "2088f6c3fc93d2eee198f80cfca12a2fb0cd10f20649bc1567608ab44b0079e5": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "7f5127543f4d2955f639db3fc5f0e90deb69592428948980400712a866e17f4b": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "3b68742ebf0012617051d687c64320e9e09d8f65da385d02b03ae503c26c278c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "64877965dfa7459e42299befe8ead49e583f62940f5d27890f424e93808ac8c4": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "0d36b773eb7b1d14fa969c12172588752ec5af7cb24632796202c7d0f8414f77": {
+        "selected_candidate": 1,
+        "confidence": 0.889
+      },
+      "06536d279fbf9fac09ccfc2ee85b410901bf8053941bd53c304e963ebac86fa7": {
+        "selected_candidate": null,
+        "confidence": 0.24
+      },
+      "8901f2658426b227e96defb35d9fa1a857a68b67d9975517af66a15805ce2b50": {
+        "selected_candidate": 1,
+        "confidence": 0.6
+      },
+      "c7096b64017c3d02e28028c654594b79c8872fc5e7210aa674aafbcad0bb6ab8": {
+        "selected_candidate": 1,
+        "confidence": 0.53
+      },
+      "449c060e3ebb963318e10a56884e73ad80a13e71514fc473d3d97cf33a5bc7f3": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "5a4a38c0c02540c97850042accdffca18c8c6eb0960965e2b258d1ddabba2871": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "e829242ff491cd84ae0d1afadff64ccf87d255c940cf14cdee8588687e05d104": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c0ac51177c165f019c1a08943f88e3d0ad8d2494b7dda2ed716f1af8982e3dd0": {
+        "selected_candidate": 1,
+        "confidence": 0.46
+      },
+      "1e248382d1eb7fdade09063e033d8d1236d3ae288e48f0de088346107e92bcad": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "86d613d4155b84dda893f4860206bef82845bcc660d98bdee3e9e8cdbbbe433f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "331cc7251cdfe3eb668b6cd4958593a48213cc6451b9ac8dc844f08fe38077a3": {
+        "selected_candidate": 1,
+        "confidence": 0.625
+      },
+      "c6f047db0b7492c35b22b7c092e0731d6e5a4cb75f5b4deec74f384fa4d60c8f": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "c011dfd78997b4919bb7d6d1c06a96a80fa9dd249c9fa5d4592a9dd10131d44b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "2bf29abbfc5a8a77c607754db689812617976b52a66cf68850ba669fee6d5800": {
+        "selected_candidate": 2,
+        "confidence": 0.9
+      },
+      "7e0eecbf5e1385f27444fea026b6a94c2ad2b52c197ff7e16db4919d1d299a0a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d54a3bc18f37f275c01ca75e1a7d1b2931e961ba606d2ef678eb47226d385865": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "5c676f1b05840d578ace9b910c54389241c64e140092ee073982faecb3a906d1": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "ac25778c8b278f6f5fbd3bbd767ef37a59ff243e96e7e980a1f6430d26971012": {
+        "selected_candidate": null,
+        "confidence": 0.16
+      },
+      "35f8758b819ff898f895a1811f7219f236e84602062da1b16d61dd565d8fe323": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "adc82da22e5eb4e2380c59e49d137085c71ddf106388ed0f4ba3fc9f71785600": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "0c00844b992d421f24ca57700a4b62bdd46baaf4e176f238d442f598dad3a319": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "2711aea441d5e1d9cbefd935fdadd867ebe5205863941ea520ad735e674bbcc5": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "af15ab07d0c94fe6c4a18a9a47d043932f85ceba6571db2c385fad7ecf071e1c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3f35aea805dad7514ff11b61dd84e5d297a79bee60d9bdd8a4e53fb38201bc4c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "972f947ee68b3442fbd7168f1925cd8d236f4ac6d07182fdd4965924ec9132a3": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c77d199731a7a75e9b56701a8deac0913179a27a3ef61442199ba4f96b62ad3e": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "586060e272767e597ce5834f2f058c9849842c2501933070e186187f4ad87735": {
+        "selected_candidate": null,
+        "confidence": 0.45
+      },
+      "5ea1b33ed1cd3e99b2530c9f5d22c8b3ca8a3116b26aacfe3460bbdce9ca512b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b5f790ae610321b4511a201c7eea9b9039fd3c01f8d052e92f07114ca2a25c6c": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "88c0c76f98ffee4cbb14bd1b64b44766a6e56f8eebc28b909480ad563d4e3ea1": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "a88db6da9fa0e8e9bc20ee40f152ecdda1a6f05b253b4581f629e88502bf0676": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f2d785faaf855042811cf0c44be880205b3aee604a2b042cba227551dce12f5b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "44d83fadd95b06e8542d0de48c8f52f162f3e9fa719c20cbf395199e3be7d047": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "abf5bd74683cce99e8698b1e40ed7771e603e3a71d3815301684b0ee4b98f8cf": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b9a3465746c4027f5876ca09eb03f75ba8fcf0c11cc21456e05a407ecf701b08": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8b5f749a9dae0abb2ca02cbdc013c83d4b7cada9f649f40dbaf2c13172a78d06": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c991b603304dcc510ce62fcb1e178e0d365a67a1166cc7292f9c4f06fa9d33cf": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "a2472327a68eba26192bfacee2f5c4a46e35038814ba03a18c74ec9b853cc0fd": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3f610a34bbb56eae5236babf0e80242aabd59ce228cf96e35edfc672077847a6": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "0a120179b9c9ce189305c4ecbaf8c11254e01f1bdc4e09fe7e356a60053c2515": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "7c5ecc1ceb4610f793f339ac865a736f5e727a48fc3076775df042cec0743aee": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "383a039b00599cfe4233c7b07d4bae2f938d8b0839068a98d4561722620adfcf": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "4a5cbc8a93f84bff869e2697d11edb45710eac714ef11ef4f98a7bc0305f3f32": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "ac0157374bdaebd28562f8249ccb7656fa2a32322ad9430dc6dd3abca24bd631": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "aeeb0e288abfdf5175f83dc58fac8c9e20b7964e2b9c1de33ff79a930c0d2a76": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "719bf8d3800dcdf4c60bc99b7d737334b7cd926f743c4e7067953cc68c973e87": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "89b1c8a1a64e1e2f61271c2d95d7fb90a337c48e3ee8a9b18de17802e67eff8a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b16b582a1e3a065cac513a189163f062805682cd5b565f7f6824f0cbc61bc98f": {
+        "selected_candidate": 1,
+        "confidence": 0.875
+      },
+      "e5aa20a626f3fb2151b3bfc075223bb7e1676654d9bee4b22a9acf0ba74ccd0d": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "2188263bd74fd5c7020ae5bdaa3272b3a284c8adb575bd1324819fda7ee3f58d": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "91d6811998cbe01934a5df13eb3d992ecc3a98e232fe024314501da6bb766501": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f63cfaae1da4ec816ad7997481a8ac883a0647819e31d48e5fe1d0d616766c74": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "cf2535351e6e30689158612e50de3f76236993a2614eef81cceeb0519aa441f8": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "3ec59e17f8b65eecdc70e49aae752d9f4b7beb5a0f45fdc4e9011b34801a55dd": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "9f8a290f6f7141a334baa1d5c5f367fbe6b6aeebc583ab1c2989c96c6edc45f4": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "662126ea8f0245db688a2848a2f5cdb94d8c910b82028fd1607858c1d987f2aa": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "70da377a0c758c6bda3242f438cbff9ff410cb7d972b11a40cccc66925693771": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "a8ea6e9ba4903d95a104a2e9bf57e05b347705bede26e6af2489e6eb5580911e": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "e80f183bc486bbe79b106fb6a62cd49e2f45798123a43f218af86178e5f1c965": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "59952ada6558701d98f40177fb06d8733af10b3cf4a8a85c9ad76089d3d40398": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "9d8abb393964d7442196aeb0a04bde9c5089e932c8f8c479c8f558eb357c1a2d": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "f63f5b1e61627923bac5e1cfdd8c891e4fbf3d64b20e14948de1b4bfb243330c": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "342053a775019926301c262f90494a21a90f419919a1890e41cec4f7fb2c68ad": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "094763a2d6b22a8ab685aca3145010cafddd21efc2f25d77011e842d1f9aa240": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ba87a799c2ee5783405ef9f5794ddbfeb08bc60918d9b2c6a3aaa36c745ea051": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d0dbfe0b646a2992663babb11bcd91cccb4030469ba7a89589e1df3cc4592eb8": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e56779482686b06945913160a60cf32f12b316989f101c97fcfc48ac0bcea0e3": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "53528dd5036c82ded672ce9fa4a99663f689f0ed46fc7168ea00844458b6c386": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "370b7030362c93be72d131709279a50a7f936fd77b8d51538196c08e030ca371": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "85185a4a2ffc8ed7b07268e38bc92f5670b41d86af92e2bc5e9cbb63fda542ff": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e87aa7782b74cdd559fddec623029bde0ea60ae41efe0bac7f5107d99059e2bc": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ff469013657178dda0e897ac51a00de6e73605954cacd1a5a197992f34116692": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "b5956180072ec554f4aa24aa6e71e810ee5541a2c22c82851ce05188ed3a40f7": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d14250ab5cdc80e48dfcdf4fc5207c8f64654b949a18c8947378bbb803acf6cf": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "0c255fa91ffbdbcb79784f173ae0ce972c9633122e21d1c06cd278c5abf04ee5": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "35b92be8fe1d49ff102bb03effc0c6f13e4dc3b2e2ecec5c7d55e5cb1a6cc958": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c0945ecc87a316aee14d1e48f5f0f818611c4d461ec114c9e8338d7a0e8f8904": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "6a776b689759aafaef93620e7581ebf1e33774bd264b7d5a84752037090e9687": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "bac9ee89491d1a6e6058ef5d51fc2a4f4c382acf21cba14857525df814151b22": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "888b3f21c59d465aa7d1dfa8329f1f29940baab5f8254d3341a9e05d0e54a7b3": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "657128f410ca39d6b974c4576a34351eacf105e3e098a1174c74da31a63d0fbe": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3099c613c2e56f5635a3c2579a6a2ad232bde57df0ee44b0d944fb10eecb3534": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "a89da9c76d373b3e41939a07b077f4972f81b7fe6bff9cee3dc5321c351f890a": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "08c84ecde2acff83266893241db328d589a5759a26f85db761620c8aa2e21d3a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3fedea046ecce6b87ac7caffcad659c3606051e12c35dcedf15b80b6e3509746": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "82c0eb26924cfdb5284b7cf305fec0be1b594cb5581543e5b9bdeb5057c9fefb": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "4d5d67523b16b5e694e5cb10b9a41da2f1ad53f41902a3de236723f96dc80eb3": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "baf5ee4ab0f83b77b531da73f00e0059b570978f64cddb79f8a0b9410946ec54": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "84ffeb95c5c27a79b320635f496af75ba221905f9cfad3f24fef25782fe839f2": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c42e6c78039b974a4a1dea9591fb78858407fca9d979923cb0ad2e15d936c71e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "9d975c936b20f8b6dbed914b4010b903b78e2e8ca8c0a98e310299eb43c5b42e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3e18689126813094766fbe8fd193290a1bc2c3251e96a7f1a822c59997aeff52": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d299596b310184cadabb0f2bbca45f96d3958fa207efd073ea9fd3ddeae8728f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d6cbb359b61c6faf374f2ab12288f75ca0d4bfa85724bb3633fbabe9a76e3aab": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "cf6899cc341a5bf3ce8b77084bdcffbc4abb0f602370a524dd25fc3d53dc16fb": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d7cda78225f6350603ab2e612f4c6dc9679662f21f01790cb523c501457f4565": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ce6a40b58a2d19cf029953c6c3838740f32ecf63374de59e4758b1ac2bc1dfd2": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d39c8aeeb500185d5c19da656720bc45c3c17e1aa8b4f6f2c867dc8724b91c3b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "227d266c71aac1fb8ed21e646752f62605ff4fc0cc49ba8f0923278b91817a63": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "1da3d104d2c0a5b2c6ae475193ed2c8dacc7cc4f87de8dc56c7805856e277b30": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "32ff9fb964a113affc2d9d0afa9d6799e663908a8674888c837ab07e703db7a3": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ee118499205e55ef3fa84babe1fb7b5670a4a2836324fef5ab5f0bc928040393": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d5e4428f1410edc28f40eacc4729690de9a327e9cbf4e97acfb528be096c8053": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "afe2d78c67f59d0b66b75982ba04240a1b6993960bad60d4bb4aeb9cbe6c61bc": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "5458b8a33a326bd4a65f530ce77ea68c8546469a0409b59622235dc37a95ad0f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "50aa5e54a4472b05185a464b0267a36fd72ddb2fda4834111d1831990dbe371b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "d2d3c902ad6b22937eb0765a6f3aa1363dd02187f9d31b1f04cf5d13776b27de": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "885c2bde86fcf0716d7bcecb4586d55c210e49f604a62a4e1259bb66444464b4": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "30d18c8e12c34320bb86f97b9459c8f77851683ec69b7fee6799ec098c9ae1b4": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e4f240f9e54dadea7fdef39321031967758241402f3d3265564dcaa2043abc3a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "fc4a1baa35d64d595717ece9ac394f93ccfd6aa29ad6c5a2985f60fed87582f1": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "afb868b6b148369c47a2a079f3ba2dd0d889b5f78225ee722c652ac62898ee0e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "67447c8c2e4ca7e8067bfe1a1178e6fc3f4b706a380f187a229177e7fa5cb9c2": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b98dcaa0b4f1337c822859be50f00ce8d9ff4571e1e63b76e988f6efe5c3df5c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "0bef50f748d19f44e5668971d8d14c2504c5694b371e024e52d1e01840cf8530": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e02756654c0b3397b474536d23fc8115def8e9c1d88366cfaaef269a61472403": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "116231293ef15ff097fa8496137ab158c1984665d9fc8b7b505ac0270efdb115": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "639b2569f2e29188edf8628092776c32b22915bdbfdc49febcc319d83d1150cd": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8215e209ccdad29d3c3fea3d00e2402e996e54a43eb4270774169e82877f3bf8": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "054293567f9554962406143fa72db04d528a93787a6714bc5b9c85a00796ede5": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "5b93e2bd68e4af2e15b51bee43767c186cba1f27477504df3aca3d81c432da4b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "dbca0dfa6914f0d1214dd05a67c485b02fe8b27ca2bb92ff121d5000291db22b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8cbf07dbdea1777affced2e4b0a9e1dc40e6b7f2089bceea942f7e575d19cade": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8ac2afe1b93885d7ba7e755f3b3c0111d934cf5464b6fc29cafc511c776f1233": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "65f8f321f417ad09169e666787275a350c3e522546833d4e92319c5127e7400e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e5388847ae9aec2c6ae4343a21c8cfd725ef1c335347d317695ea2480ca04751": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "9cd685f76f1d1a505fdd21bca7d0a0a7884a367c7cba4b92d3dc0f2882277dc8": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "6f08a8e8cb062635e154f735e238529c9eb507bf3d6f1659d29e9fc82fbaec25": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "65a3da7da45b2a4c5cf36df0a3b0cf215da2c21be48e2ff2711aeefb497e549f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c3b8a5bf12f83f12b3f021beac2e8b33084e552e56e8dfd5372cbd6d3ee01446": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "15f6160a928f1bcb245c193902584aa39a1f1d5e09a4b2f76d71b9e956cbf33e": {
+        "selected_candidate": 1,
+        "confidence": 0.941
+      },
+      "18f2b30bc607805f94ccc876b18e49a3824ff1e2cbf59186d8c581c8b4ca2546": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ad3c27441e55b75b7ca0d956b116a729eb480f0f5ce096a5bd314d1d3cd48923": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "35333623d68e2d3f6b9bb1dc9b69bae7d9e5dbb201c9411df5f4ee68a7995cc6": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "110db64f6e53260b681a81d2508d4a0529aeebfae12785626154218c00369741": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "4b704ee038f766db4de414b399f1f696df3e017937eed0cbf156c220e1aca169": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ef1946c010f6c9aa2fc2ed81182c6e8138b1ef4445518575465dbb5e91364c09": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "7ec3a6f0f1c56aab3655b3f85ef59db199564f7880792bb5fd85d7e43ad5b489": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "87a205c78338f5ad3c1aebdec160d09e63625adaf8797e2cd01eed9a4b3525f3": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "9dd4cd267b0abc8b999e0846dee3c350896dfb0ae22265b197c2c690ed649174": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "1f7941171d40f81cbaab7291dc360468e27807a18098213a968a592692af0fb6": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c69e565f5fbfdd80a88f6b0366016e734d26518d01a984f7506cde280503b353": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "311cae9074756b2495d207f886dd736484bd04e3894baf58a011659189b28506": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "0572dbf4fd6a1c70fc777908f4fe7024e319e9b979b37feab2f6801840250b25": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ddbe5fc6827a38460e38cde48dce03c1befa37938bd71731354dae0caff6712c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "7119e8fd84dda1b8e1e35f3b0bc4dc3461de158dacebdded88a52069ed9974ec": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e7540df86155d8773eada808132f2aff7c23ab7c7af9d22961c00365ae1ddb1f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "27adc4f921491932c95e1369a1cee4220bf3834bb7c0ef20aa5f8ce151d64880": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "aaff4c792539a7dca5376be68b3679f8065029b49c769b61b0e351fdf7ff28b9": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f34185925a35970ef41d6c8181e6e417f6f827ff7a0cd9765cf0b45d362e33f8": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "30a1875516c4743e1c54a163ffef117129f29fcdbefd23b4882b766cb0cdc239": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "02117a1eb4a6bff5c93422e61b1177b26bdf60a37463eeaff86b7c37487c6b27": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "614fe6a5463f7b2651e215baee7af3f6a9cf314422f9333ba7d31a2d20348cb6": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "66910eff7a9f1f933e71b445d406482e7faa8a39f1abd09019ec07aa9c15b231": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "29e8d9a0ff304a89e701117dea80ac3a79504568f44ce99c6de017fd01139952": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "2686163ea92454f49013140d594dc9656c6bc7d98ffcd29997bfd4280a98c717": {
+        "selected_candidate": 1,
+        "confidence": 0.68
+      },
+      "eac2f67d2df1476f39bafe903b7ac2d7f9f1de149abe215c529e94fc89658ca0": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "360a3b53f5c9c7d12e2e0dc955caaf4de698466f3a4f756b10c06aca5b7c4256": {
+        "selected_candidate": 1,
+        "confidence": 0.61
+      },
+      "985ee98401bcd91d8239789d1bbd8715ac9e7cf71e9611bc7d7a872a0b3b11c9": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "593d8cd1dd58d5d99e640bf298631f45389f64a0d139e6ad212d830dabf0b15b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "726911fbcf573736fdda756dc90cd891f669cee8860a633ef5137a0eb125f5e4": {
+        "selected_candidate": 1,
+        "confidence": 0.61
+      },
+      "435d762f69b4104f0c21fff5e931ed50c42983a70cfbb62248abd0182b179365": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "dd82d006f7613bb16a898b8989bdcf89bf33c5a4b85347af4a4213b70cf06f18": {
+        "selected_candidate": 1,
+        "confidence": 0.6
+      },
+      "974b69dc52b24ef32aea536bfcd70105bc518edbdf40da3e8a17caa0667dc365": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "0b45dfbfafcb6ecf40714ef6aced512902b1e4ed838b95c66aa5b4dc72562aa1": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "060d9291f355ed11ecdd4ef6ea7771948b69f93bfe3deeda3a2b9faa937d9a9f": {
+        "selected_candidate": null,
+        "confidence": 0.65
+      },
+      "921c787087027e23b995c1d9e0d895c3855a34e47ec3499b62896d4ccef5ddc9": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "2222c5f109d1875752a7bcbcfe484d47bff95a168073cc2111977cfc8801a262": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "39db66bc40fea9f02bc8f8ac4815da8d6f7efdc702625be88f708baef9a99cad": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "595181c4af650bb63ac03bffa1c933738f36d4fd11012fd835ab21ef8e976544": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8f6fdb6c2712809e09889fd906914d89a2f581f3413cea948e7a3b272537ee74": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b72839f759a6f60cd0a7c78c353a4705b0e7cd85e181da4086686cea7c87b3b8": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "8284e94ebc588a97b9da0c904f090451ad741741fd3d9e2ec55bb3ef929d555f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "b4f0668a59b266a20a2525e32d7e3d756e3b033c752a8f31b0f44d26337985d8": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "438d2fbf7483ec204ecaac314b2decf50a56d93d2a341447ca70ca4ddcdf26c8": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "afbd0c7b3ca3900e571733d54084b54d5b865797ab08ca5a825eee0af670d262": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "3287c394c659bc0c7dcf80c133c7f144c3eca06d987e489ff0ad0c99e51b5edf": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "17655513dbab7f7bebd8461e0a172a0bac4c7a04350c8a294b11a136c0e8cba6": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "f935e0711641989e56f0dee379a1dc5d701ccda4122de14cea6a1df704ad87c8": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "77f2639c1c2ec98701d55d75fbb581226ad56e03cb45d5f10c762ec2485054c4": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "69493870aa2ac84f040418e9df868ca1d64c5f62087253045fe7497940f254d9": {
+        "selected_candidate": null,
+        "confidence": 0.45
+      },
+      "2760467696755899db97147c6fbb5a678dae54f7be8a2ae4b9cb9b526b10b18c": {
+        "selected_candidate": 1,
+        "confidence": 0.714
+      },
+      "a48f6d3dd9f3e81b49e7f4554d153ea7cb4c1427c09b19e51185acdedcaa0039": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "a8839fa9430934275091bd121b4d7337377f227a8ce8e19ca3746922c3c12405": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "1f31c1eaa4dcd14ba1e49a96585f6431aba1da2c7bbf9e6e92973d4d705eea93": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "ab66c0e52789f817457e8502201b55444c707811cd0621d76e8d8e050ab94ee4": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "5bbe066d247b76181d078c48c7485b5b2fb409ae16aef7a6337ae7227df7ecd3": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "f9a144efb2fc8d5113eaf1b83e0d30c3683fb526e9d98c9671c0839df0a6a895": {
+        "selected_candidate": 1,
+        "confidence": 0.72
+      },
+      "3c9bacd419c10b8200c5fdf36bc53479792e227c29c87ae2c28125cc5593d813": {
+        "selected_candidate": 1,
+        "confidence": 0.625
+      },
+      "efc5e1fefb82a82a62890dab58c609e5d216b5a5c04cd213976916145b2cf185": {
+        "selected_candidate": 1,
+        "confidence": 0.675
+      },
+      "ff8cfd26a79f3d6031a298e96a0b39d977a00f372efe19a05521f913d8c3be3c": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "acddbd86816a67572bfce334a2663990a3938359832f152742488b72a1638c98": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "b624b32610b9f664720c88d9896c1f4a8a359243be06b884a6d7d4fca58c90ed": {
+        "selected_candidate": 1,
+        "confidence": 0.72
+      },
+      "eef96647ddb2bf288e04c29030e965b7dce55aed4716be9ff2671cacf936486e": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "0143c8d7a2ffb3accba3df8a15cb36d4e4f817ccaee7c92dabac3544433cb94c": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "b2cc5f8ffe2297bbc57d0b72d5dca227ea1ac2d90357f66821c1c5be8320b0a1": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "fde03e62067cd2e23b7fed5ab3df93b53c54b709fe0a0f8e7ad05b5afad416f7": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "e9e4f24d3e9965d3f8afe55682a836f026c1e0a983d86e19927162b0c8f880f1": {
+        "selected_candidate": null,
+        "confidence": 0.68
+      },
+      "e79695adda194ee82255aa420e3e1914c1b4baa95732770cb8e249546c97c4e9": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "332b2d661a3b3cb63cdee0b3a6abe260efc36b06a4315325bda6d97515090953": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "97b517b1bd5740cbf86d8ab790de27da67c95f3929cee009d6ee89aaece680c9": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "db068a902ce320ded6f8c61449c0a2f3b99c4c6e57fd54322ad67ec628d52243": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "2a1bf0c59d5665cc377c9349171d222723f294320f0ed76093dc7ffc18e46698": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "4667dcbcb7b263aa12461a7e709c583aa90bcb3645db994d5d99ff8aa531134f": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "80ce541b4ee1fa92a972078856563dcfcbabd87b1c00e911aabbab746ec06aa0": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "62f45e0be8ed2082ee4e447fb027667dc6c42ff09a6744093db2850575c07fb5": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "768f64e70d77011051342319e3dfc3bdfc8217e11c9b379349636959bd52e1d3": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "22a52ebafb1de5a913e0ef0977edbdedabdf5426f75c0c67831138b7717efa4b": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "9b8bb874752786296ea6987e1e4ebffd6d6ac1f8150b1cd7a84cfae01d812387": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "82fad7c5036359ce1945aacbb64f1d217130d7656fdb2926166680e08cfceeb4": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "b58e330a345107244915d2d3012db5ac5a1cb470d6c7c8c3427810d3b0aedd5e": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "14945ccf4c2ab7e51f44c8e00ed9d7b337775123e6ba935a2f1796e0cda3488e": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "1f359607ceed2119d363e01f0b3eb517972c2ee2cfeef97b8a2f57e649318355": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "0a889e94c2969d9ff5cd517d4eef8af565fa830f13eb6e12045d8aa713ba582d": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "9cd996581348c0abda72ea459c4e10019eb6d895f2d62000c731fbabb24f8837": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "3f01634000be00ea73feb7dc9b072d4c4e1099fac3abc902b0259e7e714ed8b2": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "aab4bcfc40f0b20d158ba1a3a36338dd14e30a036b25a3ef0e4e0d9d0c50b525": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "eca986e82fc4035ee05458167d43a0ffe23eea20bcab51b81ce74d03d075c455": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "d77aba4a6634e98765ab7adc030ca01a92ec1ca013d139f98a5d69fcd9ec5ef7": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "e204316157ff8461a1da5931e45e027f1af8b7d5344ede284ab3dda3cd734b4c": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "e1de423be07778a254ca375f8c81abfb74d3f47ad02f5a9f9c7a89fb1b5984a9": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "71b6459d9f7fe497e1fcf613a7e8b5b47cee907e8e10b295b77dad5a374948f5": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "21046656d9e7ad6bf7eac5a7973c8fc0f14b86de98cc5512a531f96a6fdf43f2": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "46380445a92834a0b7adffd845541d4fef38542a6f42b8f08cce470f27498c92": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "cf7c132050e43499f0ca04f965ab29433bcf801a7cfabb2786b31cd6fea37c41": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "5a704e8b1f6138a57c47c2e567e84b247498822c3d90c914cb30eb3de95d7bec": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "4ffb3ed996c78d238b3df7ffecd565b1a2e003f533ae71aaf006ce2259628be0": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "62b94bf4bb833774f05876a27aef619f230132609b87dfc4aaea0490af723dcb": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "928cb6955995b57f95d21864a52a25a068b14db263de401ee0c9b1fddea71377": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "5fec2bf5445c4552b5f8268a786d6674e21e006675b6e63b8c29df2eb8a272ee": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "606cce7f5436e63af4a3a3458f5245853b65171909eebe9955371c2e7f3e143a": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "65fe70dfc7ef2a426820da707349643653d4d035b5241ec2e506e2c4d780539c": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "0516bd34c88ddc8a76805b55fd1804c91ce93a7a828ae1d3c3bb849ed80f160d": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "f460e6571073b82c88b880988e77f9c8beed9b4e076538b6a35d738bcd548ce1": {
+        "selected_candidate": 1,
+        "confidence": 0.644
+      },
+      "0b3fcd5a7cde5fecaf60d2c37bc88cf01778fa048fa06f74439c2426e8ce498e": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "0e4288b5883812267ccf0f9e98e4eb11478dad94f60dc646f9d88e85a913d3dc": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "2a6885b79d7a6aa33cc78a68f9ea2585b27ce7d1556a3a4b6f370b4e87e7ab88": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "6087decf08582dc0e1299d8b2d8bc67d07298d0ee7f6d430c542cb6bb9a57c27": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "1463e7a413ddea41ca6e7355306f89187b48155b85662e2b7517986572699d19": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "0e1e4ff16a82a97ace6d16d121385887b5bbecba9cc2359b3e576cee2a5ab08e": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "a4ff1d60ad298d8947a1a85ed90e1c0b6e683494bae67bd3ce04ebb6825a0c49": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "a4d5e234c85a5b7da50276e76a9373bad4e7c7543185734062035d7773890750": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "99f4d2cca9d23fba41453d890a5bbb389b503867e6f202be2fb5ec5f01ee2059": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "202c458c058537502a4cc4972d68b9ec4e6b29a635db2fbf0dd204b78569c23e": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "9f0d3ee718853f6264ed208fb23a6be92f443910c88b7aae1fc7543e28412c6f": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "a692db19717455ece773fae2419efc2bacdb8d9ddea5660bfa256adf1a49550c": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "b4e1c24050909c2f74877ac6c0399b4538da43457af17e17d9b3db05397b22fd": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "5f63c62be48dd6b233f7138d63eaadd3474e73314bef809be0c2c024aca3ecee": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "dafb021bde2d50fe48fe9f9ef04f495f26752689880ae454c93f7b3f0661ce61": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "77a36caeb38a49379a044b19a460dc558c35eac74bce05d00f5e476ab96786f8": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "dc33e991c28c4dc7224b75ab793ca7ac50fae7bba05c1592d0e926906cd17adc": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "f12723b1aab57f93efa5068de05a0401c21dc9b789d8c37b2e0e18e92afbada1": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "b0b23188b02d6cda4cd2029be6bdc1f1bf319d9045354ecaecdfb6eb14e72f94": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "aea10589b52510232fd73b833000801fd5cf4581f5d25bf361a4546198bf19d9": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "d4a4d496c40c6f24bf35941a0609c0f3a870e3e758290d8c400374b1aa8542ee": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "c2edcfaa59999cd11114403f95b54b2629158198d30a273e51ffb06a4b20478e": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "4e7ee0318e38d66ba02412ca9183c968df9642c9dcfb318a75f047126b2fcdbd": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "79a33216c6d2f39f739555a4d649c07aa1c65e6bb534a358246b455960e4b3ab": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "81e71bdf1b3033f2a959d509a5b0ffca6a3dea4aa81f848227f827b56de6a150": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "880b8bb38124dacec67db9357e470f0cb14085ba53d1b84c22e4a113995d2780": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "cae6906632361a20776516941c7b7a7bdd80b39783746806958a5ec336d25903": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "42c49272672e766f7c63a21fb1a79fe3544554c47d135f612ddfd7384962f9af": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "5786ca8d6ea726ec9038c587654c6438e14a3bec16226068a9efd389662a5c4b": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "07a0a6396fab6064e7108111ec9fb3e0cf00ab5c7356dd4974f4d318ab4314d1": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "ac0c3c754431e58d6a83c7434800ed49b9a7182f61d4519d5427cfd4e888fd12": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "38af29cc6ffb84532b37f51e02888129c28b50021bff0c056ed3023ad84d5968": {
+        "selected_candidate": 1,
+        "confidence": 0.93
+      },
+      "22f6c6191f7a1a9559d580f6518d3e3057df6e3218aa3b83440ea393df03e58a": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "d2a05d4286dee1c6b3ba439775ecca76931bce83987246cb7d741db9d190c96a": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "e3d0e5b3c3cb53d443a1a4c98f6977bb8bd7ee7f3e2ce8907c4546a58d04614a": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "3d9589d6b3bb1fe6bcc8f1f396f91c4e2969ed6a5c3b35e37db22de67b2b197d": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "dd699f60dbaf8e656fe190683ad3d7c02a9b6e0496529fd9886101611152404d": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "8f6a3bd65a041d38f311589ff2e093aada1670d415e4eca8d9dc2cfe6b437030": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "adf0127942df91873ab2a8dbdedb33844e19a33e07c5611add32016bc9d188c0": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "684d0971f94ce4325f9e5fb2e5e6daa875e144faa7190a0cf07c1f10bcb7e6be": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "7bc44c73e7871ad12236b60a8ae7a41f95223ca8d2505258be5d089eec48b88a": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "4236b7eb0f41b601eee9394750fd0dc57ff9c49d6c090525f3f2dad1111c4cbd": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "d0b752af6305d1fd847b0fa0fc2ea2871b75a0c349d5f7de9d060e2ef2ce5c28": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "1d321ef95d264937b9e39305df41c9bd2ad4d85c07ca43ff42c0c96e3e9c6bd4": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "8cba35ddd8c9a63d8a5741ac3e9f2f11c06ff517c87957d67647259023b86500": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "c58c65b8931fcb4b3cbfbc50ff41efbd752e955f44c9b3476868e03d0429a490": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "84494aa172539f369262754e39678f72eec6a498ae430cfdcca5fdc753f713ea": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "16415141e2e09db798ed2e30c7f8aec2764aaba77d090ea0803f1c4c40048c20": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "d4053e044866266d6ecd0f02e7855acb50d22a442ad542d4156ee4f79b1ca737": {
+        "selected_candidate": 1,
+        "confidence": 0.62
+      },
+      "1761292b25145834d7f93fdbf78b32a4c39503c3ae12830fdf1b8038cae00420": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "a553cd803d421efc2b74fb9ea00e8b58c86437fd75f5a1d8d7d738ca29ba6636": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "518e34ff7b596c27bab4b3c1b13692d414a684067a02da4478ba6a673f10e04c": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "0f017de771817ff6ff8bae4b2415acc0ba6b0aa81f7b283e8e8feb052fc5f95c": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "7606d79f19f20009608ecf35443927b48b5d00653ed087bb59f2d5737e811ab0": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "9025b3684f58b5d4f040e4dcde666e5217eb403dcca311bf7c70d107ef8748ee": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "cc93ef2acc2f9e47b82624e62d710882618853894bdc482c084438df3dd3dd06": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "0e18e7c75567ce4e5b433745d0870f8962a289f534ee3984ab9a7e1e546006f5": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "3381ef120cb5fa2284383c01b0cee710ad69473924be2a9bdc3b63cfd84472ff": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "4df2bd99e2ac8d3add17ac1ad1dea820f3de88ed7f6e91f9549aa363851c697e": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "f99194ec703d2e1174bb2ebf683acbe42f108cc3b8d7821b8f015e6b9cd91e00": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "f3639c04cad9187aa4198fa3691649d4e7fe2dac235999d67be26da9079c7c43": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "475620fa55ec383c06efa591368ec35d28874bda600a9e2ff5f0742a445b16ad": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "06b82f519622616ec18e84277c30e5e2610c2379b663301dd8a121257a169ab9": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "fa945d8287dcd3986b41369afbfd644ad76facae7ab90fc2a03aff57ed8dea07": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "8a8f5d334ebb8b2486f13a26f5556e602ff13feca279161eeb8a8eb0cdc814a3": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "c2ea624b6074ff49b7cda04fc893b4a8b394e104096256c0a4a1eda2097410b3": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "cb8f2bb4b040b4006a7da2efd649367e00daeb744e1c02d9d30a8a2580123c46": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "1312b379101173ab3b19fd244333bdc120bd30e6a2bd493edf2732f22d507149": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "cfa5c5edb064f782433d0b3ace67b4ab696c9df1684011472b2a104d6eeb831b": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "bea24ff06fa249038da848711fb09e4a139d23076998a640f8b40e62ff79bc81": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "6f61072c1f78bdc63e30608e9a2a608802ccc999b72214f84aa55c5c76101508": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "a85e08e5bf2e337fc5c5dc4f2052086182d1ba27d45784f55697811d635525af": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "e3029d6f4f312b93330c6006198dd405808d966d940c737f3abed1bd0424465d": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "0eac43e8b77d5e3851ab083e77f5a2f7f938657f2d185ae1749571628a6839b3": {
+        "selected_candidate": 1,
+        "confidence": 0.944
+      },
+      "79bc910f4fc9680e3ada293cc9c61605478fe6f0131970a84102b1ac486ceebb": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "0092928e575858aae2470539429d05eb662bde3b95c7812023b5acad03dbe81c": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "4dc60c30aac1a788c5253734da166abe8b1d205f0111522651a6f09804e3640c": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "f0bacc75f8eafb244bc0d0b8aea6e7efa4b7625b681329d4d27468a0dd937a65": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "af9a8bae35ac20bb5c68acda1efbad313d21dd4a18e7a9ab91f22342643de5bc": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "71bfe10f10d7cf260ffa17b49321ed711e94fc625729586b2628427c8689cd68": {
+        "selected_candidate": 1,
+        "confidence": 0.938
+      },
+      "779185a19e2231ba7ef5a47a72491d36a7359021d7727bcd644b2f020c5f77f8": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "ef3fc5799c54143a43c7964af8470eb68166288be76b4c4955a7328cc4825bd7": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "573f3db64959f7ad638c000178117d7ba18af5ffa547ed2ebf2132286de0824c": {
+        "selected_candidate": 1,
+        "confidence": 0.93
+      },
+      "e4aba44501014bb86a5b134dea064a488f9b706ff51ac2ecfd42737f2db67c89": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "fd0fca2f93d0109a60070494581543cea80829afbf452a3b13bb4f9be47ec2d6": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "02e677ff5423efd554928149550e434a9dc1d4259bc3bfa37be137f62b338499": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "685dcece0d2c22be316631f34e1d6739d0c40c01b5ecd78e89590c06636d0c01": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "3ecc93e63513679c4e6d8b2e5b8cdd2d832549b609dcdabf359b1b2282b0d064": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "8734c4e839ab0e18875b3651bf748026d167d8b78562674f4a4706230fd27f3f": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "af6d4ac00b80c03c0f8f4da02d0826b6e575c5bb30a4b42f77b996ecfaa36d7b": {
+        "selected_candidate": 1,
+        "confidence": 0.786
+      },
+      "e2c329ba63eaa2f677deb11da88857a35f9a251091c8fdbfa3b93e6c7480c2a6": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "0aaa4dee299074a89f6457e5e5cd77f1a79bb3270c314ae2e058840478e667b7": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "e49bd7b671ac98a56ba5cad2b6b54b31120f5b38df8e631d6b546018d38c06c7": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "db43329996180a8544540c1501b8a8315a37860c45b20d04b1e0911ee8859466": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "0228fbe22cb1618f2ce2b13dd2497f020c32aa7214169ac15081e6111de73e0c": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "c9a08c5d209e797ef63d14a95a2afa5ebe56abbbbd2ca9c6db118a143c3e871d": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "a38b235fe286a550f60df1d2231c64182b63a40b5d69ce20ba5d4fb9a0ecaffe": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "c8929560cb0ec4aae5b27d76b5af1cc7da3cbb0b288dd55f1e4d00dc381dc7f3": {
+        "selected_candidate": 1,
+        "confidence": 0.786
+      },
+      "688c8adac0fc8b3be704bbb908ddb90fc4bdce049e665e7de25c1e5480a861a4": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "c9a575b0bd46a33ccfa4d6912c46572820e897644e3acc6dd3e2a36f7929b335": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "25860786fa9dc9a81ea100e840057c57fdb14dcb63271c2244ff841037e66799": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "4b560d2962c9bc9b0ef36453a2113400cdac0933215e2b2a0688fadc404610a3": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "293e1fc4c5ae710a2bc4dfe9eb9fde504635beedfffb05c564cb9f58ed0e286e": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "a45ba9b3e4c1d0b3478d083b0691f9c8272eb352b695929d7b9933db1063bc43": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "708e86da71ed33cba7b1e54a4f8cd13eb046deebbee50f3a7fc5e88cb57c2370": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "ffb0f5c5420955ff429c397a1bd16b6d1e128376b3dfc114c6b027fb1252d11f": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "70eb261d67123d4f9a71dc1c979a5c175f5e73d1cde641fbba39617b189f3e1a": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "e4c8070c91af69bbc2c417f80097915c013b299e2525e08ff869ad3c58027a5c": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "e882b253f1da842dce14fa5eaa2007f49e8b2a8add22e55443f0c06c2fd18a38": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "309808df1cfff3d5a72cc032a7303a05e621abbcc03e6b88216113e46e6f94b3": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "a5e1732364f254a353691dfda5535d2683517e5171dbee96b01cd23d7b44f04b": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "204924af3a8ff7a49e4dfcd75f3a711483644f21b5c161ea63b1283dbba81746": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "57523371fe958a45c44461d3ae8888058e099b55d307dc10f0201c034e8d0adf": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "d5c954815d18a47ecce0edeae2ce0a4dbc6cd5316d7fbe1d29432343dc9b381f": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "69b76adb6cc56c078cf8a6ff0ec3c790ad6478b7436b7f22b4af6d13a1dd89d3": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "4b6a2a6641234837d3a042bd7a9c6469a9b39e010a8ddd9bf2bddbfd87e7e243": {
+        "selected_candidate": 1,
+        "confidence": 0.769
+      },
+      "322d47055cfd16539590605d2db14f5457003774d716e999c2288bfa02130ba5": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "0bfe38d2f771a206cde748d3f520b29534290aeeafce2cd57bbdac09a98c774b": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "ca1433fc5f00aaf5b47f74b8e46972b8b276bd5771b8694ce63ed58ef8a41735": {
+        "selected_candidate": 1,
+        "confidence": 0.62
+      },
+      "cce5d225ad3ebd740ceb53bd8a46271cbc760093c3bf913b1cbda021c66f2005": {
+        "selected_candidate": 1,
+        "confidence": 0.62
+      },
+      "ebc95653be94031cc5a2f81647f4b166175492b988bdd774fdccc9444d116316": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "c570c560352b6c51d094fb27b0e4d78d65f50f520b906cf7035d4b584cb936c8": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "67f1b298d0fa77a0d529701b441a591d5aba6082db3999325aeb2650017145ef": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "9cba6da6880f525e5d9bcd4fe381a0d0ec507bff94c85f479f2767b36ea55539": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "b44dee5f0b0e5624dcacedbfa32b9d7c41e93a3216181e12ac8db4ebc33e555c": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "be78d3e7f0581ca0d4976afcac99cefa23b647031ecc6bca8c8fa1554a92a4aa": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "9b202f9e37ddfa0f9cc4e0d6f60bdf82b9c8b4560c5537cb995a3bf736f843e9": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "125f17408a53b06fd6a69b5706cf754b1ae756e12239a5c2aad421c78024b4a4": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "9abd5ec72f2bfcd105eeabe449e8e27d0b461a98ce831798b0289f084265545c": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "475512f6e0cc4278c18ba5645861ead77336768ad3300a52e6f30ab7ad4c4059": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "6c439633c7bae2289c211d22a8a460a5f5895b4425e33637c264fe4d6495f941": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "f0af9a1b8f59867eeb17a0e31b92a4f49e1c5474dbb5f3c5af612f541a3e529e": {
+        "selected_candidate": 1,
+        "confidence": 0.786
+      },
+      "9edffd830e7b87472bc724be99a97f3e7556a20e8c40d2a38b8c8f636485b09a": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "67802e6309db911632e47148c99d9f509fa493806d30b7d1f6e8f5e04deaad95": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "76dd35aa5950c0c5399e5e40c749849acdb0b96c05f373ce123df05fbb5f640a": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "151f941d10d3c2a8e9efa1859562948d5d9715ae327003ce907a4a2f9f52a4ad": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "a653af34195e67ffa43a73d29ba94799fbe8d9288be3b97f5d1dc0d8ec486ae3": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "3d2f56bd2fb7e41618a4b237d88f1f214c09462e3b4e4cb16fe25a4fe92e5730": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "84440c1f855472e12264337a1331923072d154f6ff8053bb2fe4bfd4fec151c0": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "81343f2e0b2b8dfaf988833f975a5c2236afa76265b5a5578297d72203d399b0": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "4949e8268d377e56973e7de5e9c90644b9a815f07f58b4103b20985d59d45958": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "aa8c17c55a5ff6698f8b1648a01eea625c843c677712c16a088ac1f3c3203d69": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "94cf97ca8202b6583e02b3c980e6e9f1d84ab45b44147d0308c45ff8f2363854": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "597339d3a9abd2fa3bd3e57d0b163ae3e5a5bfe5ac1f2a2ab44e7766e5115d2c": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "3878440e4d47e0b0680cd6c9d46ca3dc19b8a6bf2c306b4f9cbe97666d4b9859": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "3de55b6ba00460f3b692645b5d63d549f07e4ed0f9b6010e91f9bab57c4f3aaa": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "ab35ff903e2903b9a6a08e437f066fb325b50c68908dfd8d2dd80979485760b1": {
+        "selected_candidate": 1,
+        "confidence": 0.833
+      },
+      "2d1e44b7df8479ea89ff64239c670075517ad9e5e620890381b015717bea8349": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "b259120dd9b0ebdc1aa92f580acb02bbe84ea9a4e30d8125fae2d1859318fbd6": {
+        "selected_candidate": 1,
+        "confidence": 0.786
+      },
+      "27d6d1a1aaa280772128ed8ab3ab93600d0c573ae2723646a14b3f8a82944f4b": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "f7e49701a88d138289853dea91534a24e096a0963dff9ba3342f4ff152200b75": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "9e64daf52c8838fff9643680122f9e51223c74949891c08fca7d422648cc200f": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "41d2de81e37a631427f16722543b7a83089a4621036f3940aadc7edb68e03181": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "079972c2eb1314922f93e0617b617a18a467f2ee0ce3ab40d1a110b08e720d7f": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "085b0f6f507179c8bbcc16f717361e9d1a0fca26b91a1f8f5f58a5847f66c12d": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "fc69a96ba22aa08c0f8bd56dd75f8628a1b039059983958a2cde07462000597a": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "7a0f93bccfc5f96c69b8934644ae39f8f6c0995915aad0ad618fd6e0beb75157": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "1d607a35dd245a603b5433b68c6c7ed63decc08b34997c882c7372700963862d": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "4846c49c1b42a1d146a09e9824732dd7781a5ba6bd2f66131f46b462ca76922d": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "ce9c0323553fe7f944706885d04feb8e651544f63937a3ecfa34dfe08dacd4de": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "1a204ce771337b99f6154c93a68ecf4f502d2e9c72ff801977387dfcf6cbd960": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "f48faf5296068aad69ed2fdf84f9d262514821d454be7243d8d2f8827f27e28f": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "d15952280fa7f855b67a286ee98a121558973d6bad6e4f32eb6c96f4e897bab2": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "984d4444d5f2fd32faca81a7e90a8ce23b2cad9808dcfff5fc195be2080958cf": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "7c2254c6d3512e91e47e535c95251d1c20822d1e7fa433bf615658559d12cf38": {
+        "selected_candidate": 1,
+        "confidence": 0.786
+      },
+      "5203b5cd76a2e0148fdf407d09fb86f2a1e714fcebede4f8a192b2387816acf4": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "474c25b6ab5fbb701edb9110237a73e89913f2932d4698484f58f5c6284c5069": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "bebc2f8a22bd3c8e0f6c25a678b4adb24ae394d242bfaaed335e290c61c87903": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "aaee10f556626de286ea77f6925f2b27028f42b78bdf6db232698108f5d40b96": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "a819e0adeeff6959e84950ad093be675a7ceadaf7a784f36a169077d08a62eb4": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "7645aabed9cdd3b33f5e58d13d375547e567b8cf8b6095157d5b3494eb5f0812": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "c40200ac3b5ec7c4c83ea30bee995103fe9a0ec0e89fc38be16700938a7d65a6": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "a0a97211a7286e0021901ec2e3cdcdea85a4607ac7f79c425b883a7ddb9012d4": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "545607afc905c5cd8f492302576b9f5d9192e34af15d36497854d62fbafcb105": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "ad3f6ba14aacaadf99549113d7285ba5cfae23ab034f331e7b0ce513ef1803af": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "7a5f030fb236fafc9ecdb10df092b84110886a380b1aa438004311e4556b6048": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "0726c93419ff08e511f9840955df105a9586ad93fc2ea7e259eb286b027f7f78": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "39811e6ade9ca038b9d12fe39eeaf3849b500aa56acddb7c73647262956dc8bf": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "467902cbc2a111df380a857a667269d3248461e7387e4d785b5255ec82729b1d": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "036622d73f8a454cd441784b958c38e761f501bb1559b34fb4ce895dbb8b99d4": {
+        "selected_candidate": 1,
+        "confidence": 0.769
+      },
+      "0281b09973792967ca51f91b610618243e51386596568e5ff6d402a47e3fc27b": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "1e7761a7d582a23250b6331df21859af78b55bf7bff820edb83635ea1bf92987": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "9b50a877cee1b56f3b7f1deca9e60b55a6197abe7ff705f5886361930eedfed3": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "a91d6f160bb0ddc43e515fc3d2194f27a579b0a99c9e0106a54a41c1704d831c": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "220facd5ce31628da07831bd622b755e1ec2d91be7481c0060dd1fc35893b4fc": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "62403c715ec36013e0f13402eb6c50590ee27875859ea8e59386944b51a149d6": {
+        "selected_candidate": 1,
+        "confidence": 0.769
+      },
+      "887eeec3b86cddfee8f07e350462f8b9dcd6dba01a97e29cc93e80f7dbbd43ff": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "049c48d5b64c98a723dbebaddbe447a956e3f653b86cdcf642a5456c368401f8": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "d2b3b15e624e0532c457a44634d197cfae41e6422091ddef6695adc5e3f41bb1": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "36ea5ea021f2c29e322b3fe3bbca19b3b924a2b8b191a106b8012ba05f35561b": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "88c86c8887cc370ce311e2f413cd9e82ec652208a7f2edc6f9012cdbbb601d4a": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "941ce4eb9e93ea6db5ef96bbfdc3f719cde4314dff423323a40ee1873e9d2ca5": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "1e173e9407ba9838259727fb175b4a017d0843278e302b84c771a5c249f4fd49": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "bc4f4bf475dcbb3e59891d5db7eddf64f66da2591fca9e84a3220588983162b8": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "4b2564eca8ee8c693f71d1fd99774242c7712ee4fc54e063986363fb1e9189ea": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "3e9168f8977bed1dcbf874375be46a3e1cfccd59ba9845760e1276270b25712c": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "64f10ec124c2ffa77c2408bc5854ff080f1ca39f79fccebb7755e3173270908c": {
+        "selected_candidate": 1,
+        "confidence": 0.857
+      },
+      "aefc92bffae3864d494321562b85624b7c56e7d0eb138bc86ac18de9004d2dd5": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "807258070c887cd830f43992bd4358615c69770c9d194dc4763f4bd06147dd9a": {
+        "selected_candidate": 1,
+        "confidence": 0.72
+      },
+      "4f8aed00c9b3f6b01b2a3bbd1a3a7c030888e7ad047c632a226d883329e666af": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "34b14202dab07761597c4906b13630e705c11ead9fcbf76574b83306d54f37c5": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "2cbd10ac59f9040f02b8e82765c8e751004e30b82f00f9130c53fd3990ac6ead": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "d2d6cdbd788dc1ac46e63930113b1484d6c9cb9e2134946064aaf6913fac35ec": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "677cab4cd2966e2ab1b5a67cbd6c0e6e34797c575d9cdb238f11d130e7af66c4": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "714d42d5bac4f54a8df6137f76a89ac5f74496fb8983db124c53403c85c43cbc": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "a1ef53da7f42ba5de7b69e47620513a391b04258b8f4bd8edb049455f8f053ab": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      },
+      "cb81b066204eeb375a49fc28438719763b29e676f32d5b4557e12ce5503710d6": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      },
+      "32852c4a7b1f189b393e0c3009d971ed02a6c8f132dd75de37714a9dc5f33d99": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "c039ef1eb8cc5ff165f6ef91aac8594af6bed5d162b13df9bf97d94b002ae775": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "50e94e37e1f9223c689d0600e93caf5bc80075f87b069f7707f84d85c8ca4250": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      },
+      "6051744baabd4e2ab8d6760dc44e51e5794d79c180109f704633643593fb7c47": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "b9a737a4fdb21b817612d482e5094810e1a79e6ca2025d7e17f74fc6c2d8da46": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "0ce85ae799d24df4a8da3893c37ef20d32cc778a6aa5cc901b137c1558bba033": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "46d0408e670b2aa13ebbb40f9b72c19705e2f09d7c199d40c90c6c4741b44731": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "19f912aa43025e5bf34f4de84188be766f3bcd154eade8b1df159663131eb6a9": {
+        "selected_candidate": 1,
+        "confidence": 0.818
+      },
+      "a5c4d785e9145c8caf47d0b1ca027c38d09e11350d126c48eb8fdba4a0cc0618": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "110d013b19191f0abe12b9f94908a0cc1d8d3bed404d43bc4f017dd887e3e5e9": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "5ff1a96e03d4e164b7d5946f0dfe768eaf310297b65c419b9b92c2cf0a8c49de": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "f4e41143b6ab61dca0e182f775905c4cd05eff0d9fac36e8e0cd5e1e7f7128cc": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "1e2fd81c8133338e1fc175a862708580ace8b4378aa37088d680844bfedfe1e3": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "7304a537b78aa85cace6ab4842813c4bb68dd22a77796fcaebf00603f423c76d": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "8b003df81b7258a9bdba0181f2e8bbed8aa925d3992f481de42e2418db206323": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "c3fda23c81f6ea92c108af19bbed405e1ae6cd0ef49a799e81dcb090c7e70f2e": {
+        "selected_candidate": 1,
+        "confidence": 0.818
+      },
+      "aa0ce3c0411ddcca8a85359adce1c1e07f208306d244cb9955b5af0639466376": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "637d724aa12ccb56c63149ea8f455005015611dd36bba2f76e0f4d12cc94f0c0": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "38b0058d1da5846bc8ea6f2707033e755a49230d111ed7fe7eba8adde523a467": {
+        "selected_candidate": 1,
+        "confidence": 0.857
+      },
+      "7fea730c38624cf5009df9c98e585a3f079d4fa5691ac197946f99bb65d67209": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "0f623bfa7fe8ef41b68d3144720196b098c7c1e8bc1fcebd781a04a12c655e5c": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "3e516688aa3a7c2ef33ed0af7ee19067791b4f9eacf2c62d9a0465423fa9b76e": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      },
+      "257fb05ac7116d620213fbd7fcc436df6347ce241da0bddec25e3c5f229534b9": {
+        "selected_candidate": 1,
+        "confidence": 0.818
+      },
+      "7f438d0cda52eeff5908b8b17836e8277c5444892e9999eb49a2dcdf1af8d57e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "6aa561c871ec12dd380125e31cbcff184c58620d8384304a2b2d76b09f4107df": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "81501d90336c22e0b1090c7e9d8f1154dce901ba7c42d552e1ad94b1980922f6": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      },
+      "5f56b20c952bde5a33b15cddf7f2851f013e1a8b95ceda3372b5beb18b62b077": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      },
+      "deb742e5448d0f245fcdff99320409e4fdd1d2925dba3147d3a7554391985ee3": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "78827f52b8e9829a363c1de6750a84f06024deedea58f2c4b3ba98f4f66af837": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "15d18736d7506a18d87b452461e5a070a1e802c22187c84a789b9f74f3a9666d": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "9dde4f9acfa3fa4020607a20d30ad0177db76d6cb60bea9becc38c49454309e3": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "276aa8fc69adce5af7e7878104f6e10c33ed05b3b7b4fed84dd8f4578c562be0": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "b815f77c93fcd0402867e2ea42af252fc0ab2afe1c48187d90be761c3222aedc": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "b01593a0516fb295dcb7f7aa076321411fa9b0fabe6ee30656bfb27baa4d476f": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "653ec333d24c4a86564979700d0bf2c9409c01614a83db8c7deffd6203f27082": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "c997d23f69a20a2450b2a607ed4279c08b3a069b777e801c2b75562ec40900a5": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "e92490e925eb204906b36a2ff926e86b24e5fb101eb8cb8d57e3db79797eddc0": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "f5f18d5d62d2f86075823d5538e398f06749f3a2bad4866a11edeb35b585e65f": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "74ae374ca069d1470007ccec8f8f093f57fafa8ec05816a2f1275a0ae23e3a21": {
+        "selected_candidate": 1,
+        "confidence": 0.909
+      },
+      "225f46c2698ceaf6bcd5e784c2c146273a05caaa4a7c64a855d7abf8b314e7cb": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "b7801715aa605877a975187907463107f6f6b34bba0080e9447b40b6025ca830": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "35570130807a4c3306ba94d12b8fa415e9daa4cf780e1da4a4988df6c6622554": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "7afb96df1acc993d791d9447eeca73abcf68f25ac28fc3d42cd2bde90da86c6c": {
+        "selected_candidate": 1,
+        "confidence": 0.941
+      },
+      "c7412410be93c9fa1a6897ed5b23e479d6576d5cdcb9a064102a6a3c2ed5200a": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "3acb5782763d6d7a6f6b1007440069d19372f314d8d35b525f2815960aad6db7": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "28c633f7e5d9be85f6b47a320b7daadccd7f6cd3c7b8fe2c2b9e3a85b6b02d20": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "804d97b98e72fff9361c40ff6d8e94bab5f8723aead713a8b8782c4c2a86753c": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      },
+      "643035f8588548c8b9d926ce6defc6a179d175e740f4f4d2a62a503fe73ec164": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "4f5c022d3e86e7d4a5bf24a8e725ce371a229eef69afdddc86f151827710bf6c": {
+        "selected_candidate": 1,
+        "confidence": 0.957
+      },
+      "7d1cf4de72fb96f0576ac03d5bf68effed352c857c92b6f77f1554db83278570": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "e9480fc37b7e07d53953e329d751bb097478f8e82e694455cde779d6bed5f60c": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "ad77c94cc3096af4e53b919c3cfb9343f0e3c3d294d85df343c3d2b5b6297980": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "e5a6b8f5e77adfcfdd1b77baec2acd5cefc045826288fe707c99259e8757be6c": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "e8b5166d7eb77e00dc0c85ef19b8a952bc6227266dc1ca0cc0fcade467d1de4d": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "66064de9cfa4e59380eb99ba43ecc8a8dc594803655e3941c4b93908b44c6745": {
+        "selected_candidate": 1,
+        "confidence": 0.93
+      },
+      "34ebb483e99dc57be7e8d9bb04f74f2f5e2df870095af32e2f444b303843348f": {
+        "selected_candidate": 1,
+        "confidence": 0.963
+      },
+      "ec980c43ccf8189a1985f5cb8472d1e0783cae81f92618966460b3fb48bb0323": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "cb75b1f6489d0f0ff925681d24b02615dcf1ce11b3b4e9127b8dcd16e3170afe": {
+        "selected_candidate": 1,
+        "confidence": 0.815
+      },
+      "3e2a2e1c9ac4de37654d83f779d4a362690e9e0a4660823a9280d38e1b1c60fe": {
+        "selected_candidate": 1,
+        "confidence": 0.929
+      },
+      "37c027f1c32b916e61d0a0a130e2af1056a8f50aea0511b8c837ade40e857e60": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "af3a27214946b39d88038ee26b51f1e6a6deb9cdbd2192d4c6bf7f3f2eef12bf": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "20253426ebf9469ee604b1c89ad7b6bca901b58467a1cd0c30d213fd75d11a04": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "85cea2856c1dac08a75e29e163224944d0fb1d1a9c8dab5f405732eec8d3c38f": {
+        "selected_candidate": 1,
+        "confidence": 0.941
+      },
+      "fac517db39ef430229d64689adf41eb9bd716e400dd0beb9e34c5c51430e5848": {
+        "selected_candidate": 1,
+        "confidence": 0.93
+      },
+      "f31b5a7b56d8cbe52b07aae533555d797133f9b21583a072397fa9817cb265e9": {
+        "selected_candidate": 1,
+        "confidence": 0.914
+      },
+      "b46861c78b2be96f130f318ffd2de968f34af6625865ebba0082cf5ff8a49876": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f7e2e79fe524f9cfccce59af4990cbc86f71eec3389c64d99b65c0eed52019fb": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "402716668dd76902f71d3205c844961b4fd2e0920e56034a0ef0650390a978c2": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "1d326a34b4a7cd07f49f8504915b96aae4cf91a30084a9dbba30dca67ed4bc1b": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "ee87dbaf32899807c73cd4d9909e7b295135df8fd6ea3d2e2e59bc8315e1a5e6": {
+        "selected_candidate": 1,
+        "confidence": 0.938
+      },
+      "490fef1594dcb862d270d84ddc595bf27f4488dce546eb46d7e54b24f5c47a6a": {
+        "selected_candidate": 1,
+        "confidence": 0.974
+      },
+      "88a0ca53235541b73d52be0f2fb4c97a08dd4996a7c9c81c0b7675069906ef24": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "bfae73aa2b1f7c24708a28ded67690fa30c30836eb85f1fa87e3e7fbc7f125e0": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "defc5d550253b868685197190574d25fe946ae52b13df03ff2a36f676eaa86e6": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "63f48073cc4df110b85dff1f8a2f7dfd734ea89a6c93f4b2bd34333c645985ac": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "b7c87ffda324a35c9b1e9376d8eddb271ed1dcee94809a6ba4f6bf8f8b23d2b6": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "ab5888d2518e49c37a49881a2bad2e9d46d91204fcf62fbfcabf6c55140a178e": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "396d6290dc26038f441178e3c70525251f9aee78654d759b350377041e27eb77": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "1daf4d722bc99357ff16e28bf5223b5c9ed4241313085b1c84de0c0b161c5168": {
+        "selected_candidate": 1,
+        "confidence": 0.914
+      },
+      "62364c2201969c61a494d430e5e4a26f7df0f8dbb3b1db542998450225c48b47": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "5838a8f5f47094a79e65d80d485ba83c9bd82b0c5031fc04fef53db5f831fc15": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "f3b26cbc637327099e09b7642c7d86123446bea1e42787e95a4b8a4aa81b9972": {
+        "selected_candidate": 1,
+        "confidence": 0.909
+      },
+      "1ae06890c59034a53cfa0057410233bf84776cdd0b856f84c7f6b9012e9be00f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "e99af3c9e46c386b9664ca1bb42bbf77ae33546ed88f03a8037ad6eed5a6acc3": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "ce43cb13665ed8c3583819d26a923d216b386bd6f39614bb18522c1579bbbdf1": {
+        "selected_candidate": 1,
+        "confidence": 0.963
+      },
+      "8cca82bb7a2e8999e07c4a2bf14b6b098349cb7fefa75e29df65381b456af39e": {
+        "selected_candidate": 1,
+        "confidence": 0.917
+      },
+      "a696bfc3ed6492e88c082e3a5c09af18f1dd5ebcb14c768a70ba8061f316d99c": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "44f0467f1edf57627741ab0f94c73a1364bf9b12ce22f5e2776ac0c262178a0b": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "bca5cb0b1ffcd5117f8c18b02fa99e203243581739f8da509c62da7d25af2883": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "d8297115f8225ad58f482799f12f1e4c2b503254577f6acc703021e2665ca777": {
+        "selected_candidate": 1,
+        "confidence": 0.93
+      },
+      "38001916dc8e44c26445aaa8d9a96869f1fb526378fd6b73e2c82b7b16fbc09d": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "497d1efcfe0892d722001e7ac093c1bb1bdb263d998305624a5d2cb054c022b9": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "0dbd1c2557d406d3011890309ccca009669db1e69d44ec34127c263c4df87682": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "b0ea20deb52dae8a7a06418be5608d5ee231b0c95cb824ed033cd159d0500a5e": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "59240f392e515a240711c5c2a58f1cb9deb06afce43cb9f1d11641ac56847337": {
+        "selected_candidate": 1,
+        "confidence": 0.938
+      },
+      "a473376ee353a8bceae4887ee1fcc79edd7cd76f8a16c2afbbaae2050eb4416c": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "53efb863ce54fe6b6c7362a0625ab539cf20409ff91b998cf78a41efbdf97e9f": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "ecf4cf0214adbba3543c97e8b91f16fff3fedbd50943c3aaafc330f244b58a3b": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "caf68aa61a0d32650254e4b69395cf4a01282124005281cd2f6ffa6677eeeaa6": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "4c8103aaa2531c33cfd296b2ce5a547a3e99df2cd647339b5d1476bbd1e003d0": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "c9cc09fc0f2f54a751d4259fcfacdcdb31356ef3061119cf9931c1f3f49881c2": {
+        "selected_candidate": 1,
+        "confidence": 0.941
+      },
+      "d37812196fa784f903be27764289b117df674c9a2993ea505df48ba46eba5985": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "d4fd0ea9f6e670b9a83d21e6633fe83bd2420138ce38bccc43b93c2d07802e60": {
+        "selected_candidate": 1,
+        "confidence": 0.941
+      },
+      "f9971841156bfa6169c036af23a356863159910cb6af34d3ee7e3c03e9d212a5": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "5866f03c7fef35c28819ae3bf0f7f2f1140308b40294b250646c73674ca5eec1": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "f9976fe6c4fb4c201fcea345b8c8486e5cf560abbe617c30c8618096b7225c36": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "95c86b66d6062474c9cda68ce0dc69bd58f6b6aa333a6b7482b1a46c0bd0326e": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "881e9efb3e20ec80b86fb09d6e69b67ff48ca31d349dc311402ffb39bdc935d9": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "6b661de54514ff7d063da1094831e5b7752eec7351a08463ddddd3d1cd0603f6": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "02f6348df769a2a2e4c046a45f9470f39d361a12b7dc2958357bd0ba04a171d4": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "9bd7631396e927d1bc7f22e22390634227d8ff93488f733997383a123a44414d": {
+        "selected_candidate": 1,
+        "confidence": 0.963
+      },
+      "286b614a7c7c84ca5663c4f2b28f91bfa2d3faec31d937587af8d370110605f5": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "b9bbc0c1b2a98a16cbdbbcface5b7dd5cc90a006f62af834f21883a9046e6169": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "ebcdbe2684b57d2b405778a2a2b10f230f17b9b4ba972252c5a1b5740afd1889": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "adbe1168ca9bfa71f215b8db56039e677631b8c804a531b23198839baf132040": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "9ad6ca942c90299d655a5f9c4c8a442e5936788bf6692a2669c1688cae96e723": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "48df322a1b7d22623ce448ee0020dc720abd55bc05cfb9e16a8dc592c998a9b5": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "7e39ca5463dc774e877524248836fd6268dca2c7cc31b60e58f4f2d2f20ad9af": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "a79180f30a8ce08d443ab5b43bbc5bab3a3e4e76644ad96726d4e787171eeaf1": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "5b205960d52f8e8b4ff23e57a353064305725d35cf9d6c7e3bc7aa62e53025bb": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "17e0d73c7e88a402167ae75d6a03c142a4f280f6e7349c71d3b8b9e63c1fbe6b": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "3a852d1c827cb987811a9735c02bd036dd8c7b1ecec4b38fb1b030abf6c40102": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "c3b1778933a672f75c728e59b70c73fd2fd12b82516c112ffbb077ca203a1dd9": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "44a3292e636b4dcd7e9523e0001d7fc8aaea1d6b1628e4ee786add50b8d1ac0a": {
+        "selected_candidate": 1,
+        "confidence": 0.963
+      },
+      "2f522a3a4467424ff69caf4cefbfbd13c9c0d123a7c4bc4748c0cc0a2b87ec72": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "57817aa4f37f548443792443d752f40623dde0051023e9b356570dfafefbc612": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "d1ad6b17762b1f63439b7b037028fb79e6e10fd279ca9f9774b7c1de1df21c01": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "60b8cf4e4aae8617a3a830bef97d3d71f0e4856747249b16ab3be5dbf3d98b11": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "dead999df525d8d3d16f865aae36f7e5b2a14d09595d2d92bb281efe3c77b8bb": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "7da2cfcb02fb3ac3fb8c085eabbdce039e1cffb71904753810a539147df8d2fa": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "cdf8724103c94784f57baec45fd196ad331628a149d3f667634193550ddbedac": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "13bfa104cc648face400beb5effad2d12fc4992bb8093494cac37f2ff516ea89": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "4d959b3a8c67f5ad61faf0bb6d4750141ca619c87328f4871a900d3dc04dd9ac": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "88f688a95e593d89842a504d9f724139dd8ad7d1dc6cb4653ac6d98a429528d6": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "32638e977e9802da5f31a4cf6e26bed9046c8f1c7b2246278329e3a43ed06ae9": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "fa7ba233595208db8a00a888f548909463118a2de752743fd82b10eefa5a0093": {
+        "selected_candidate": 1,
+        "confidence": 0.963
+      },
+      "7eda08531b651b94a7b41a83fbe444a7fd0037d48b99be786f7238d93d844379": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "d3684313ff9c32e5652b1bce7fc8ee1a4756081fad0488c7d2952e39b409ee21": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "ae495eec8bb3caea402fab6bccf62bc81cf1eb4e8eca6adf2e50c4c747b2d101": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "8742f05d323dc664ecd3f776c46fb71ffdf7427548a689450c4fdd8d6cc619c8": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "475a023de3779e1722c5e3f821103ca5b876c0c9320ca55c550d6677e9519969": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "7da119c68ba19c6fa599ac148d7165648194c67a4ce6521656b4b90db4d7f431": {
+        "selected_candidate": 1,
+        "confidence": 0.93
+      },
+      "e083297f16f6d4dfb1f20c9e7b07803497d3c9380a5cca957d614324911ccf88": {
+        "selected_candidate": 1,
+        "confidence": 0.92
+      },
+      "50b1b92a9288e593cb58d822aa9ab084d1dc8342a49eb2efafb74830c14592c9": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "f4e1b4d31e410f7ea293d9f839a8bb66df199a5d3684c7c29f898ca15f2ab21c": {
+        "selected_candidate": 1,
+        "confidence": 0.933
+      },
+      "b3062f9cfb2241594c204a689ec52335bdcee77350d913a49a5a78824410ac05": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "3ad8e5d657e6a9239a597214139603572b36d4f59a4c424d6be5de833e84248c": {
+        "selected_candidate": 1,
+        "confidence": 0.909
+      },
+      "bb76273c59ee795e364a2d21db47580e1200ffb7b524afe7e2a0e22b22f9c027": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "c01916c2fb07694b1e0b1518fc740f3768cbe4c3e8cf06882b64ee9b31619ef0": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "9ce27ad9013aa81ceb0b7d955fd3f95179f13c610533a46e97e6b56994c0d7e1": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "40287f27740557746f24ac76ff5384a862a8c9bae810caa71d6914ac21280ed3": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "91c4c64a00fd4c16f2579f419ebddbbc14c5568815fefcb3eaa6211232ab248b": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "fa5f651447b1c7dd018dc5d0659cd7e06831f36562036c281401e44d07f298cd": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "0611cc778add019f7ee85bfd340db5b065f794786691d10d97a9b0cb2dee0eca": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "f969806c9e48f18bdb95845f43bca20d182da97268eb91c7b7d9319decb32065": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "8b9945750c6937be9d3851757a035f57f6c8fc5bc31ade2cea261fbc39f20cea": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "d5452d209e85dba9c5b1e7379222bec527e0970247efb439f873cd80265dea38": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "129234ed6c0388ef8dfbbed623fe3f300948c22746bc1d191d07da3295752582": {
+        "selected_candidate": 1,
+        "confidence": 0.93
+      },
+      "04f372119a64e393d9c6202a39c6034a87d65867519b706b0b5a17fcd85b4dae": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "451ee032741fa087c8bc921e84e095503ea1b020450095fbe7e2b3a90eff3d84": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "59bcc80b558a9d4c04962f0d9b36470c71298b8ed21fe5175635a14178e8cb00": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "9fc4279e968ffe7070f7cb82a49d0deddfc881cf87c94502525524a48505136f": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "c78e218b7a5be55ebffe61e647181fe8ff4e1bf23a77eca9bde8554d0b1b7e8d": {
+        "selected_candidate": 1,
+        "confidence": 0.96
+      },
+      "c341a5417ecffd693087637123784a9a91010650197c2c51cdc94c1f4e28a584": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "ecabf04729b8ef727d3e06d1c50811e63f072388870a48a92a6ee5279dc99257": {
+        "selected_candidate": 1,
+        "confidence": 0.917
+      },
+      "99b055ce7845d6b5554ecd15e13bd90adefbd76b961a1a164b4bb99e25831dc1": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "0412417e5bfec5dd80a88d8c0f8260d1325c5a4bd7d3b546a59fd4ff567ccee0": {
+        "selected_candidate": 1,
+        "confidence": 0.974
+      },
+      "a49a8d6cb70f1db977d68ca7c0269505590264388ae3a0aae6d21571bd74a902": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "e0f261f67c203d55c22c24e79b48e073042fc17335fc78f5a7872d3056ec38e8": {
+        "selected_candidate": 1,
+        "confidence": 0.941
+      },
+      "38cdfc4fd8d09da09a9c0c1be60f8c2f78946f5b54d69056008ebd20ebc00da1": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "505d0b3713564dff5e75743545127bb50ceec79f50a4492144f5f46193ca2cd5": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "681a3e94f9d0233efbdf0ba67bd2aadc65eab7778863de4956c695a2dcf50c28": {
+        "selected_candidate": null,
+        "confidence": 0.4
+      },
+      "e4213bc34c92b507684a955a60e261eb818b30482917802f2a5368956ffc1b0a": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "7aed45aef843829b5cfa24f02e1f0b795d795dce56b66c3057832afadc07af5e": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "019875562e88e1d514e245250a833f680b07e3246fa1fe02e273412aaddf27bd": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "45b18753fba84106d72292d0bda7db0ac8f1cf3155d00eeb47da1ab53d1d0ef2": {
+        "selected_candidate": 1,
+        "confidence": 0.971
+      },
+      "fa8b19bfbfff4f0a6d4466b80e721d6592404c240d9e46352c277b9c395d1c6e": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "4351b05dd8c6ef6229439edd6eda9d5cb7dff19ccb7252c1f263e4b585207258": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "e1b7d71c6eadcf70e20bbf4de8c0da6c1877a17ff980a6cf26df5cf190088eba": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "3357f7a71b5ffea051b6b6fc113e0efd0d19ca12a8887d5b37512fa3d6cc8c07": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "f2021c15e4ec71d50397d255f3eb938c7993710d1a55e0f462370b5fe5fc8318": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "db59cac335a1de5ac2be8150dd1d8e7f9952029bdf1eeeb79a508252406bcefe": {
+        "selected_candidate": 1,
+        "confidence": 0.68
+      },
+      "97d831209840eae6dc4e73390945fb007469674830f0460f847eaef73c8d13e0": {
+        "selected_candidate": 1,
+        "confidence": 0.62
+      },
+      "6659334edbd3002cc94c2a0497fffc8f5019f0b5f0c6837fd4af00954ef0f365": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "332dd12708b07a4ba106acabba685f3bd1a9285f307828a5a91ca672b59def05": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "a6515a5a02e414c8cbf22e92802c14fc2a3b3db9e37acc4d3c55cc1cec9c0065": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "e0085cd02bfc3f180fb9bda1103ac8d1563a2fba5a6998256fb5ad1db8678c64": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "0aad7b4749d92cd4cce547596b9860338729b6b2b8574908bd328386575fa629": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "02c596bdd3319b856aff3fad46e85da19abb734c83230ef748c84eaaef770bbc": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "f7b5d3a4a9fb8fe49bbf8d42884f29df58625e294154b485a8ee5ba57eb30a95": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "fbde2aaa190b3805c2a793cae75f67965fd76aba0bbf47adb48e74bf21fbce28": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "003f43ad178da2d005135c212cc46a71bb1d23900a18ea1f45a7a87b5e9759ea": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "435eb7aca312aca4c2c45ac19d452c611cd2d6bcb3b30d9e9e3b53524f38fe58": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "94c221e99645871f2e2c51d0907df36d3514422278a4165a2b7d947d43a07d2a": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "4a59fabf2900b4c7ecdd102c47055aac9440ac7a6b8988ea3a01acd2661e8dbc": {
+        "selected_candidate": 1,
+        "confidence": 0.675
+      },
+      "3a0b7b07d107a35c88fe8f54b94c18a91191bdfec309abdae757291be99f0d0b": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "5859aa3cad3f6d1172b8fd7d214f17a35800f390d42a1e0d828ef492aa122e4f": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "0e49ce150ade097cc64c3b0a1bf60b5c224c957820b0c04e93d09bb0f76ef1b5": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "3d87d333bff86ceb529541c75d1f7d2dce2a57c7c744890f417219be1da2649d": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "1cb1ac5b03f01d263ad100d797b876e51298c72b6430a138ab68ff9ba7c509b8": {
+        "selected_candidate": 1,
+        "confidence": 0.72
+      },
+      "1ad36cb42bec470d993403633eefbf341a42b0a994fab83ff503570e8037d6dc": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "34dc5822ab9dd55b26154d076e1092d78cfcc869fd2b5d6894dfcf18211d2e6b": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "8e4e539f66b4441384ec498c2bcfaacacc8ae59ea047c19422e157245a153f3d": {
+        "selected_candidate": 1,
+        "confidence": 0.785
+      },
+      "26c81c7e43a587c0b29fb62eba215ca100fdcdb270f88c74359a7b5cbf31c119": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "2f56e3e45c564cdc855e31fb934352d0cc97a98da16e5447b76732a30b8e614e": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "6c02b0246bdda57992b3e9603f731410ec8ce7d22ad114c7b4e203f623ca4bd5": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "f31c383829d6134d68811bceeaa884f8ca22fdcc63638c5b9be86ea8a4732c85": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "1ebb77394054b81224fc62c387c26af6277cd2b6d99e8ea265562c1576d4a676": {
+        "selected_candidate": null,
+        "confidence": 0.5
+      },
+      "0c560571ca04217f02675870043f1412c4145c3feba7e83f03217fc429988ec5": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "c758426e7be92fff64797d7452ba823bc273b5da8fe32dc92a573f82dc85522e": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "da5ab354d0d0b353ae58d140ba9ab1f4110276561f4f6be2d99a0b59feab3191": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "2e7faa4d59617b417bd886866693e85eac6b706a047a45f159e140dc0c093cc7": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "30e3957594abffb960c25a52306a2b1b776129d6c477906a72d7b6a06215e819": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "df24fc223e666545c2d5702bf20d77712ca14bdcaab338bb1ae0a4a3b3a06a6d": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "e3e849113114b684c45008c9e0b484b88aae347827785b2bad81646d91aebff6": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "5de765b939d01c78545800be51e27248cb80d44bee74f5f846e1b3466411f923": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "7c152d22967069015c7c7fb0ad75479d4bf58c95a15ef4cda4d926ff978bff3f": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "975318891ed0a8d112dc29e097b9b7f37847abe32334d1a01951bcf379806145": {
+        "selected_candidate": 1,
+        "confidence": 0.6
+      },
+      "a4fa455b30de1bb86fdf31573c50b56bb86fb070f3e7674467b7336ad09f2889": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "afbb03bc284fd6dc7559785a0aaf4032d7a54be83735e2a20c6b889978d5ca69": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "7f1072c798502d6ed7079448c15f9e9c42bb922153b7199e9c077f58b0846d68": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "6e5264927719f1e06265aa49a6d6484cf10253a5c7cd0f7bded17be244e32ec4": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "21a7c122eeae67d2ba86e5bbe29f600840ffa4a4d5d92bd33f489b7a5d563f94": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "0e8e4c45d88c98429426a9eb4f8e7ad368b5514b85ee013c241f714451d92f11": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "1826bdeefe4e80554cb5d9e11844f979bae4a1cdcc51f743a1786a1f3def7a93": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "964e2bc15d677c60d8e558fe0cfa46ff3e2a9b0a6fe5d59bc0b18f2410600886": {
+        "selected_candidate": 1,
+        "confidence": 0.49
+      },
+      "bc68bf18b65b519db71ba9ddd62abbb2124028c906b942d21cd1f62766188315": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "7445908dd713a61321c6b40d5830718bc9e83a2ff9c52427cc69bba9271f67d4": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "d8032126084ec53bac5a8d9c93d72f45216876d8a76ceb07834ab7f932459b8f": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "1a65f63f7b99a4805b4b4a2937e247b1bd52dae5a0dc564742f671b3c5541bc5": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "ae66643b5f11a999266b69fc5fc3922268c0a7366d10a2618cd83b2981ddf9d8": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "8147c22eca8f44eb67f445647a131717cfc83fca18c613678a8fc2fbf0553835": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "a13fb8261e2538097edf63fd2cc94b456305d6566b0eb726d42f897b88b5839a": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "4ae0bdc169759b8370cfeda7d8f01e4df884f380c0d1f9824db6100f12392db5": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "7958318bef5f65101df5194baa38cced1f2711106bd5d8cc6486dc8722fc3b3a": {
+        "selected_candidate": 1,
+        "confidence": 0.62
+      },
+      "db2e0cb64431cffb288d519933ace9d6754946230ba3e77f3df10b6e039e53dd": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "27f127c6836009ff5a94afbd985585acf622fd72925ad62ef8319e8b202f9a1f": {
+        "selected_candidate": 1,
+        "confidence": 0.97
+      },
+      "9bedf8f81a233fb4f8c0f1321c4d61b5a198c5f9078f8c6463b336e843eb45ca": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "570daf809dff98cb12fb5818da15d0736988236f05ad264cc63e472eebf7805a": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "72b22ed44f42d20968cd2d15f0df296ebc7eaf1829eaca9d82278d9d6115a93a": {
+        "selected_candidate": 2,
+        "confidence": 0.9
+      },
+      "9be8cdf62fd1ba0be781d290d50b935d5a37d7ecabb7e2b4b03976d92826f58e": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "7e246c6b5931f9e3c0d5baffc33f9c4beb8df9fd22002fdeeb17309e2538cd38": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "3d854a01c8ec55eb20e4dbc2ececeb2251079b0365dd140ed355f5ac7c1a063f": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "23f044c9aedbc57cce9616546e8fb9e9e4c1cba2ba421ddf349e2b920aa3f746": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "96f92e4b781b31a1f00b640731e41554ffe90657c76285901cf20ade422cd2c6": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "7b9c8110b08ae63a143232aff02ff96efe6bb87c378af59a92ab604a3104d80f": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "4f5816071473cb78bfee8bb43ee475a488319e7fc5d1f30da900e51f50230f8a": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "257e573cb64a5fd8c44c373addac1bf5d449d1ed381d345f52de049c8430f639": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "94e6b5e0c04b524018e812e2286df6afb2d99e171ad72ef11bd5279bdfe8c003": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "c09a350e0ebfb731e018cd773d92ab57f4c60aba9cd90249cd982e110590b4a1": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "2b238bc5f0ea49f2512eda091714348298cb4e1a4ea993373fb85012bd74b73d": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "a51c05ccbb0e0ec487043d66b77336d5659d9f7a9ce1b4de85d90acff92a5be7": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "540b02c0e21739d867e914f13cb60205a57f801d2343e621454d7ba3eb7c6b71": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "be96fdf46adb9ac5055afdf29dbad5d2724a8e354b973c42d71770e9575bac72": {
+        "selected_candidate": null,
+        "confidence": 0.83
+      },
+      "6e864f46bf815f5797047883ea1e0eb2807511ff2142323d3f32d95b1a3ef843": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "db13e5ae647c42466145b366a418867bbbc68dd9925dce0df01a81cfafe07155": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "1f2c7cff630b8994f3db74b7c79623581aee3d82c76f2d95856666da87e98be3": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "2c5c81d57d9a46e5feac9f331fa0c5bd5911c6512f54e38d3ad9a7d99eb6a65e": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "7929e20e4eea4061a9da9a586d78506df9405318c503e1fedeeebb4b7f086422": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "61ec8c3ecf673f346c7f6edaec65f4321ea9caf8f14782ebc538bb17b21cf0c4": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "36796c748791a3cd6863d45a6bb3ccc007c9701f9f8006e831dbe3ac7e8be3c1": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "ca435720d304bf081b3888836f2c892b36801fd5bc5af11eb12f5941bcc3bb62": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "59990e6e243b32cd02874de27639ff4de381e755f5d93bde0adc7e2838aca75a": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "41ac1dc91ae82b692edd5989014229fccc0dbc2d508ab0ff05a25e80bfab7268": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "d914563bf823a06248641cdc21106b75e130e6ad64dffbf28025607311253daf": {
+        "selected_candidate": 1,
+        "confidence": 0.91
+      },
+      "67349cb715e3da5ef5fb5d30fbe404bd8ec5abab3ea1f32447088c01bb70e245": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "85ea1ef808a682e89c9faeb9970a4c042aa28c4bf49d097a150ecca36ae5f026": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "9b563e6fa152702d2cbf5f52884a4dea9c053634fed1687d1911df3e6d2f501e": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "e65f4e2149dfb8b9b0de57f3f76341fa59c41826f55dca788a2105267cee6896": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "fef0cb64bb38646b69a1b61261c815eb878766f581dc363bf4dfdfce02f79aa6": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "f4036eaab6226a5a94078f1d05bcb92c69440c246f78371428065e7621fbd2b8": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "de5b1b57abf36ce4debb2f54dbfea02834d908468c8bf83aba324b7c5df2d157": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "33d222b474d9b3b190674514c26ca2774bdb440bcd8ef7d26ee9f5e96582dbb8": {
+        "selected_candidate": null,
+        "confidence": 0.7
+      },
+      "a374b7d46d32e48aad7b4c71296896beae18c1b48ebfe54ba22a9d7868bafa4c": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "5d896fd0db115dcc1784cfac83c9222b2f02ab6e935a86034721e3ce89174a46": {
+        "selected_candidate": null,
+        "confidence": 0.85
+      },
+      "d88b6e6f6eb52fa04819a1181ea19587a45c115563b825141cf978db3cc20619": {
+        "selected_candidate": null,
+        "confidence": 0.3
+      },
+      "df1fb5b76228b89a07c48fd9bc21890af1f2dd0fac5c780e0d07b84e16822f17": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "a6dad3e11c470f10c1e5f0ef52a22d4242a24f1f10d9b768d4758a383bad6973": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "18db7fb237afb17463566b51ae778e978d03b191b6b906d0a097ee8fb6170188": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "cd884bb61606375e8d64df0cc39a8d30aac76cf7095902460b9fe2f0e9b4744a": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "00e646653067c9429f6c7d918e8249ef89c2272597fc00e375bef5b049af6b3d": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "286d405a0b595be5e70595a697e4bcbd9ae7f0f7d1a4bcc02452c01b275d5936": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "79c70024ab74142afad130dcb6d689c3efafd6938f845cd25737f260cd219d95": {
+        "selected_candidate": null,
+        "confidence": 0.6
+      },
+      "12ae0615c5ad5570d1efcb0c749d2c1ba1edad8b9085de40b6149d12546585eb": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "e1c445d2e18fd9ff98d526b63988e9ec28a78e0067ec345e46f55203bb39753f": {
+        "selected_candidate": 1,
+        "confidence": 0.5
+      },
+      "3bde5dbe5c6ae77d3eeb8aca782f0ecbe6a5021acc200af52e6c59a587533f35": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "06cbdbaa594d4965238b0f9c17158184aeebe628ad0be13db0d9887f9686b95b": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "96f90a99ce34996c1c38429fd3cee64498c7c85e2655a065986e09a2a88fed89": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "ce38c61af51210173991e8437a2d9733bd19b488f5f39ce0670d89d631efc566": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "660ec29c59299e58decebf07892dc23da760fd914871a6a1aa3ab946887cbd9e": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "d399755834c64dd24d614aa462616218772b611074f32e825cb0f9277e8174e8": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "5b46f550ee6f49a4079cfc548e3cf9e8625ca8e7f3bb362b356a9d01fbea3434": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "1c25e147078d68c28f7b0bb3380816bdeef8fac44c8e9cecc8ca73e70dfd10fe": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "8738971b64b3aee90442e91e9327799ed8f8e8835ab47583a5414fa63d426597": {
+        "selected_candidate": 1,
+        "confidence": 0.88
+      },
+      "bd5faa77262c8b1b103b1c0ed528927dcf5c2c8bda83d6c5209d87d768a5a9bb": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "6bd4b3e1c5e1e8028d302b137fede965e6c2c0818cdc936c2ecb6fd5dce7547a": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "c2651201e3949ce468723227bb8f4ef2447e3b90d45528d4e8e8ccab45512dd9": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "ccf2b00798794ec7bbd95840a10114fac21ee0306707766d02a37c50df9e1520": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "7659e0fa4631b31946814b2f05047ea60a9bc7d0fe32dcb19425ea8702bededf": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "4ee583414965af24e88ef6929790ee9c373c3a023f5a7502fdd847dd15a0a930": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "aa36b2ae8d067b6e822de669b1047e255e643b1996fb35c0b93c07120f0c44c0": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "03362ee9ba9904c1b57ee9b30ac575fc469f54c82abf61321420c021c4d685db": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "528892dff5426b13c01144703ff5252f3350422c83d4402c2a811348e95613b7": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "396f2231f5beb5eb8003468e12717078bcc81e3ba3da50c1da2ba74dd332dac1": {
+        "selected_candidate": 1,
+        "confidence": 0.5
+      },
+      "04860caa94dd58507b71022acb6105410c5bd2e6a069382561e5b1a4dc397417": {
+        "selected_candidate": 1,
+        "confidence": 0.814
+      },
+      "b085b15a0fb29a287fb82350f5c1f3eb51190134a582dbc51d76e113324c0a0f": {
+        "selected_candidate": 1,
+        "confidence": 0.47
+      },
+      "bbcad34ec43adde90ca3eb5fa2b87815410c8c32e1c7a3c2e60883ae7ec329c8": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "a17dd820218db23728720da6a22af6c45543c01fb72de169eb7011dc5b685c43": {
+        "selected_candidate": 1,
+        "confidence": 0.56
+      },
+      "4fb4c4dd1172fd19b65a5597af4698cfc3a4cdafa5611c1916841798eca2bba8": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "536606d6073af16c6182965b1d4af205740094da82c3acb4f26c43b6002c4606": {
+        "selected_candidate": 1,
+        "confidence": 0.36
+      },
+      "972472561e65f51730eb5ba2bd2379755e26f8f0297a848da4d4568b3fc4d40b": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "475e7ce7ddc97dc4eb31583db37cbb4068da807781cbdea4d9f3c2cfba50bd43": {
+        "selected_candidate": 1,
+        "confidence": 0.58
+      },
+      "a10421c956c0baaddd960a12b7068373ee762e8e85fcc2dcccc996929eb11685": {
+        "selected_candidate": null,
+        "confidence": 0.41
+      },
+      "68403c4ac5aeec9094152efb804c9a3ac8f0e8f13ac945ffabac727fa254874d": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "d0c7b3b6378bb72ee55b0e0044e2826b341d92fa115b31d378711dd4ff18923b": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "169a820bf14c74dc990639b741fff4b1b204249ac2454883ce299e95057198ea": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "ef0c1760c316d73101057be25149c3da745c94923276742238c557badd4c3075": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "62f0a5da16a1aacdee4792dc9f20436438ca3ccdf95d03a04fc10008ab224301": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "480ad1ece631ca4d2fc27777eccd354c26643d75b8ad58e15e71ba415b932962": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "9eb57c18d036867e5bb880c47514d270bc9b4cb73c7d9b5c3704227305f0bb43": {
+        "selected_candidate": 1,
+        "confidence": 0.62
+      },
+      "abb09cc312295e9e2b98d5b844d6963ace33b2bfa81f981d314bfbfe27fec84c": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "f072619a1c1909df63102860abe03b653659868747ca437d28e90e45cf4479f0": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "10c1778816a9ad36a2a888b769edbeffcb764f2c53200e8106d9dd73b4cd0234": {
+        "selected_candidate": 1,
+        "confidence": 0.58
+      },
+      "d13c86758036e01801db6447c8bd3bd29871ecfa51433cc04d3d2d26a2d426b1": {
+        "selected_candidate": 1,
+        "confidence": 0.48
+      },
+      "59513210fb5be0d81b7db5e44556c61e4a782d41a9a34e1947710858bdbb1cd9": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "95d676503881e948c189e26cdfed254bad3cf0eaa11a04703d24d0929914ea56": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "44444663886d49dcfe540689c7bf4930e17ceccb10cdc072e33693278f57841e": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "06f27137cb4a486d531093df56155c2ec7cde39ff69cfb8513b624875002f9d8": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "d7cb0c149071ed95219c23ae135c6cc69830f570ac255f136411fa822f17d820": {
+        "selected_candidate": 1,
+        "confidence": 0.51
+      },
+      "c8fe108481bb1864b96f12106463cf85aa885b6a0c1820909e342dc22b25ae67": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "7160b1c377649eb5df1daec425016d2cbd3a8cf48bf88a86876b5a327c0096a5": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "95d146564bde4e2d4fb82c23ec72d1d6389ba0678e7bd1e78a4ea9fd3fc78377": {
+        "selected_candidate": null,
+        "confidence": 0.42
+      },
+      "281347e70deef305244342c20bd01028775f82653e2382526e0af4a985f7e8e3": {
+        "selected_candidate": 1,
+        "confidence": 0.424
+      },
+      "39c1128b8c30d5f09812306ddb76c20c7b5ffc0ae620b3fc073a74a55aed1024": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "00f20538dc3123040d07f6383ea0cb8a38b4bcb4b6fef13878e20bec732b233c": {
+        "selected_candidate": 1,
+        "confidence": 0.56
+      },
+      "5c783d8dfc512994509a9c41efaf7f057e0ccabb05de7c8cec838bc87ab431fb": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "10fb2b789296020ec4e305dc543b6f1501561c51e70e6150a1000298222ec294": {
+        "selected_candidate": null,
+        "confidence": 0.49
+      },
+      "9e9afef933ab127773214a844600e0542a000518c96baff61fd606f5737a9f08": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "a234800ced01c18d11f473b2393dcab4a5b9f817247f5e25d372017daec8e8ee": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "d74810c171df9696e2e793aa86fc746ea11d98029f746e57e1b0505eb60675bf": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "3cc6cfc72255ea4f0e17f927e9b7f39c9636054b58b8c84ea909a632b610e4d2": {
+        "selected_candidate": null,
+        "confidence": 0.2
+      },
+      "02c05a4e1911a8f3b9b46975d39b38d91ddf1ca22b7ea1d907c5a995520f6fb4": {
+        "selected_candidate": 1,
+        "confidence": 0.582
+      },
+      "4c55811a33eda452ae4b55d5cae30f6c5b7749f32dd16c6c10825cced24d1fc2": {
+        "selected_candidate": 1,
+        "confidence": 0.53
+      },
+      "f6d1e35891826557c8e63929763f332a10ac90537a620310e99ef2ae7e7d09d3": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "357d86a2d4a9f85e013402dcf0742bc72d61a0decc34a7ae0d7c16210c48707f": {
+        "selected_candidate": 1,
+        "confidence": 0.54
+      },
+      "beb766aa36e1ae9a56b52c2efb9ed18d7036b9eedc6babcb60313821f4667f70": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "e4976ebe3d4b335e8c78e03f5d53d801a9a8f0873b59814e2a8209185b3ebf51": {
+        "selected_candidate": 1,
+        "confidence": 0.457
+      },
+      "15aea731fbd8dc20091857b9b84a1ebed105a759868ac22deb460fd6150cfff0": {
+        "selected_candidate": 1,
+        "confidence": 0.855
+      },
+      "c738b053e6fe8b8ff5daad7d667a8d4b7f30754082c29de7350d46d88625d53e": {
+        "selected_candidate": 1,
+        "confidence": 0.35
+      },
+      "e50a0fc244aea52c74f6ad78f0c6cde1594fc45241597437a3cc5ee4c99559b4": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "5b994a6cf283417b19f7833d552d379c7c2d6103e5463086e6034c4921774808": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "ddd44ff6bb609ff90117e97b02a4738dc8c8dbeaea45e876277ce17d458bbac6": {
+        "selected_candidate": 1,
+        "confidence": 0.48
+      },
+      "a35f3c226413dd09c6e5c4301b69058e6053b8885bf683191375efd67b038f12": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "5927f191bfe1099ff7723899266ddd007471d516b43235737546abed0fd153e1": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "d5bd24a05b5b0c95fd086121701933fd8b989c79a59d3a63421c7ac4a0f5b645": {
+        "selected_candidate": 1,
+        "confidence": 0.68
+      },
+      "42f69a6d6ab6e6d1fc6ef99a0f798f282d2af86c8a1c8f1975bf441251e670eb": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "8060886edb0f69ee61d9a3161819702272f7364b6693873f6d00cd9d917b39de": {
+        "selected_candidate": 1,
+        "confidence": 0.54
+      },
+      "0e17c6327555f9c9a9eee88d6a6bf0dd9356e85778b9700cba4aef41f0f9d3c0": {
+        "selected_candidate": 1,
+        "confidence": 0.52
+      },
+      "b4be5972ac69d911b127e974fd748ed820ddb69f853b7773214e75a5f610294d": {
+        "selected_candidate": 1,
+        "confidence": 0.375
+      },
+      "aefbbcabe3b2cf4bc70bb79b3a8e437b3af07616d07d55e677ad80f3ff0a3c91": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "97a82d30efdc2195de9d26cc1f1235a2c4c8e9be58ad9d8132f8dea9c0493255": {
+        "selected_candidate": 1,
+        "confidence": 0.46
+      },
+      "8e86246043d26faa4b015f3b8975d2e9eae0ba754a8921f1bfd5daf59a2aa60c": {
+        "selected_candidate": null,
+        "confidence": 0.33
+      },
+      "fbeeca5047ab6e84053845f1ce934add12a6fc356f43e1495aafdbde43eb4ec9": {
+        "selected_candidate": 1,
+        "confidence": 0.5
+      },
+      "e1a5e0123f8b6d449633d49d9baa9082988b68592741209fecfff357debadcbf": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "d3d33796ac666a73331b44ee1d8ef6f05478ac87eebf7b9ad8b99de6c5b6def1": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "dea272a758a9f17e20d55688b5ade97063db4b1562dfbcbe1f1522038f95fda7": {
+        "selected_candidate": 1,
+        "confidence": 0.68
+      },
+      "7103c019952898b7ebe5269500e209348432e4d7b2cb3a72fef43a65cbcd1cd1": {
+        "selected_candidate": null,
+        "confidence": 0.47
+      },
+      "a48c357e39925c96738f012d3da3188f6b5acc001cbdab11f57b825740fe4e0e": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "aebc968f515d0276e9ac9b6a8db756da973737548c63e77abae16e863fd0ef48": {
+        "selected_candidate": 1,
+        "confidence": 0.583
+      },
+      "acbf4daa533eacb22b9789cf7f8bbff8f312bdc9d15e6364453e53f5444b8f73": {
+        "selected_candidate": 1,
+        "confidence": 0.583
+      },
+      "c53894cdd3f8a3c840517ee3ef3caef8cdab24d0cb5b0776f21e1ad3bd47c925": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "49f248efb366f155b7201421521f2875484c9385c72b5ff76d9625bd44e0cfcd": {
+        "selected_candidate": 1,
+        "confidence": 0.41
+      },
+      "eb95449091e87c906d455b620f5987a7458633f7b33f4f4871f8b54b0af13213": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "9edb0afe9675317e08dadb9823f21524a31289771f71065f36c8be4e9c9a99ed": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "289cfaabf7caf4eb1c6112d5ba0c2ce07ee8fd0f54b0c55ffbb5dd98eeccf641": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "17346e0378a0d96164190b1a407a2b96d40f87f6eb72d71e5678b44468828da2": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "762b78111a12341da196b09a25931e776e552fa2f973f71c1dd1f3031fbf4b53": {
+        "selected_candidate": 1,
+        "confidence": 0.58
+      },
+      "305729403ce3ce5790e2739bb7d05a12c2b9cff148c87f220facc292156d7975": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "07bb199528ef71d88859868a3b750d6bcd6b281ca2029b8748a3af9a0efa1ab8": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "ebf0465ae78d031a88b610f7d6bff9ba81c707e6e29a14acb4dae7349fa5fb77": {
+        "selected_candidate": 1,
+        "confidence": 0.59
+      },
+      "2cdc560202120f04685862e2b470ff2e7d430e149a37cff3b3537f2e237d2ec6": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "ea91f346eb2bcaf954b1b1e3e6653186b4106c18e1fc99068c5f59486a6f015b": {
+        "selected_candidate": 1,
+        "confidence": 0.55
+      },
+      "3b64dc37c187a2c5ff93d8ea32419017eac5dcf9934ede7ae773ef7d08a1c423": {
+        "selected_candidate": 1,
+        "confidence": 0.583
+      },
+      "f9fea7c588364220ab3040c8bc7ac4e7281c5398db1799e640e251a3ca779eee": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "5c931cdb5325c155b9355ffda76c75bf4191f665dc82a3db13ac2fa5b336726d": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "895287eac4277503a84f987bc74537fc37dd0615fb697976478b93b4cb3f897b": {
+        "selected_candidate": 1,
+        "confidence": 0.817
+      },
+      "9423fdda0505de77809e812e9256447802b84b5c2e4e74091751997bae567149": {
+        "selected_candidate": 1,
+        "confidence": 0.8
+      },
+      "dfd33df772bfeeeecca93c7f7e8f570b3bae6240474367b953103861daa48dff": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "47942a23a9bb5c3d3b8e1ca3a16754031324a05634678f45aeb0ad0e51ada036": {
+        "selected_candidate": null,
+        "confidence": 0.55
+      },
+      "9c39763b13bdf4a93085da941d1f645cada44c67329d4949c7e77924c974fe62": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "4d2bc0957577a13d02d55b87f021ec6f25ad0c088f48ea150aed7b6b2af5f1a7": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "40b8fb4053b9490e83845a98d0e590a2b9fcb180f644b2564bc6db92b4edd1f6": {
+        "selected_candidate": 1,
+        "confidence": 0.55
+      },
+      "71819a9b1ea915231fd97cadf7a234b5c4b378c846f89af0cdc3b799a0ab017f": {
+        "selected_candidate": null,
+        "confidence": 0.0
+      },
+      "e43887f51215437d155544f84063b626b5961a2575898a28afc89988a3790f60": {
+        "selected_candidate": 1,
+        "confidence": 0.54
+      },
+      "4e66ec8b8e610921c7e526733fc6e28b22ae0cb9b858ef2705576113809e3ada": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "edf9e6f09f487ce56d36a82b12af69773fc72092082c677398318b7b70aac5d1": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "b27d0a6e8eff562b389f1fcac72728bce6812d61a95aabd69442da907d895cb6": {
+        "selected_candidate": 1,
+        "confidence": 0.56
+      },
+      "46e1e364845df18df6a5f2d7fc3055caca9f81c2888f7eafefe6c5e62a793aa4": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "05e5a2c81824c325f953c723afed471d13c547882170c028340a4c14af08520a": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "63e24b0b15bd57bcd3435a61d46c47b544465b9f4b89042c6787aefb40871dfc": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "ee85b1244b1a545f3ad2dd556b3974f0bc2e0efe0a79146b78fe1614cbe6aa5e": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "3522eec4b7b27302b4e40bb6d5bc389ab1a24ee1b1412d583336c9a4f9cee3a5": {
+        "selected_candidate": 1,
+        "confidence": 0.58
+      },
+      "8a103cc6c1de934b1123bf2d1296a8cfc59aa0dd35fc046d1e243f59e48bfa82": {
+        "selected_candidate": 1,
+        "confidence": 0.61
+      },
+      "1f8afe2036e95b4f759ab4599d22ef4f020ad21f30f136b2c484b51021810769": {
+        "selected_candidate": 1,
+        "confidence": 0.75
+      },
+      "606dafc3c5f1ec4500c6a7d8b34b537fb23e2d5f02ccbdec26569800f75f3e13": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "15405a77427566ee22e422bcd4ec1c4bafd6fb9b2848ecdc361ff2a74a5ff980": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "da99224ad1813bc5ed72fcdaf0a446a1a22a5fa388e83e4ab35dd2465f7c816d": {
+        "selected_candidate": 1,
+        "confidence": 0.49
+      },
+      "5ecbcea2dfea21e014f6b4c9f90085e04d9c9b0b18fd9fc6d5258d889604ad32": {
+        "selected_candidate": null,
+        "confidence": 0.58
+      },
+      "adab1079a2b182043f581a228a7ef258ddf220d0e0c7f1195aba32f142f9efa6": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "085b92bda7b09e358c596797f4658674f99d6a626aa720deae6bbd75a96b673d": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "193f89e21ca5c554bd8e3ee8175c44a422a584a8ab73f7a28cc8ddb6f8f0fae0": {
+        "selected_candidate": 1,
+        "confidence": 0.49
+      },
+      "6cced658f078cadfe0cb34c57fd64a6f69f3f9a728332130a8074be2ac34f082": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "7b611ecb2554c8fa24644e38eb6cc1888f659cdc3741b3b462317185594eab94": {
+        "selected_candidate": null,
+        "confidence": 0.4
+      },
+      "075e7c767de15e5104bb04e7289c088fe7c2357006483c76925fe8d2d7437f3b": {
+        "selected_candidate": 1,
+        "confidence": 0.49
+      },
+      "1af6f72fbec92e3494b8a4eb55f06d1cdc5c9c437cffef07f695c4dd6380c682": {
+        "selected_candidate": 1,
+        "confidence": 0.58
+      },
+      "c89786acb617179d3e7c323cdf00d912a7f7aeedf5efcc42489a3de4b82d772e": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "0b2049ee3457d9930df069dde75eb52339a35af0b2435bebbfedc0c8adc11c2e": {
+        "selected_candidate": 1,
+        "confidence": 0.57
+      },
+      "8d1b0248ea3a530a0efa20075f1fddb61c95c8e0d78a42ca780283fa327030ba": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "fcd578e1542e19b958d2caf9f3f34bdce57cf7579f82352b857b07df40d5835a": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "8db00a2cf27a69e5572d00b301c003c585c8245420c116fd89be8a5ddf8c6db3": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "e88badf07973e81c4acf1e39548429f87ef66033c32244931e94ed38878c32fc": {
+        "selected_candidate": 1,
+        "confidence": 0.61
+      },
+      "b6e7a55c46d6dcb56c2f6ab38b9e3b0cf09876aabc72e9b109bf85db00e5c34e": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "5537067274d9e28e47771eddf30e75a7e1c8292b1a276de2fa99319bedaadb90": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "df175e99b2a8cc73886c652dc656fdbf1fe69cc71f6a0fbe8e84ddfabec36f79": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "d77a264884dab11d42f220f9586cac9dd82ec9c1c0385f25c295cb3a3748a043": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "efe8130bb8e3064ea60d24efaf176313ccbec604c3839ccac41e92557ba2fa91": {
+        "selected_candidate": null,
+        "confidence": 0.49
+      },
+      "3017d4fcd9067c2c199bccf5393d8dc21057186e704ad3199e1f712fdea86716": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "772e3166019307190f86e850c09430020cf487588365982dfed607bf5ef4741c": {
+        "selected_candidate": 2,
+        "confidence": 0.83
+      },
+      "da992975a98959aba6bc129fd4b6b017c4d2d29dea71ab1f7944ad862e7349b6": {
+        "selected_candidate": 1,
+        "confidence": 0.58
+      },
+      "436d2dc7e8429de45d680885217b1c26eada97c6ddaca05d5c09456c549429fd": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "98be085c8e77e55c743f93ecc97e1c81a9352c29d62fbfafa7b3cff3c361cc3b": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "1be1fb9adaa6b1289920b8475fbd41be087eb0ca1d4b855c18e2176713a4e5f0": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "15515d400e0d1a0b9a1425a63b8bfa6e0b453793c007a483a376b356995e3966": {
+        "selected_candidate": 1,
+        "confidence": 0.78
+      },
+      "35d96bb180e864204830abba2e5399b1a9d0430b7bb891312c519f54216ede88": {
+        "selected_candidate": null,
+        "confidence": 0.4
+      },
+      "39fe4a5c787dee421ac51951745ac775ba0e31f7644b852b9f1884b70bae325b": {
+        "selected_candidate": null,
+        "confidence": 0.5
+      },
+      "62ede22597ec3c5152702b10f319d2e22e3ddd0edf7cc076c9025d51af0bceb2": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "ca06db38b5534c35a1a9ffd4b80be6e9befb9004185582e05d2583de60b47743": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "71f1c55cf71fce13758fd2a7595305f3cd26a5bfce290a5f85abc913d3e1d9cc": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "bd9c56bca4e6a23fbd53637e0251a1933274bdc24dd790cd3f9637f406205426": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "d1c8f9c9e19b19fd210a401dd8fdd3f6a623d932554a2a116cf995bdb7ddd77d": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "b53d1fb04f53eaf68c3174439424172e30ad5ee54773cc22c21f5780a690b9f2": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "b5d1171b492dd3ee2789b5de749d9305abe39086acfa8fa026345e1ed42a206d": {
+        "selected_candidate": 1,
+        "confidence": 0.818
+      },
+      "b2e0d531e9375e369538f868aa1044030e7ea5717f70766a43f6f87ecac60240": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "403fafa1366fc36b7d877fd98e2056280ef049e22949c290336ca6319fc1030f": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "f4c76e43322f28fdf23e1752525760b5fcbd7acb8b140cf6e1806de4c19321d0": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "957dcd8f6932d75d7a7656c3f1eb2e2eb76a4225f844fb9021cd9482b154d944": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "147ec3ef08487ae11c7d790fbff471acc2ee6efb153cab28dc2eff015d18a373": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "22cdf49f6fc99e15db36a60c535d8f848c08cf723e0ef9453ebc4caa7caf0002": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "166a54d1f8a660e4d807d054befb90dc40aeb2bd71d8d7163b7c357c55de22cd": {
+        "selected_candidate": 1,
+        "confidence": 0.875
+      },
+      "d7fd7f37085ba08dca4e46abec72d79e8888536e19866ddff2788467622a0db7": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "c1cbf249897c377a3067ec89d0e237276ad2ffa3975d7b6434641f46f200fa8f": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "776412bbcf58df1a3b65eec6a2d770da8522f970e6ea68adae85ba18de7209fe": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "48e29537dce7db4d56f741a5446623d9ef2a3ee9f876bfb192709355a62c0a8a": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "d5641cbde46d77185f518cfdc2991efe78fdc7cf92b101a4db078ce65bbc14d0": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f97ef5c5f43ff39f9a1f5b1a6e32f2df2fd70e4d463d5ebf4f047ab8a7a88681": {
+        "selected_candidate": 1,
+        "confidence": 0.94
+      },
+      "8c79211ecaca0d6a02cd5eb3beaa4fce27efc497f483961f53839a26e91ccc2f": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "8cad3aa4532d1bab1377b605dfa6bfdc8121c3d2f959b6872ab1c04e046cb92f": {
+        "selected_candidate": 1,
+        "confidence": 0.585
+      },
+      "425a44641881bc1f1d57672d1ed1c00b40780f2a34b70b24b0154d8745219753": {
+        "selected_candidate": 1,
+        "confidence": 0.98
+      },
+      "0952e7baa67336c3162ed078f79f2de037756a594429e0d9f1ada06977d09502": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "27f49963fddce4a08da62fdb74a3a0ffdab29f5d77476fea29fab73acd47d25c": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "8fc5c1e9c8b59bbbeb50f591a63123d055fe246b452065518ba87338fea01517": {
+        "selected_candidate": 1,
+        "confidence": 0.74
+      },
+      "fe107fb9ed36840d9e51373ed9e1745c697e029de4d559fb7f80eed755ab96bd": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "6f18e8399712d94bf11c20d89b31f7507a2de2ba64f81e399182a4e15ce67160": {
+        "selected_candidate": 1,
+        "confidence": 0.615
+      },
+      "2a1fc5768cddc0122923925b4939879a158dc0720f3d5dbbccb96bcf07482fc0": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "cd9e9367e8cfd99464211460ff38b5c01d8fcef1f4e8ce1838c7dffbaef8074b": {
+        "selected_candidate": 1,
+        "confidence": 0.652
+      },
+      "07e6f952ef3706a3902fb9f4f0626745eed48decfe4b320961e05fdb05fc9908": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "ef6af7a278b8709665c9c6048361979a9e9167125ae1c37efcd6d5dc22694e2d": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "e16fa8b39b1b866ba240666d503730cfd578c92a592e231ef452b27e902762c4": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "0fd4d699726a9cb03908f37b547e6751a2892c5bfbb1fa0b98db9fcc87e4df1b": {
+        "selected_candidate": 1,
+        "confidence": 0.94
+      },
+      "dea8f999dd877994d4ddd68da01a749f81d5a18727a7f0f9cc885a2fbe17decc": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "72bbee62f89a130578190f7d0c936c6552b5846071d6894d6e6618af2428f0f9": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "493c5e2a7805a7689d6f203973c5bef7ec879df1fb18876feb620efb7517de81": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "41f7875bda49c753ec21827f4c2bb0edb61c92572e0a900ad233b9338509d4d9": {
+        "selected_candidate": 1,
+        "confidence": 0.58
+      },
+      "c322e17e32abb3b65637fcdc9a3f659ebb7cfd210fea949e87f2ab8fdf77d599": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "c224d5f69ad6050042785cb6a3d4f025adb84631f136068337f58f3fa6a69af1": {
+        "selected_candidate": 1,
+        "confidence": 0.86
+      },
+      "178afd6824221892cf5681e0517eea00143fd4571073d74527e950910d7ecdaa": {
+        "selected_candidate": 1,
+        "confidence": 0.9
+      },
+      "dc020bf5084df7688a8d9ae9a010d8de6b6937c6e7c638501a673980f4577867": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f08e422e09ed7bb3d6ce280b7287b7cbc2fccadb773d70a70a8b1274677d1d41": {
+        "selected_candidate": 1,
+        "confidence": 0.53
+      },
+      "80121943d94a026389032c827682199afd0fa77da9dbabe84db2344010cdc1f1": {
+        "selected_candidate": null,
+        "confidence": 0.65
+      },
+      "7ea9ad59a4db7a2706a72d5a9ae1a4a66395026ab11e54dcd3689c0be182cd68": {
+        "selected_candidate": 1,
+        "confidence": 0.7
+      },
+      "3fab82acb00cc357f208a0a293aaf9cd83bc526bff145890334092232ae83377": {
+        "selected_candidate": 1,
+        "confidence": 0.833
+      },
+      "5236d2457154fb91d3faae8736fd69e1237fe6824547a77d44623532c301e07b": {
+        "selected_candidate": 1,
+        "confidence": 0.95
+      },
+      "2666d8c578c7fbd800c2a02dca0cadee56bd83d08155c596dc28da6fcfa26a9f": {
+        "selected_candidate": 1,
+        "confidence": 0.76
+      },
+      "941fc936cd683821647ae7573b749e2724f1cecb7ad0ab9e2326eccf19439b82": {
+        "selected_candidate": 1,
+        "confidence": 0.87
+      },
+      "81b003dc99176c212556843319a776ca8e9ebd676baadd268679b791a1ccbe93": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "f34402e6f12ff58233673830d3bc6be9fb0ce20cba4cd82e04a2d319942dd439": {
+        "selected_candidate": 1,
+        "confidence": 0.69
+      },
+      "b30e6cc8aa3ed9b5501c2ddb0ce8696826677856d8dd0ff07385b8744ff803b3": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "68bccd81feaca15ba8cf7a22572f8cfa025219692e51b06a6bd24c7f510a497c": {
+        "selected_candidate": 1,
+        "confidence": 0.77
+      },
+      "f177cd57a2cb67a5e54d33cf30b4c256aad54d8b392c198a21f92f8e2a61a5c3": {
+        "selected_candidate": 1,
+        "confidence": 0.65
+      },
+      "80c7f8620ec4afe43d9d34341007afce6c95c107b41a66413cee60506c5849c3": {
+        "selected_candidate": 1,
+        "confidence": 0.52
+      },
+      "e6f532797db654d785a5f98ff389d22467ae883b04befb9a6679a4956d3c00b6": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "c48228ad1d700b7fadc1c7ad0de52a10ef80fe936be06d777c5c598196a69b0c": {
+        "selected_candidate": 1,
+        "confidence": 0.62
+      },
+      "da0c400983e3bb306daa91a099e9e2e9d7f76bea2ca61b5586b4c46d460a7f48": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "b6734bf7a0449497dcf84c6f12741be4406f1a899dd70b887a868254a5da6c72": {
+        "selected_candidate": 1,
+        "confidence": 0.85
+      },
+      "d7c787de3ccc17cc1c302d52e06ce80b57794d158e2278550c8c698b4ef51c97": {
+        "selected_candidate": 1,
+        "confidence": 0.89
+      },
+      "2b23d11a0275388d5b5ffd027b769ae53a64abee65f56926e7ebc2fab527d979": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "1a71e56234af37cf357cf3fb5395e651e3574363a45d0e477229a5ad2e387d69": {
+        "selected_candidate": 1,
+        "confidence": 0.714
+      },
+      "289a7d6c7dcb6abf171f58b558817858e452bc1c1c8e8b741eeeac43a15d91f9": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "37726052f718e0aa63f3beea92b4fc80c49cb8392e64cfc0c315ef6ff0297338": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "bac029c5c326819fd90791882099e6603c93b9e9acd50fb83b93aed79b7ec682": {
+        "selected_candidate": 1,
+        "confidence": 0.625
+      },
+      "f7709560cd8cc6cc0a8efb730eac6de8eb72a95040b0bd330cbf4281cd64e5f0": {
+        "selected_candidate": 1,
+        "confidence": 0.811
+      },
+      "61c2877f43973b22212aaa159788ecab2f0a6536046f714f20ae716497c59e54": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "0cfe0a799b8531d2a0a77430245e192a26756aa59a83b1b1f106045618b2f602": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "ea5ed0c3878891209f377076e33db37c012a5c733378af75512fbc5ad09a3c6b": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "82132090ed0a5f71c1b7f2428bbd424a99678bec474ff8238d4e1bffd1a7033c": {
+        "selected_candidate": 1,
+        "confidence": 1.0
+      },
+      "9f534cb8e696e8ed841c349f8eb25fc7d5040d5b8138155a571bd44b2e2ca8a9": {
+        "selected_candidate": 1,
+        "confidence": 0.68
+      },
+      "bca7f3ad64d62dda2efb897e4525db1a12111630cd3df3aa9c4ca3ecb1151aab": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "81328a6f01fac83ff190b0f12e5dbcc57623f369a567814f2a2d12c2b845dc92": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "022d40c7e07167424bb1f86277be49baac84ef348ff392081808f411d254af7c": {
+        "selected_candidate": 1,
+        "confidence": 0.705
+      },
+      "62c8c56583a3f6707d27fe768e5da1e8c1d9f5ba17caff3028edec1eea94d3c3": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "49c77da9a75db31a6c513da52c21556f6d2f0e1ed59e5e04a498b1412d81efbb": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "9883f84ce7d3eac8856199de2bca94c05847735e599c26bfad365941a19d49ea": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "c159c3861c6fd524908b4b03e846df654bccbe7326fc4376f54e3569452d5a88": {
+        "selected_candidate": 1,
+        "confidence": 0.66
+      },
+      "8dc9747a2e2893080482cc14e3225c7a653b578a4e825f963db45a69f941b097": {
+        "selected_candidate": 1,
+        "confidence": 0.63
+      },
+      "83c237bdb35cb69f8fd6555dede689775b4f3dbe2c8176f64a7509a2382268b4": {
+        "selected_candidate": 1,
+        "confidence": 0.971
+      },
+      "d842cd1d0b56564c396682847ffd807e3ba5f82da6fbb577e99afdf848e7dd1e": {
+        "selected_candidate": 1,
+        "confidence": 0.68
+      },
+      "ee5e2b0b8672614242d84919e5058d8d0d97e1e0ab3526d67c08db006a9917f8": {
+        "selected_candidate": 1,
+        "confidence": 0.64
+      },
+      "8507e43488d97fa4f8053cd05aa93a48f23f687c08690489b10bc5f7ae39c26a": {
+        "selected_candidate": 1,
+        "confidence": 0.73
+      },
+      "fbbca9f8e4890bc35fa245deedaa9c4d84260d5370fcc695bf4ac65a0b6b82a6": {
+        "selected_candidate": 1,
+        "confidence": 0.72
+      },
+      "d862580974a69379c6d0ae783dcae1f78ef6968c53ed624b2f1a0737b96459e2": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "dd84701c848c551fbc1d13c42d8d6c92d78f6e5ce11eaadfd26178ad53e26ff3": {
+        "selected_candidate": 1,
+        "confidence": 0.812
+      },
+      "02338b87cfae02dd4687c29ceb5a3153b3a0a95218b8b09615a7af48aca9200d": {
+        "selected_candidate": 1,
+        "confidence": 0.67
+      },
+      "79224f1dcdb2925347dbcc3c9b29a77297cae39893d1b53c0e504e15221f0682": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "7970e3726cb8d396a0c5fac1cdcb7192f152103ca942516110a079c6c48cef87": {
+        "selected_candidate": 1,
+        "confidence": 0.79
+      },
+      "fa3c86c55bbd67be574119388a82a078aab14721664dcad9209ab3db8f1cab73": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "28d9594874a798458169b0e387098cc144ef559e9e84fef33e8758697cacfa39": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "ff34157be446d1dd236ba3186a9eee19ee08c2a3cbd003084351beba42297714": {
+        "selected_candidate": 1,
+        "confidence": 0.82
+      },
+      "207875dcad425ae5a97556f5a2ee3e23d1f7737ebbe922c5a4bb0fccdda7770e": {
+        "selected_candidate": 1,
+        "confidence": 0.824
+      },
+      "1b4fefe6881cc1b730ecf52e2a3be02643edc4ce4c7a741d85b6f8e085fa9f7a": {
+        "selected_candidate": 1,
+        "confidence": 0.83
+      },
+      "667f423e72a015f34cf1ef9ce7fe6e1de84e5406fb43c9eee9988e15003a9ec5": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "92aabc5da6fc1ea4e24f6a452f5a39a6a7ed80c35626ba3ac8ae217f3d704418": {
+        "selected_candidate": 1,
+        "confidence": 0.824
+      },
+      "70c14097b45d6a1051b2a121a1ed71c39d34bff4bf4ba506c211fb993ea0ea38": {
+        "selected_candidate": 1,
+        "confidence": 0.71
+      },
+      "078cb6b4f9636ee17cd68c4cec8f7a5a018641454504b288710e05d6362b32d1": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "ead7c9d080455e7f3fb24d25caf8d820689a7b02848a8b3b2dd8b974ed9be4b6": {
+        "selected_candidate": 1,
+        "confidence": 0.81
+      },
+      "039a1d87df65b53a5f8d4661aa98bd7811f0fb51347e92cfb1f2b36094182cce": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "101df531c0a1bea3e0301925a2aed08c6e212273cb6c65c1737aee510ba8e5fc": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "1a6d5504b16c9ab6bc60acdac38cf323494e134db4c9e4248ed38adb99021267": {
+        "selected_candidate": 1,
+        "confidence": 0.84
+      },
+      "f89d3e51940179214bc5201194d510825c577262bb31d015695f5c1abcf705db": {
+        "selected_candidate": 1,
+        "confidence": 0.824
+      },
+      "38f971eff5de2ac4c2e9559629b903e0bd52ef62e40aae20e1c16483c113d787": {
+        "selected_candidate": 1,
+        "confidence": 0.99
+      }
+    }
+  }
+}
