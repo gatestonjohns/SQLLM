@@ -18,9 +18,11 @@ class OpenAIProvider(LLMProvider):
 
     def __init__(
         self,
-        api_key: Optional[str] = os.getenv("OPENAI_API_KEY"),
-        model: Optional[str] = "gpt-4.1-2025-04-14",
-        token_limit: int = 190000,
+        api_key: str = None,
+        model: str = None,
+        token_limit: int = None,
+        input_token_price: float = None,
+        output_token_price: float = None,
     ):
         """
         Initialize OpenAI provider.
@@ -29,30 +31,36 @@ class OpenAIProvider(LLMProvider):
             api_key: API key (auto-detects from env if not provided)
             model: Model name (auto-selects based on environment if not provided)
             token_limit: Maximum tokens for prompt
+            input_token_price: Input token price for single token
+            output_token_price: Output token price for single token
         """
-        self._api_key = api_key
-        self._model = model
+        self._api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self._model = model or os.getenv("OPENAI_MODEL")
+        
+        token_limit_env = os.getenv("OPENAI_TOKEN_LIMIT")
+        self._token_limit = token_limit or (int(token_limit_env) if token_limit_env else None)
+        
+        input_price_env = os.getenv("OPENAI_INPUT_TOKEN_PRICE")
+        self._input_token_price = input_token_price or (float(input_price_env) if input_price_env else None)
+        
+        output_price_env = os.getenv("OPENAI_OUTPUT_TOKEN_PRICE")
+        self._output_token_price = output_token_price or (float(output_price_env) if output_price_env else None)
 
         # Lazy-initialized clients
         self._async_client: Optional[AsyncOpenAI] = None
         self._sync_client: Optional[OpenAI] = None
         self._client_lock = threading.Lock()  # thread safe lazy initialization
 
-        # Configuration
-        self._token_limit = token_limit
-        self._temperature = 0.1
-        self._system_prompt = (
-            "You are an assistant to a data analyst. "
-            "Your responsibility is to assist in extracting, standardizing, and enriching data. "
-            "Be concise and accurate in your responses. "
-            "Your responses are fed directly into an SQL environment; "
-            "therefore, ensure that your outputs are structured as succinct data points, not as prose.\n"
-        )
-        self._system_prompt_msg = {"role": "system", "content": self._system_prompt}
-
-        # Pricing (GPT-4.1-nano)
-        self._input_token_price: float = 0.0000001  # $0.10/1M tokens
-        self._output_token_price: float = 0.000004  # $0.40/1M tokens
+        self._system_prompt_msg = {
+            "role": "system",
+            "content": (
+                "You are an assistant to a data analyst. "
+                "Your responsibility is to assist in extracting, standardizing, and enriching data. "
+                "Be concise and accurate in your responses. "
+                "Your responses are fed directly into an SQL environment; "
+                "therefore, ensure that your outputs are structured as succinct data points, not as prose.\n"
+            ),
+        }
 
     @property
     def async_client(self) -> AsyncOpenAI:
@@ -113,7 +121,6 @@ class OpenAIProvider(LLMProvider):
         response = await self.async_client.responses.create(
             model=self._model,
             input=input_messages,
-            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return response.output_text
@@ -160,7 +167,6 @@ class OpenAIProvider(LLMProvider):
                     "strict": True,
                 }
             },
-            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return json.loads(response.output_text)
@@ -195,7 +201,6 @@ class OpenAIProvider(LLMProvider):
         response = self.sync_client.responses.create(
             model=self._model,
             input=input_messages,
-            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return response.output_text
@@ -242,7 +247,6 @@ class OpenAIProvider(LLMProvider):
                     "strict": True,
                 }
             },
-            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return json.loads(response.output_text)
