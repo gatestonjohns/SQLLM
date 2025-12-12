@@ -4,7 +4,7 @@ from ..components import (
     editor_section,
     gui_section,
     uploader_section,
-    joiner_section,
+    # joiner_section,
     results_section,
     execution_tasks_section,
     total_usage_component,
