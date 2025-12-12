@@ -20,7 +20,7 @@ class AzureProvider(LLMProvider):
         api_key: Optional[str] = None,
         model: Optional[str] = None,
         azure_endpoint: Optional[str] = None,
-        api_version: str = "2024-12-01-preview",
+        api_version: Optional[str] = None,
         token_limit: int = 190000,
     ):
         """
@@ -34,9 +34,9 @@ class AzureProvider(LLMProvider):
             token_limit: Maximum tokens for prompt
         """
         self._api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY")
-        self._model = model or "gpt-4.1-nano"
+        self._model = model or "gpt-4.1-04-14"
         self._azure_endpoint = azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
-        self._api_version = api_version
+        self._api_version = api_version or "2024-12-01-preview"
 
         # Lazy-initialized clients
         self._async_client: Optional[AsyncAzureOpenAI] = None
