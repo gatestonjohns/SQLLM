@@ -55,9 +55,9 @@ class AzureProvider(LLMProvider):
         )
         self._system_prompt_msg = {"role": "system", "content": self._system_prompt}
 
-        # Pricing (GPT-4.1-nano)
-        self._input_token_price: float = 0.0000001  # $0.10/1M tokens
-        self._output_token_price: float = 0.000004  # $0.40/1M tokens
+        # Pricing (GPT-4.1)
+        self._input_token_price: float = 0.000002  # $2.00/1M tokens
+        self._output_token_price: float = 0.000008  # $8.00/1M tokens
 
     @property
     def async_client(self) -> AsyncAzureOpenAI:
@@ -108,9 +108,7 @@ class AzureProvider(LLMProvider):
                 user_content.append(
                     {
                         "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/png;base64,{b64_png_string}"
-                        },
+                        "image_url": {"url": f"data:image/png;base64,{b64_png_string}"},
                     }
                 )
 
@@ -145,9 +143,7 @@ class AzureProvider(LLMProvider):
                 user_content.append(
                     {
                         "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/png;base64,{b64_png_string}"
-                        },
+                        "image_url": {"url": f"data:image/png;base64,{b64_png_string}"},
                     }
                 )
 
@@ -190,9 +186,7 @@ class AzureProvider(LLMProvider):
                 user_content.append(
                     {
                         "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/png;base64,{b64_png_string}"
-                        },
+                        "image_url": {"url": f"data:image/png;base64,{b64_png_string}"},
                     }
                 )
 
@@ -227,9 +221,7 @@ class AzureProvider(LLMProvider):
                 user_content.append(
                     {
                         "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/png;base64,{b64_png_string}"
-                        },
+                        "image_url": {"url": f"data:image/png;base64,{b64_png_string}"},
                     }
                 )
 
