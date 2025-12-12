@@ -113,7 +113,7 @@ class OpenAIProvider(LLMProvider):
         response = await self.async_client.responses.create(
             model=self._model,
             input=input_messages,
-            temperature=self._temperature,
+            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return response.output_text
@@ -160,7 +160,7 @@ class OpenAIProvider(LLMProvider):
                     "strict": True,
                 }
             },
-            temperature=self._temperature,
+            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return json.loads(response.output_text)
@@ -195,7 +195,7 @@ class OpenAIProvider(LLMProvider):
         response = self.sync_client.responses.create(
             model=self._model,
             input=input_messages,
-            temperature=self._temperature,
+            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return response.output_text
@@ -242,7 +242,7 @@ class OpenAIProvider(LLMProvider):
                     "strict": True,
                 }
             },
-            temperature=self._temperature,
+            # temperature=self._temperature,
         )
         self._get_token_usage(response)
         return json.loads(response.output_text)
