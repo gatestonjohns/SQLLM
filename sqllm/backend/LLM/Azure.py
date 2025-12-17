@@ -3,12 +3,14 @@ from typing import Optional, Any
 import os
 import json
 import logging
+from datetime import datetime
 from .context import accumulate_usage
 from openai import AsyncAzureOpenAI, AzureOpenAI
 from openai.types.responses import Response
 import tiktoken
 import threading
 from ...models.token_usage import TokenUsage
+
 
 class AzureProvider(LLMProvider):
     """
@@ -41,16 +43,25 @@ class AzureProvider(LLMProvider):
         self._model = model or os.getenv("AZURE_OPENAI_MODEL_DEPLOYMENT_NAME")
         self._azure_endpoint = azure_endpoint or os.getenv("AZURE_OPENAI_ENDPOINT")
         self._api_version = api_version or os.getenv("AZURE_OPENAI_API_VERSION")
-        
+
         token_limit_env = os.getenv("AZURE_OPENAI_TOKEN_LIMIT")
-        self._token_limit = token_limit or (int(token_limit_env) if token_limit_env else None)
-        
+        self._token_limit = token_limit or (
+            int(token_limit_env) if token_limit_env else None
+        )
+
         input_price_env = os.getenv("AZURE_OPENAI_INPUT_TOKEN_PRICE")
-        self._input_token_price = input_token_price or (float(input_price_env) if input_price_env else None)
-        
+        self._input_token_price = input_token_price or (
+            float(input_price_env) if input_price_env else None
+        )
+
         output_price_env = os.getenv("AZURE_OPENAI_OUTPUT_TOKEN_PRICE")
-        self._output_token_price = output_token_price or (float(output_price_env) if output_price_env else None)
-        
+        self._output_token_price = output_token_price or (
+            float(output_price_env) if output_price_env else None
+        )
+
+        # Ensure extraction_logs directory exists
+        os.makedirs("extraction_logs", exist_ok=True)
+
         # Lazy-initialized clients
         self._async_client: Optional[AsyncAzureOpenAI] = None
         self._sync_client: Optional[AzureOpenAI] = None
@@ -101,6 +112,25 @@ class AzureProvider(LLMProvider):
             api_version=self._api_version,
         )
 
+    def _log_interaction(self, call_type: str, prompt: str, response_data: Any):
+        try:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            log_dir = os.path.join("extraction_logs", f"{call_type}_{timestamp}")
+            os.makedirs(log_dir, exist_ok=True)
+
+            with open(os.path.join(log_dir, "prompt.txt"), "w", encoding="utf-8") as f:
+                f.write(prompt)
+
+            with open(
+                os.path.join(log_dir, "response.json"), "w", encoding="utf-8"
+            ) as f:
+                # If it's a string, wrap it or just dump it? User asked for response.json
+                # If it's a dict, it's already JSON-like.
+                # To be safe and consistent, we'll dump it as is.
+                json.dump(response_data, f, indent=2, default=str)
+        except Exception as e:
+            logging.error(f"Failed to log interaction: {e}")
+
     async def generate_text_response(
         self, prompt: str, b64_png_strings: list[str] | None = None
     ) -> str:
@@ -130,7 +160,9 @@ class AzureProvider(LLMProvider):
             input=input_messages,
         )
         self._get_token_usage(response)
-        return response.output_text
+        output_text = response.output_text
+        self._log_interaction("async_text", prompt, output_text)
+        return output_text
 
     async def generate_structured_response(
         self,
@@ -172,7 +204,9 @@ class AzureProvider(LLMProvider):
             },
         )
         self._get_token_usage(response)
-        return json.loads(response.output_text)
+        result = json.loads(response.output_text)
+        self._log_interaction("async_structured", prompt, result)
+        return result
 
     def generate_text_response_sync(
         self, prompt: str, b64_png_strings: list[str] | None = None
@@ -203,7 +237,9 @@ class AzureProvider(LLMProvider):
             input=input_messages,
         )
         self._get_token_usage(response)
-        return response.output_text
+        output_text = response.output_text
+        self._log_interaction("sync_text", prompt, output_text)
+        return output_text
 
     def generate_structured_response_sync(
         self,
@@ -245,7 +281,9 @@ class AzureProvider(LLMProvider):
             },
         )
         self._get_token_usage(response)
-        return json.loads(response.output_text)
+        result = json.loads(response.output_text)
+        self._log_interaction("sync_structured", prompt, result)
+        return result
 
     def _encode_as_tokens(self, prompt: str) -> list[int]:
         try:

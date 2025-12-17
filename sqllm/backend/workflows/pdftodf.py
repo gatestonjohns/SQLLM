@@ -476,4 +476,4 @@ async def pdf_to_dataframe(
     for res in row_results:
         all_rows.extend(res["rows"])
 
-    return pd.DataFrame(all_rows)
+    return pd.DataFrame(all_rows).drop_duplicates()
