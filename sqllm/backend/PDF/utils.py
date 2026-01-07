@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
 import pymupdf
 
 AVERAGE_NUM_CHARS_PER_PAGE_EXPECTATION = 500
+
+# Thread pool for running Docling (CPU-bound) without blocking the event loop
+_docling_executor = ThreadPoolExecutor(max_workers=2)
 
 
 class PDFRequiresOCRError(RuntimeError):
@@ -97,4 +103,51 @@ def get_page_annotated_text(
             f"[START OF PAGE {i + start_page}]\n{page}\n[END OF PAGE {i + start_page}]"
             for i, page in enumerate(sliced_page_texts)
         ]
+    )
+
+
+# =============================================================================
+# Docling-based PDF to Markdown extraction
+# =============================================================================
+
+
+def extract_pdf_as_markdown_with_docling(pdf_path: str) -> str:
+    """
+    Convert a PDF to markdown using Docling for document understanding.
+
+    Docling handles OCR, layout analysis, and table extraction in an integrated
+    pipeline, producing clean markdown output with properly formatted tables.
+
+    Args:
+        pdf_path: Path to the PDF file.
+
+    Returns:
+        Markdown-formatted string of the PDF content.
+    """
+    from docling.document_converter import DocumentConverter
+
+    path = Path(pdf_path)
+    if not path.exists():
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")
+
+    converter = DocumentConverter()
+    result = converter.convert(str(path))
+
+    return result.document.export_to_markdown()
+
+
+async def extract_pdf_as_markdown_with_docling_async(pdf_path: str) -> str:
+    """
+    Async version: Convert a PDF to markdown using Docling.
+    Runs Docling in a thread pool to avoid blocking the event loop.
+
+    Args:
+        pdf_path: Path to the PDF file.
+
+    Returns:
+        Markdown-formatted string of the PDF content.
+    """
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(
+        _docling_executor, extract_pdf_as_markdown_with_docling, pdf_path
     )

@@ -2,7 +2,10 @@ import asyncio
 import json
 import pandas as pd
 from ..LLM.base import LLMProvider
-from ..PDF.utils import extract_full_pdf_text, get_page_annotated_text
+from ..PDF.utils import (
+    extract_pdf_as_markdown_with_docling_async,
+    get_page_annotated_text,
+)
 from ..Engine.progress import ProgressTracker
 
 ARTIFICIAL_PAGE_BREAK_DELIMITER = "\n<<<< ARTIFICIAL PAGE BREAK DELIMITER FLAG >>>>\n"
@@ -169,7 +172,7 @@ CHUNKS_FOR_ROW_EXTRACTION_JSON_SCHEMA = {
 }
 
 
-async def _get_doc_outline(llm: LLMProvider, full_pdf_text: str) -> dict:
+async def _get_doc_outline(llm: LLMProvider, full_pdf_markdown: str) -> dict:
     return await llm.generate_structured_response(
         f""" 
 <ROLE>
@@ -189,9 +192,9 @@ Your task is to create a concise, few-sentence executive summary and high level 
 - Non-content sections (table of contents, cover pages, references, glossaries, appendices) should be listed in the sections overview but will be filtered out in later steps as they don't contain extractable data.
 </CRITERIA>
 
-<DOCUMENT_OUTLINE>
-{full_pdf_text}
-</DOCUMENT_OUTLINE>
+<DOCUMENT_CONTENT>
+{full_pdf_markdown}
+</DOCUMENT_CONTENT>
 """,
         DOCUMENT_OUTLINE_JSON_SCHEMA,
     )
@@ -379,9 +382,10 @@ async def pdf_to_dataframe(
 
     phase_planning.set_total(3)  # Outline, Sections, Page Ranges
 
-    full_pdf_text = extract_full_pdf_text(pdf_path, ARTIFICIAL_PAGE_BREAK_DELIMITER)
+    # Extract full PDF as markdown using Docling (runs in thread pool to not block event loop)
+    full_pdf_markdown = await extract_pdf_as_markdown_with_docling_async(pdf_path)
 
-    document_outline = await _get_doc_outline(llm, full_pdf_text)
+    document_outline = await _get_doc_outline(llm, full_pdf_markdown)
     phase_planning.increment()
 
     # Prepare input for section_page_ranges before starting tasks
