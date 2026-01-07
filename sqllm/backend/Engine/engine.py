@@ -288,7 +288,7 @@ class Engine:
 
         df = self.conn.execute(f"SELECT * FROM {cleaned_table_name}").fetchdf()
 
-        print("df: ", df.head())
+        print("df head: ", df.head())
         print("cleaned_table_name: ", cleaned_table_name)
 
         print(

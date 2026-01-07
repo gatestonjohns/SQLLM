@@ -171,6 +171,23 @@ CHUNKS_FOR_ROW_EXTRACTION_JSON_SCHEMA = {
     }
 }
 
+ROWS_TO_REMOVE_JSON_SCHEMA = {
+    "schema": {
+        "type": "object",
+        "properties": {
+            "rows_to_remove": {
+                "type": "array",
+                "description": "A list of 0-based row indices to remove (duplicates or irrelevant rows).",
+                "items": {
+                    "type": "integer",
+                },
+            },
+        },
+        "required": ["rows_to_remove"],
+        "additionalProperties": False,
+    }
+}
+
 
 async def _get_doc_outline(llm: LLMProvider, full_pdf_markdown: str) -> dict:
     return await llm.generate_structured_response(
@@ -368,6 +385,57 @@ The user was also given the opportunity to provide general instructions, which a
     )
 
 
+async def _deduplicate_and_filter_rows(
+    llm: LLMProvider,
+    df: pd.DataFrame,
+    user_instructions: str,
+) -> list[int]:
+    """
+    Use LLM to identify rows that should be removed from the extracted data.
+    Returns a list of row indices to remove.
+    """
+    if df.empty:
+        return []
+
+    # Reset index to ensure we have clean 0-based integer indexing
+    df_with_index = df.reset_index(drop=True)
+    df_markdown = df_with_index.to_markdown(index=True)
+
+    response = await llm.generate_structured_response(
+        f"""
+<ROLE>
+You are a data quality expert specializing in deduplication and relevance filtering.
+</ROLE>
+
+<TASK>
+You are given a table of extracted data (with row indices) and the original user instructions that guided the extraction.
+Your task is to identify rows that should be REMOVED from the table because they are:
+1. DUPLICATES: Rows that represent the same entity/record as another row (even if worded slightly differently). When duplicates exist, keep only ONE instance (the most complete/accurate one) and mark the others for removal.
+2. IRRELEVANT: Rows that do not match what the user requested in their extraction instructions.
+</TASK>
+
+<CRITERIA>
+- Use semantic equivalence when identifying duplicates (e.g., "John Smith" and "Smith, John" are the same person; "$1,500" and "1500.00" are the same value).
+- When choosing which duplicate to keep, prefer the row with more complete or accurate data.
+- Only mark rows as irrelevant if they clearly do not match the user's extraction instructions.
+- If no rows need to be removed, return an empty list.
+- Return the 0-based row indices of rows to remove.
+</CRITERIA>
+
+<USER_INSTRUCTIONS>
+{user_instructions}
+</USER_INSTRUCTIONS>
+
+<EXTRACTED_DATA_TABLE>
+{df_markdown}
+</EXTRACTED_DATA_TABLE>
+""",
+        ROWS_TO_REMOVE_JSON_SCHEMA,
+    )
+
+    return response.get("rows_to_remove", [])
+
+
 async def pdf_to_dataframe(
     llm: LLMProvider,
     pdf_path: str,
@@ -480,4 +548,14 @@ async def pdf_to_dataframe(
     for res in row_results:
         all_rows.extend(res["rows"])
 
-    return pd.DataFrame(all_rows).drop_duplicates()
+    # Create initial dataframe with programmatic dedup
+    df = pd.DataFrame(all_rows).drop_duplicates().reset_index(drop=True)
+
+    # LLM-based deduplication and relevance filtering
+    rows_to_remove = await _deduplicate_and_filter_rows(llm, df, user_instructions)
+
+    if rows_to_remove:
+        df = df.drop(index=rows_to_remove)
+
+    # Return clean dataframe without index column
+    return df.reset_index(drop=True)
